@@ -8,11 +8,13 @@ import { saveMarkdown } from "@/lib/download";
 import { useStudio } from "@/lib/store";
 import { PageHead } from "@/components/Shell";
 import { Button, Kicker, Panel, Pill, ProgressBar, SectionHead } from "@/components/ui";
+import { useToast } from "@/components/Toast";
 
 type FileKey = "brand" | "design";
 
 export default function HandoffPage() {
   const { project, approvedCount } = useStudio();
+  const toast = useToast();
   const [open, setOpen] = useState<FileKey>("brand");
   const [copied, setCopied] = useState<FileKey | null>(null);
   const [saving, setSaving] = useState<FileKey | null>(null);
@@ -35,7 +37,10 @@ export default function HandoffPage() {
     setSaveNote(null);
     const outcome = await saveMarkdown(`${slug}-${file.name}`, file.body);
     setSaving(null);
-    if (outcome.status === "saved") return;
+    if (outcome.status === "saved") {
+      toast.show(`${file.name} saved`, { detail: `${approvedCount} approved deliverables.`, tone: "go" });
+      return;
+    }
     setSaveNote({
       key,
       text:
@@ -51,6 +56,7 @@ export default function HandoffPage() {
     try {
       await navigator.clipboard.writeText(files[key].body);
       setCopied(key);
+      toast.show(`${files[key].name} copied`, { detail: "Paste it into an assistant to brief it on the brand." });
       window.setTimeout(() => setCopied(null), 1600);
     } catch {
       // Clipboard permission denied. The textarea below is still selectable.

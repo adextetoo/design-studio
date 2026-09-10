@@ -75,7 +75,7 @@ export function Button({
     <button
       type="button"
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-body font-medium transition-colors disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-body font-medium transition-[background-color,border-color,color,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.975] disabled:cursor-not-allowed disabled:active:scale-100 ${VARIANTS[variant]} ${className}`}
     >
       {children}
     </button>

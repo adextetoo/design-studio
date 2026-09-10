@@ -21,7 +21,10 @@
   --color-sunken: #eae6dc;
   --color-ink: #17150f;
   --color-ink-soft: #56514a;
-  --color-ink-faint: #8a847a;
+  /* Measured, not eyeballed: 5.64:1 on panel, 4.95 on canvas, 4.56 on
+     sunken. The previous value failed on sunken at 2.98:1, which is not a
+     standard this app gets to sell and then miss. */
+  --color-ink-faint: #6c665c;
   --color-line: #ded9cd;
   --color-line-soft: #ebe7dc;
 
@@ -59,6 +62,10 @@
   --text-title--line-height: 1.2;
   --text-display--line-height: 1.1;
   --text-hero--line-height: 1.05;
+
+  /* Motion. One curve, so everything decelerates the same way, and durations
+     short enough that nothing ever waits on the animation. */
+  --ease-out-quint: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
@@ -119,7 +126,7 @@ h3 {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -128,5 +135,41 @@ h3 {
 }
 
 .rise {
-  animation: rise 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation: rise 200ms var(--ease-out-quint) both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.toast-in {
+  animation: toast-in 220ms var(--ease-out-quint) both;
+}
+
+/*
+ * Touch targets. A 32px control is fine under a mouse and too small under a
+ * thumb. Coarse pointers are the real signal, but plenty of touch devices
+ * report `fine`, so narrow viewports get the room too — that is where thumbs
+ * are either way, and the desktop layout stays untouched.
+ */
+@media (pointer: coarse), (max-width: 640px) {
+  button,
+  [role="button"],
+  summary,
+  select,
+  input[type="file"] {
+    min-height: 44px;
+  }
+
+  /* Chips are a grid of small targets; they need the height, not the width. */
+  .chip {
+    min-height: 40px;
+  }
 }

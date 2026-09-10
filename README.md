@@ -158,6 +158,20 @@ brand is the only saturated thing on any screen. Border and fill are spent by
 role rather than stamped on every block: a panel is a white field on warm
 paper, and an outline means the thing inside it is selectable.
 
+Contrast is measured, not eyeballed. `tests/design-system.test.ts` reads the
+tokens straight out of `globals.css` and fails the build if any text colour
+drops below 4.5:1 on any ground it can sit on — the app prints a contrast
+verdict on its clients' guideline pages, so missing the same standard itself is
+not an option. That test caught a real failure: the faintest text was 2.98:1 on
+sunken.
+
+Motion is cheap and consistent: one easing curve, durations short enough that
+nothing waits on an animation, transform and opacity only, and reduced motion
+respected globally. Approve, Refresh, Copy and Save each raise a toast that
+says what happened — which let the permanent captions explaining those buttons
+come out. Controls grow to a 44px minimum on coarse pointers and narrow
+viewports.
+
 ## Where the UI patterns came from
 
 The generate → review → **approve or regenerate** loop is not invented here. It

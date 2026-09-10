@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StoreProvider } from "@/lib/store";
 import { Shell } from "@/components/Shell";
+import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <StoreProvider>
-          <Shell>{children}</Shell>
+          <ToastProvider>
+            <Shell>{children}</Shell>
+          </ToastProvider>
         </StoreProvider>
       </body>
     </html>

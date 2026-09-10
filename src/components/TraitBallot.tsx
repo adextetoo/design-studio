@@ -85,7 +85,7 @@ export function TraitBallot({
                   onClick={() => toggle(trait)}
                   disabled={full}
                   aria-pressed={picked}
-                  className={`rounded-full px-3 py-1 text-body transition-colors ${
+                  className={`rounded-full px-3 py-1 text-body transition-[background-color,border-color,color,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.96] ${
                     picked
                       ? "bg-ink text-panel"
                       : full

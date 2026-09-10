@@ -418,7 +418,7 @@ function LogoView({
               type="button"
               onClick={() => setChosen(route.id)}
               aria-pressed={chosen}
-              className={`rounded-lg border p-4 text-left transition-all ${
+              className={`rounded-lg border p-4 text-left transition-[border-color,box-shadow,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.995] ${
                 chosen ? "border-ink shadow-[0_0_0_1px_var(--color-ink)]" : "border-line hover:border-ink/40"
               }`}
             >
@@ -521,7 +521,7 @@ function LookFeelView({
               type="button"
               onClick={() => choose(d.id)}
               aria-pressed={chosen}
-              className={`rounded-lg border p-4 text-left transition-all ${
+              className={`rounded-lg border p-4 text-left transition-[border-color,box-shadow,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.995] ${
                 chosen ? "border-ink shadow-[0_0_0_1px_var(--color-ink)]" : "border-line hover:border-ink/40"
               }`}
             >

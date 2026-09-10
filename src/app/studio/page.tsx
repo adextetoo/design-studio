@@ -10,6 +10,7 @@ import { useStudio } from "@/lib/store";
 import { PageHead } from "@/components/Shell";
 import { DeliverableView } from "@/components/deliverables";
 import { Button, EmptyState, Kicker, Panel, Pill, ProgressBar } from "@/components/ui";
+import { useToast } from "@/components/Toast";
 
 export default function StudioPage() {
   return (
@@ -23,6 +24,7 @@ function Studio() {
   const router = useRouter();
   const params = useSearchParams();
   const store = useStudio();
+  const toast = useToast();
   const { project, approvedCount, roll, approve, unapprove, chooseVariant, setNote, patchPayload } = store;
 
   /*
@@ -119,12 +121,19 @@ function Studio() {
           {variant ? (
             <div className="sticky bottom-0 z-20 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel px-4 py-3 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)]">
               <div className="flex items-center gap-2">
-                <Button onClick={() => roll(active)}>
+                <Button
+                  onClick={() => {
+                    const wasApproved = state.status === "approved";
+                    roll(active);
+                    toast.show(`${meta.title} — round ${state.variants.length + 1}`, {
+                      detail: wasApproved
+                        ? "The earlier round stays in the rail, and its approval has been withdrawn."
+                        : "The earlier round stays in the rail.",
+                    });
+                  }}
+                >
                   <span aria-hidden>↻</span> Refresh
                 </Button>
-                <p className="hidden max-w-[22rem] text-body leading-snug text-ink-faint sm:block">
-                  A new round, generated from the same brief. Every previous round stays available.
-                </p>
               </div>
               {state.status === "approved" ? (
                 <div className="flex items-center gap-2">
@@ -136,10 +145,31 @@ function Studio() {
                         })
                       : ""}
                   </Pill>
-                  <Button onClick={() => unapprove(active)}>Withdraw approval</Button>
+                  <Button
+                    onClick={() => {
+                      unapprove(active);
+                      toast.show(`${meta.title} is a draft again`, {
+                        detail: "It has been taken out of the hub and the export.",
+                        tone: "signal",
+                      });
+                    }}
+                  >
+                    Withdraw approval
+                  </Button>
                 </div>
               ) : (
-                <Button variant="primary" onClick={() => approve(active)}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    approve(active);
+                    toast.show(`${meta.title} approved`, {
+                      detail: `Round ${variant.round} now goes into ${
+                        meta.exports === "both" ? "Brand.md and Design.md" : meta.exports === "brand" ? "Brand.md" : "Design.md"
+                      }.`,
+                      tone: "go",
+                    });
+                  }}
+                >
                   <span aria-hidden>✓</span> Approve — send to {meta.exports === "both" ? "both files" : meta.exports === "brand" ? "Brand.md" : "Design.md"}
                 </Button>
               )}
@@ -183,7 +213,7 @@ function Studio() {
               </div>
             )}
             <p className="mt-3 border-t border-line-soft pt-3 text-micro leading-relaxed text-ink-faint">
-              Rounds are kept so you can go back to the one from twenty minutes ago. That is usually the good one.
+              Kept so you can go back to the one from twenty minutes ago. Usually the good one.
             </p>
           </Panel>
 
@@ -212,8 +242,7 @@ function Studio() {
                 </div>
               )}
               <p className="mt-3 border-t border-line-soft pt-3 text-micro leading-relaxed text-ink-faint">
-                Every string on this screen is checked against a blocklist of machine tells and consultancy filler.
-                Quoted counter-examples in the voice guidelines are exempt — they are supposed to be bad.
+                Every string here is checked against a blocklist of machine tells and consultancy filler.
               </p>
             </Panel>
           ) : null}

@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { Shell } from "@/components/Shell";
 import { StoreProvider } from "@/lib/store";
+import { ToastProvider } from "@/components/Toast";
 import { useRoute } from "./router";
 
 import OverviewPage from "@/app/page";
@@ -31,9 +32,11 @@ function Router() {
 function App() {
   return (
     <StoreProvider>
-      <Shell>
-        <Router />
-      </Shell>
+      <ToastProvider>
+        <Shell>
+          <Router />
+        </Shell>
+      </ToastProvider>
     </StoreProvider>
   );
 }

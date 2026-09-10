@@ -199,7 +199,7 @@ function ChoiceGrid({
             type="button"
             onClick={() => onPick(option)}
             aria-pressed={selected}
-            className={`rounded-lg border p-3 text-left transition-colors ${
+            className={`rounded-lg border p-3 text-left transition-[border-color,background-color,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.99] ${
               selected ? "border-ink bg-sunken" : "border-line hover:border-ink/40"
             }`}
           >
