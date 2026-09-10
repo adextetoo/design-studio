@@ -39,7 +39,7 @@ what gets published as an Artifact.
 | `/hub` | **Brand Hub** — the approved system as a numbered, published guide. |
 | `/handoff` | **Handoff** — `Brand.md` and `Design.md`, previewed and downloadable. |
 
-## The eighteen modules
+## The eighteen deliverables
 
 **Foundation** — Brand Story · Brand Mission · Brand Vision · Offering
 **Position** — Market Research · Customer & Audience · Competition · Differentiation · Brand Exposé
@@ -47,6 +47,9 @@ what gets published as an Artifact.
 **Application** — Packaging · Marketing Material · Social Media · Website Copy
 
 Each one generates a draft, and each one carries the same pair of controls.
+They are **deliverables**, not modules — `module` means a unit of code here.
+The glossary is in [`CONTEXT.md`](CONTEXT.md); the decisions behind the design
+are in [`docs/adr/`](docs/adr/).
 
 ## Approve and Refresh
 
@@ -59,15 +62,16 @@ This is the mechanic the whole app is arranged around.
   Refreshing an approved module drops it back to draft on purpose: the thing that
   was approved is no longer the thing on screen.
 - Nothing reaches `Brand.md` or `Design.md` until it is approved. Unapproved
-  modules are listed by name at the bottom of each file under *Not yet approved*,
-  so whoever picks the file up can see how much of it a person has signed off.
+  deliverables are listed by name at the bottom of each file under *Not yet
+  approved*, so whoever picks the file up can see how much of it a person has
+  signed off.
 
 ## How generation works
 
 There is no model call. Every round is a pure function of `(brief, seed)`:
 
 ```
-seed = hash(brandName, sector, offering, priceStance, fontClass, traits, moduleId, round)
+seed = hash(brandName, sector, offering, priceStance, fontClass, traits, deliverableId, round)
 ```
 
 Same seed, same output — so a project file opens identically on someone else's
@@ -125,8 +129,8 @@ out both suspicious unanimity and a room that has not actually agreed yet.
 src/
   app/            five routes, all statically prerendered
   components/
-    modules/      one renderer per payload kind, plus constructed logo marks
-  data/           modules, workshop questions, palettes, typefaces, language
+    deliverables/ one view per payload kind, plus constructed logo marks
+  data/           deliverables, workshop questions, palettes, typefaces, language
   lib/
     generators/   one file per stage — foundation, position, identity, application
     markdown/     Brand.md and Design.md builders
@@ -134,10 +138,25 @@ src/
     jargon.ts     the human-tone checker
     store.tsx     reducer + localStorage
 tests/            generator determinism, variance, tone and shape assertions
+CONTEXT.md        the domain glossary
 docs/
+  adr/                   the decisions worth not re-litigating
   RESEARCH.md            what was extracted from the reference films
   UI-FLOW-SOURCING.md    which Appllama flow was used, and why over the alternatives
 ```
+
+## How the studio itself is designed
+
+The app sells typographic discipline, so it obeys some. The chrome is set on a
+minor third from a 13px base — seven steps declared in `globals.css`, and
+nothing off the scale — with three type roles doing three jobs: **Newsreader**
+for titles and for the prose the studio generates, because the product here is
+documents; **Work Sans** for anything you operate; **IBM Plex Mono** for
+labels, hex values and anything in a column, so data looks like data. Colour is
+rationed to warm neutrals plus one signal and one confirmation, so the client's
+brand is the only saturated thing on any screen. Border and fill are spent by
+role rather than stamped on every block: a panel is a white field on warm
+paper, and an outline means the thing inside it is selectable.
 
 ## Where the UI patterns came from
 

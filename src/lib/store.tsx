@@ -4,9 +4,9 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode,
 } from "react";
 import type {
-  Ballot, Brief, ModuleId, ModuleState, Project, Variant,
+  Ballot, Brief, DeliverableId, DeliverableState, Project, Variant,
 } from "@/lib/types";
-import { MODULE_IDS } from "@/data/modules";
+import { DELIVERABLE_IDS } from "@/data/deliverables";
 import { STEPS } from "@/data/workshop";
 import { generate, seedFor } from "@/lib/generators";
 
@@ -72,10 +72,10 @@ export const SAMPLE_BRIEF: Brief = {
   },
 };
 
-function emptyModules(): Record<ModuleId, ModuleState> {
-  const modules = {} as Record<ModuleId, ModuleState>;
-  for (const id of MODULE_IDS) {
-    modules[id] = {
+function emptyDeliverables(): Record<DeliverableId, DeliverableState> {
+  const deliverables = {} as Record<DeliverableId, DeliverableState>;
+  for (const id of DELIVERABLE_IDS) {
+    deliverables[id] = {
       status: "empty",
       variants: [],
       activeVariantId: null,
@@ -84,7 +84,7 @@ function emptyModules(): Record<ModuleId, ModuleState> {
       note: "",
     };
   }
-  return modules;
+  return deliverables;
 }
 
 export function newProject(brief: Brief = SAMPLE_BRIEF): Project {
@@ -93,7 +93,7 @@ export function newProject(brief: Brief = SAMPLE_BRIEF): Project {
     id: `p_${Math.random().toString(36).slice(2, 10)}`,
     brief,
     workshop: { stepIndex: 0, answers: { ...brief.answers }, ballots: [], revealed: false },
-    modules: emptyModules(),
+    deliverables: emptyDeliverables(),
     createdAt: now,
     updatedAt: now,
   };
@@ -110,12 +110,12 @@ type Action =
   | { type: "step"; index: number }
   | { type: "setBallots"; ballots: Ballot[] }
   | { type: "reveal"; revealed: boolean }
-  | { type: "roll"; moduleId: ModuleId }
-  | { type: "chooseVariant"; moduleId: ModuleId; variantId: string }
-  | { type: "approve"; moduleId: ModuleId }
-  | { type: "unapprove"; moduleId: ModuleId }
-  | { type: "note"; moduleId: ModuleId; note: string }
-  | { type: "patchPayload"; moduleId: ModuleId; mutate: (v: Variant) => Variant }
+  | { type: "roll"; deliverableId: DeliverableId }
+  | { type: "chooseVariant"; deliverableId: DeliverableId; variantId: string }
+  | { type: "approve"; deliverableId: DeliverableId }
+  | { type: "unapprove"; deliverableId: DeliverableId }
+  | { type: "note"; deliverableId: DeliverableId; note: string }
+  | { type: "patchPayload"; deliverableId: DeliverableId; mutate: (v: Variant) => Variant }
   | { type: "reset"; project: Project };
 
 function touch(project: Project): Project {
@@ -170,23 +170,23 @@ function reducer(project: Project, action: Action): Project {
       return touch({ ...project, workshop: { ...project.workshop, revealed: action.revealed } });
 
     case "roll": {
-      const state = project.modules[action.moduleId];
+      const state = project.deliverables[action.deliverableId];
       const round = state.variants.length;
-      const seed = seedFor(project.brief, action.moduleId, round);
+      const seed = seedFor(project.brief, action.deliverableId, round);
       const variant: Variant = {
-        id: `${action.moduleId}_r${round}_${seed.toString(36)}`,
+        id: `${action.deliverableId}_r${round}_${seed.toString(36)}`,
         round: round + 1,
         seed,
         createdAt: new Date().toISOString(),
-        payload: generate(project.brief, action.moduleId, seed),
+        payload: generate(project.brief, action.deliverableId, seed),
       };
       return touch({
         ...project,
-        modules: {
-          ...project.modules,
-          [action.moduleId]: {
+        deliverables: {
+          ...project.deliverables,
+          [action.deliverableId]: {
             ...state,
-            // Refreshing an approved module drops it back to draft on purpose:
+            // Refreshing an approved deliverable drops it back to draft on purpose:
             // the thing that was approved is not the thing on screen any more.
             status: "draft",
             approvedVariantId: null,
@@ -201,20 +201,20 @@ function reducer(project: Project, action: Action): Project {
     case "chooseVariant":
       return touch({
         ...project,
-        modules: {
-          ...project.modules,
-          [action.moduleId]: { ...project.modules[action.moduleId], activeVariantId: action.variantId },
+        deliverables: {
+          ...project.deliverables,
+          [action.deliverableId]: { ...project.deliverables[action.deliverableId], activeVariantId: action.variantId },
         },
       });
 
     case "approve": {
-      const state = project.modules[action.moduleId];
+      const state = project.deliverables[action.deliverableId];
       if (!state.activeVariantId) return project;
       return touch({
         ...project,
-        modules: {
-          ...project.modules,
-          [action.moduleId]: {
+        deliverables: {
+          ...project.deliverables,
+          [action.deliverableId]: {
             ...state,
             status: "approved",
             approvedVariantId: state.activeVariantId,
@@ -227,10 +227,10 @@ function reducer(project: Project, action: Action): Project {
     case "unapprove":
       return touch({
         ...project,
-        modules: {
-          ...project.modules,
-          [action.moduleId]: {
-            ...project.modules[action.moduleId],
+        deliverables: {
+          ...project.deliverables,
+          [action.deliverableId]: {
+            ...project.deliverables[action.deliverableId],
             status: "draft", approvedVariantId: null, approvedAt: null,
           },
         },
@@ -239,17 +239,17 @@ function reducer(project: Project, action: Action): Project {
     case "note":
       return touch({
         ...project,
-        modules: { ...project.modules, [action.moduleId]: { ...project.modules[action.moduleId], note: action.note } },
+        deliverables: { ...project.deliverables, [action.deliverableId]: { ...project.deliverables[action.deliverableId], note: action.note } },
       });
 
     case "patchPayload": {
-      const state = project.modules[action.moduleId];
+      const state = project.deliverables[action.deliverableId];
       if (!state.activeVariantId) return project;
       return touch({
         ...project,
-        modules: {
-          ...project.modules,
-          [action.moduleId]: {
+        deliverables: {
+          ...project.deliverables,
+          [action.deliverableId]: {
             ...state,
             variants: state.variants.map((v) => (v.id === state.activeVariantId ? action.mutate(v) : v)),
           },
@@ -274,14 +274,14 @@ interface StoreValue {
   goToStep: (index: number) => void;
   setBallots: (ballots: Ballot[]) => void;
   setRevealed: (revealed: boolean) => void;
-  roll: (moduleId: ModuleId) => void;
-  chooseVariant: (moduleId: ModuleId, variantId: string) => void;
-  approve: (moduleId: ModuleId) => void;
-  unapprove: (moduleId: ModuleId) => void;
-  setNote: (moduleId: ModuleId, note: string) => void;
-  patchPayload: (moduleId: ModuleId, mutate: (v: Variant) => Variant) => void;
+  roll: (deliverableId: DeliverableId) => void;
+  chooseVariant: (deliverableId: DeliverableId, variantId: string) => void;
+  approve: (deliverableId: DeliverableId) => void;
+  unapprove: (deliverableId: DeliverableId) => void;
+  setNote: (deliverableId: DeliverableId, note: string) => void;
+  patchPayload: (deliverableId: DeliverableId, mutate: (v: Variant) => Variant) => void;
   reset: (brief?: Brief) => void;
-  activeVariant: (moduleId: ModuleId) => Variant | null;
+  activeVariant: (deliverableId: DeliverableId) => Variant | null;
   approvedCount: number;
 }
 
@@ -297,11 +297,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as Project;
-        if (parsed?.brief && parsed?.modules) {
-          // Tolerate projects saved before a module was added.
-          const modules = { ...emptyModules(), ...parsed.modules };
-          dispatch({ type: "hydrate", project: { ...parsed, modules } });
+        const parsed = JSON.parse(raw) as Partial<Project> & {
+          /** Deliverables were stored under `modules` before the rename. */
+          modules?: Project["deliverables"];
+        };
+        const stored = parsed?.deliverables ?? parsed?.modules;
+        if (parsed?.brief && stored) {
+          // Tolerate a project saved before a deliverable existed, or under
+          // the old field name.
+          const deliverables = { ...emptyDeliverables(), ...stored };
+          dispatch({ type: "hydrate", project: { ...(parsed as Project), deliverables } });
         }
       }
     } catch {
@@ -320,8 +325,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [project, ready]);
 
   const activeVariant = useCallback(
-    (moduleId: ModuleId) => {
-      const state = project.modules[moduleId];
+    (deliverableId: DeliverableId) => {
+      const state = project.deliverables[deliverableId];
       if (!state?.activeVariantId) return null;
       return state.variants.find((v) => v.id === state.activeVariantId) ?? null;
     },
@@ -337,15 +342,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       goToStep: (index) => dispatch({ type: "step", index }),
       setBallots: (ballots) => dispatch({ type: "setBallots", ballots }),
       setRevealed: (revealed) => dispatch({ type: "reveal", revealed }),
-      roll: (moduleId) => dispatch({ type: "roll", moduleId }),
-      chooseVariant: (moduleId, variantId) => dispatch({ type: "chooseVariant", moduleId, variantId }),
-      approve: (moduleId) => dispatch({ type: "approve", moduleId }),
-      unapprove: (moduleId) => dispatch({ type: "unapprove", moduleId }),
-      setNote: (moduleId, note) => dispatch({ type: "note", moduleId, note }),
-      patchPayload: (moduleId, mutate) => dispatch({ type: "patchPayload", moduleId, mutate }),
+      roll: (deliverableId) => dispatch({ type: "roll", deliverableId }),
+      chooseVariant: (deliverableId, variantId) => dispatch({ type: "chooseVariant", deliverableId, variantId }),
+      approve: (deliverableId) => dispatch({ type: "approve", deliverableId }),
+      unapprove: (deliverableId) => dispatch({ type: "unapprove", deliverableId }),
+      setNote: (deliverableId, note) => dispatch({ type: "note", deliverableId, note }),
+      patchPayload: (deliverableId, mutate) => dispatch({ type: "patchPayload", deliverableId, mutate }),
       reset: (brief) => dispatch({ type: "reset", project: newProject(brief ?? EMPTY_BRIEF) }),
       activeVariant,
-      approvedCount: MODULE_IDS.filter((id) => project.modules[id]?.status === "approved").length,
+      approvedCount: DELIVERABLE_IDS.filter((id) => project.deliverables[id]?.status === "approved").length,
     }),
     [project, ready, activeVariant],
   );

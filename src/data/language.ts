@@ -96,7 +96,7 @@ export const VISION_SHAPES = [
   "The day {claim} is the day this is finished.",
 ];
 
-/** Section kickers used across the website copy and marketing modules. */
+/** Section kickers used across the website copy and marketing deliverables. */
 export const KICKERS = [
   "How it works", "Why it exists", "What you get", "Where it fits",
   "The short version", "In practice", "What we will not do", "Who it is for",

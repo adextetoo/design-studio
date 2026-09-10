@@ -1,7 +1,7 @@
 /**
  * Deterministic randomness.
  *
- * Every module round is a pure function of (brief, seed). Same seed, same
+ * Every deliverable round is a pure function of (brief, seed). Same seed, same
  * output — so a designer can hand a colleague a project file and see the
  * identical draft, and Refresh is just "advance the seed".
  */

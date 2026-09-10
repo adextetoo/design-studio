@@ -1,4 +1,4 @@
-import type { CompetitorRow, ModulePayload, Persona, PriceStance } from "@/lib/types";
+import type { CompetitorRow, DeliverablePayload, Persona, PriceStance } from "@/lib/types";
 import { ARCHETYPES } from "@/data/language";
 import { list, sentence, STANCE_WORDS, type Ctx } from "./ctx";
 
@@ -6,7 +6,7 @@ import { list, sentence, STANCE_WORDS, type Ctx } from "./ctx";
 /* Market research                                                   */
 /* ---------------------------------------------------------------- */
 
-export function generateMarket(ctx: Ctx): ModulePayload {
+export function generateMarket(ctx: Ctx): DeliverablePayload {
   const sector = ctx.brief.sector || "the category";
   const region = ctx.brief.location ? `the ${ctx.brief.location} region` : "the domestic market";
 
@@ -78,7 +78,7 @@ const ARCHETYPE_LABELS_B = [
   "The Delegator", "The Late Convert",
 ];
 
-export function generateAudience(ctx: Ctx): ModulePayload {
+export function generateAudience(ctx: Ctx): DeliverablePayload {
   const note = ctx.a("audience");
   const before = ctx.frag("before");
   const objection = ctx.a("objection");
@@ -181,7 +181,7 @@ function humaniseTrait(trait: string): string {
 /* Competition                                                       */
 /* ---------------------------------------------------------------- */
 
-export function generateCompetition(ctx: Ctx): ModulePayload {
+export function generateCompetition(ctx: Ctx): DeliverablePayload {
   const named = ctx.brief.competitors.filter(Boolean);
   const rivalGood = ctx.a("rival-good");
   const before = ctx.a("before");
@@ -269,7 +269,7 @@ export function generateCompetition(ctx: Ctx): ModulePayload {
 /* Differentiation                                                   */
 /* ---------------------------------------------------------------- */
 
-export function generateDifferentiation(ctx: Ctx): ModulePayload {
+export function generateDifferentiation(ctx: Ctx): DeliverablePayload {
   const stance = STANCE_WORDS[ctx.brief.priceStance];
   const traits = ctx.brief.traits;
   const hardTruth = ctx.a("hard-truth");
@@ -319,7 +319,7 @@ export function generateDifferentiation(ctx: Ctx): ModulePayload {
 /* Brand exposé                                                      */
 /* ---------------------------------------------------------------- */
 
-export function generateExpose(ctx: Ctx): ModulePayload {
+export function generateExpose(ctx: Ctx): DeliverablePayload {
   const { brandName, sector, location, foundedYear } = ctx.brief;
   const archetype = ctx.pick(ARCHETYPES.filter((a) => a.traits.some((t) => ctx.brief.traits.includes(t))).length > 0
     ? ARCHETYPES.filter((a) => a.traits.some((t) => ctx.brief.traits.includes(t)))

@@ -48,22 +48,24 @@ const js = readFileSync(`${TMP}/studio.js`, "utf8");
  * to whatever the viewer happens to have installed.
  */
 const FONTS = [
+  // Chrome faces first: display, UI, data.
+  "Newsreader:wght@400;500;600",
+  "Work+Sans:wght@400;500;600",
+  "IBM+Plex+Mono:wght@400;500;600",
+  // Then every face the Typography deliverable can name.
   "Manrope:wght@200;400;500;700",
   "Space+Grotesk:wght@300;400;500;700",
   "Poppins:wght@300;400;500;600",
   "Inter:wght@300;400;500;600;700",
-  "Work+Sans:wght@400;500;600",
   "Source+Sans+3:wght@400;600;700",
   "Lato:wght@300;400;700",
   "Source+Serif+4:wght@400;600;700",
-  "Newsreader:wght@400;500;600",
   "Lora:wght@400;500",
   "Playfair+Display:wght@400;500;700",
   "Bodoni+Moda:wght@400;500;700",
   "Jost:wght@300;400",
   "Roboto+Slab:wght@400;500;700",
   "Zilla+Slab:wght@400;500;700",
-  "IBM+Plex+Mono:wght@400;500;600",
   "JetBrains+Mono:wght@400;500;700",
 ]
   .map((f) => `family=${f}`)

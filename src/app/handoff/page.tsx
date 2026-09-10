@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { MODULES } from "@/data/modules";
+import { DELIVERABLES } from "@/data/deliverables";
 import { buildBrandMd, buildDesignMd } from "@/lib/markdown";
 import { saveMarkdown } from "@/lib/download";
 import { useStudio } from "@/lib/store";
@@ -26,7 +26,7 @@ export default function HandoffPage() {
     [project],
   );
 
-  const pending = MODULES.filter((m) => project.modules[m.id].status !== "approved");
+  const pending = DELIVERABLES.filter((m) => project.deliverables[m.id].status !== "approved");
   const slug = (project.brief.brandName || "brand").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   const download = async (key: FileKey) => {
@@ -62,10 +62,10 @@ export default function HandoffPage() {
       <PageHead
         eyebrow={`${project.brief.brandName || "Client"} · Handoff`}
         title="Brand.md and Design.md"
-        note="Two Markdown files built from the approved modules only. Hand them to a developer, a freelancer, or paste them into an assistant as a system prompt so it is briefed on the brand before it writes a word."
+        note="Two Markdown files built from the approved deliverables only. Hand them to a developer, a freelancer, or paste them into an assistant as a system prompt so it is briefed on the brand before it writes a word."
         status={{
-          label: `${approvedCount} of ${MODULES.length} approved`,
-          tone: approvedCount === MODULES.length ? "go" : "neutral",
+          label: `${approvedCount} of ${DELIVERABLES.length} approved`,
+          tone: approvedCount === DELIVERABLES.length ? "go" : "neutral",
         }}
       />
 
@@ -73,22 +73,22 @@ export default function HandoffPage() {
         <Panel>
           <SectionHead
             title="What goes in"
-            note="Approving a module is the only thing that puts it in these files. Withdraw the approval and it comes straight back out."
+            note="Approving a deliverable is the only thing that puts it in these files. Withdraw the approval and it comes straight back out."
           />
-          <ProgressBar value={approvedCount} total={MODULES.length} />
+          <ProgressBar value={approvedCount} total={DELIVERABLES.length} />
           <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {MODULES.map((m) => {
-              const status = project.modules[m.id].status;
+            {DELIVERABLES.map((m) => {
+              const status = project.deliverables[m.id].status;
               return (
                 <Link
                   key={m.id}
-                  href={{ pathname: "/studio", query: { module: m.id } }}
-                  className={`flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-[13px] transition-colors ${
+                  href={{ pathname: "/studio", query: { deliverable: m.id } }}
+                  className={`flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-body transition-colors ${
                     status === "approved" ? "border-go/30 bg-go-soft" : "border-line hover:bg-sunken"
                   }`}
                 >
                   <span className="truncate">{m.title}</span>
-                  <span className="shrink-0 text-[11px] text-ink-faint">
+                  <span className="shrink-0 text-micro text-ink-faint">
                     {status === "approved" ? (
                       <span className="text-go">✓ in {m.exports === "both" ? "both" : m.exports}</span>
                     ) : status === "draft" ? (
@@ -102,8 +102,8 @@ export default function HandoffPage() {
             })}
           </div>
           {pending.length > 0 ? (
-            <p className="mt-4 rounded-md bg-sunken px-3 py-2 text-[12px] leading-relaxed text-ink-soft">
-              {pending.length} module{pending.length === 1 ? " is" : "s are"} still unapproved, so {pending.length === 1 ? "it is" : "they are"} listed
+            <p className="mt-4 rounded-md bg-sunken px-3 py-2 text-body leading-relaxed text-ink-soft">
+              {pending.length} deliverable{pending.length === 1 ? " is" : "s are"} still unapproved, so {pending.length === 1 ? "it is" : "they are"} listed
               by name at the bottom of each file under &ldquo;Not yet approved&rdquo;. Whoever picks these up can see
               exactly how much of the system a human has signed off.
             </p>
@@ -136,11 +136,11 @@ export default function HandoffPage() {
                   </Button>
                 </div>
                 {saveNote?.key === key ? (
-                  <p role="status" className="mt-3 rounded-md bg-sunken px-3 py-2 text-[12px] leading-relaxed text-ink-soft">
+                  <p role="status" className="mt-3 rounded-md bg-sunken px-3 py-2 text-body leading-relaxed text-ink-soft">
                     {saveNote.text}
                   </p>
                 ) : null}
-                <p className="mt-3 text-[11px] tabular-nums text-ink-faint">
+                <p className="mt-3 text-micro tabular-nums text-ink-faint">
                   {words.toLocaleString("en-GB")} words · {(new Blob([file.body]).size / 1024).toFixed(1)} KB
                 </p>
               </Panel>
@@ -157,7 +157,7 @@ export default function HandoffPage() {
                   type="button"
                   onClick={() => setOpen(key)}
                   aria-pressed={open === key}
-                  className={`rounded px-3 py-1 text-[13px] transition-colors ${
+                  className={`rounded px-3 py-1 text-body transition-colors ${
                     open === key ? "bg-ink text-panel" : "text-ink-soft hover:text-ink"
                   }`}
                 >
@@ -167,14 +167,14 @@ export default function HandoffPage() {
             </div>
             <Kicker>Exactly what downloads</Kicker>
           </div>
-          <pre className="max-h-[34rem] overflow-auto px-5 py-4 font-mono text-[12px] leading-relaxed text-ink-soft">
+          <pre className="max-h-[34rem] overflow-auto px-5 py-4 font-mono text-body leading-relaxed text-ink-soft">
             {files[open].body}
           </pre>
         </Panel>
 
         <Panel>
           <SectionHead title="How to use these" note="Written to be picked up by a person or an assistant with no further explanation." />
-          <ul className="space-y-2.5 text-[14px] leading-relaxed text-ink-soft">
+          <ul className="space-y-2.5 text-lead leading-relaxed text-ink-soft">
             {[
               "Paste Brand.md into an assistant as a system prompt before asking it to write anything for this client. It will stop inventing a voice.",
               "Commit both files next to the code. The copy and the product then move together, and nobody has to find the deck.",

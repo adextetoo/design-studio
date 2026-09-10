@@ -69,7 +69,7 @@ export function TraitBallot({
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <Kicker>Your ballot — {picks.length} of {MAX_PICKS} picked</Kicker>
           {picks.length === MAX_PICKS ? (
-            <p className="text-[12px] text-ink-soft">Now star the one that matters most.</p>
+            <p className="text-body text-ink-soft">Now star the one that matters most.</p>
           ) : null}
         </div>
 
@@ -85,7 +85,7 @@ export function TraitBallot({
                   onClick={() => toggle(trait)}
                   disabled={full}
                   aria-pressed={picked}
-                  className={`rounded-full px-3 py-1 text-[13px] transition-colors ${
+                  className={`rounded-full px-3 py-1 text-body transition-colors ${
                     picked
                       ? "bg-ink text-panel"
                       : full
@@ -101,7 +101,7 @@ export function TraitBallot({
                     onClick={() => setFavourite(isFavourite ? null : trait)}
                     aria-label={`Mark ${trait} as your favourite`}
                     aria-pressed={isFavourite}
-                    className={`-ml-1 rounded-full px-1.5 text-[12px] ${
+                    className={`-ml-1 rounded-full px-1.5 text-body ${
                       isFavourite ? "text-signal" : "text-ink-faint hover:text-signal"
                     }`}
                   >
@@ -118,12 +118,12 @@ export function TraitBallot({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
-            className="w-44 rounded-md border border-line bg-panel px-3 py-1.5 text-[13px] focus:border-ink focus:outline-none"
+            className="w-44 rounded-md border border-line bg-panel px-3 py-1.5 text-body focus:border-ink focus:outline-none"
           />
           <Button variant="primary" onClick={submit} disabled={picks.length !== MAX_PICKS}>
             Submit in private
           </Button>
-          <p className="text-[12px] text-ink-faint">
+          <p className="text-body text-ink-faint">
             {ballots.length} ballot{ballots.length === 1 ? "" : "s"} in. Nobody sees anything until the reveal.
           </p>
         </div>
@@ -142,7 +142,7 @@ export function TraitBallot({
         </div>
 
         {ballots.length === 0 ? (
-          <p className="text-[13px] text-ink-soft">
+          <p className="text-body text-ink-soft">
             Nothing submitted yet. Get everyone on the call to fill this in before anyone says a word out loud.
           </p>
         ) : !revealed ? (
@@ -150,7 +150,7 @@ export function TraitBallot({
             {ballots.map((b, i) => (
               <span
                 key={`${b.participant}-${i}`}
-                className="rounded-md border border-line bg-panel px-3 py-1.5 text-[13px]"
+                className="rounded-md border border-line bg-panel px-3 py-1.5 text-body"
               >
                 {b.participant} <span className="text-ink-faint">— sealed</span>
               </span>
@@ -159,14 +159,14 @@ export function TraitBallot({
         ) : (
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-[12px] text-ink-soft">
+              <p className="mb-2 text-body text-ink-soft">
                 Ranked by favourites first, then by how many people picked it. The top five become the brand personality.
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {ranked.map(([trait, { count, favourites }], i) => (
                   <span
                     key={trait}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[13px] ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-body ${
                       i < 5 ? "bg-ink text-panel" : "border border-line text-ink-soft"
                     }`}
                   >
@@ -178,7 +178,7 @@ export function TraitBallot({
               </div>
             </div>
 
-            <ul className="space-y-1.5 border-t border-line pt-3 text-[13px]">
+            <ul className="space-y-1.5 border-t border-line pt-3 text-body">
               {ballots.map((b, i) => (
                 <li key={`${b.participant}-${i}`} className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-medium">{b.participant}</span>
@@ -189,13 +189,13 @@ export function TraitBallot({
             </ul>
 
             {ranked.length > 0 && ranked[0][1].favourites === ballots.length && ballots.length > 1 ? (
-              <p className="text-[12px] text-ink-soft">
+              <p className="text-body text-ink-soft">
                 Everyone starred the same word. That is either real alignment or one person talked before the ballot.
               </p>
             ) : null}
 
             {ballots.length > 1 && ranked.filter(([, v]) => v.count === 1).length > ranked.length / 2 ? (
-              <p className="text-[12px] text-ink-soft">
+              <p className="text-body text-ink-soft">
                 Over half these words were picked by one person only. The room does not agree yet — that disagreement is
                 the most useful thing on this screen, and it is worth twenty minutes before moving on.
               </p>

@@ -1,20 +1,20 @@
 import type {
-  ModuleId, ModulePayload, Project, Variant,
+  DeliverableId, DeliverablePayload, PayloadKind, PayloadOf, Project, Variant,
 } from "@/lib/types";
-import { MODULE_BY_ID, MODULES } from "@/data/modules";
+import { DELIVERABLE_BY_ID, DELIVERABLES } from "@/data/deliverables";
 import { STANCE_WORDS } from "@/lib/generators/ctx";
 
 /**
  * Brand.md and Design.md.
  *
  * The rule the whole app is built around applies hardest here: only approved
- * modules are written as fact. Anything still in draft is listed by name at
+ * deliverables are written as fact. Anything still in draft is listed by name at
  * the bottom under "Not yet approved", so whoever picks this file up knows
  * exactly how much of it a human has signed off.
  */
 
-function approvedPayload(project: Project, id: ModuleId): ModulePayload | null {
-  const state = project.modules[id];
+function approvedPayload(project: Project, id: DeliverableId): DeliverablePayload | null {
+  const state = project.deliverables[id];
   if (!state || state.status !== "approved" || !state.approvedVariantId) return null;
   const variant = state.variants.find((v: Variant) => v.id === state.approvedVariantId);
   return variant ? variant.payload : null;
@@ -36,20 +36,20 @@ function table(headers: string[], rows: string[][]): string {
 }
 
 function frontMatter(project: Project, kind: "Brand" | "Design"): string {
-  const approvedCount = MODULES.filter((m) => project.modules[m.id]?.status === "approved").length;
+  const approvedCount = DELIVERABLES.filter((m) => project.deliverables[m.id]?.status === "approved").length;
   return [
     "---",
     `document: ${kind}.md`,
     `brand: ${project.brief.brandName || "Untitled"}`,
     `generated: ${new Date().toISOString().slice(0, 10)}`,
-    `approved_modules: ${approvedCount} of ${MODULES.length}`,
-    "source: design studio — approved modules only",
+    `approved_modules: ${approvedCount} of ${DELIVERABLES.length}`,
+    "source: design studio — approved deliverables only",
     "---",
   ].join("\n");
 }
 
-function notApproved(project: Project, ids: ModuleId[]): string {
-  const pending = ids.filter((id) => project.modules[id]?.status !== "approved");
+function notApproved(project: Project, ids: DeliverableId[]): string {
+  const pending = ids.filter((id) => project.deliverables[id]?.status !== "approved");
   if (pending.length === 0) return "";
   return [
     "",
@@ -57,7 +57,7 @@ function notApproved(project: Project, ids: ModuleId[]): string {
     "",
     "These sections exist in the studio but nobody has signed them off, so they are deliberately absent above. Treat any claim about them as unverified.",
     "",
-    bullets(pending.map((id) => MODULE_BY_ID[id].title)),
+    bullets(pending.map((id) => DELIVERABLE_BY_ID[id].title)),
   ].join("\n");
 }
 
@@ -65,7 +65,7 @@ function notApproved(project: Project, ids: ModuleId[]): string {
 /* Brand.md — strategy, positioning and language                     */
 /* ================================================================ */
 
-const BRAND_MODULES: ModuleId[] = [
+const BRAND_MODULES: DeliverableId[] = [
   "story", "mission", "vision", "offering", "market", "audience",
   "competition", "differentiation", "expose", "tone", "social", "website",
 ];
@@ -97,7 +97,7 @@ export function buildBrandMd(project: Project): string {
   for (const id of BRAND_MODULES) {
     const payload = approvedPayload(project, id);
     if (!payload) continue;
-    out.push(h(2, MODULE_BY_ID[id].title), "", renderPayload(payload), "");
+    out.push(h(2, DELIVERABLE_BY_ID[id].title), "", renderPayload(payload), "");
   }
 
   out.push(
@@ -119,7 +119,7 @@ export function buildBrandMd(project: Project): string {
 /* Design.md — the visual system                                     */
 /* ================================================================ */
 
-const DESIGN_MODULES: ModuleId[] = [
+const DESIGN_MODULES: DeliverableId[] = [
   "lookfeel", "logo", "palette", "typography", "packaging", "marketing", "social", "website",
 ];
 
@@ -156,7 +156,7 @@ export function buildDesignMd(project: Project): string {
   for (const id of DESIGN_MODULES) {
     const payload = approvedPayload(project, id);
     if (!payload) continue;
-    out.push(h(2, MODULE_BY_ID[id].title), "", renderPayload(payload), "");
+    out.push(h(2, DELIVERABLE_BY_ID[id].title), "", renderPayload(payload), "");
   }
 
   out.push(notApproved(project, DESIGN_MODULES));
@@ -171,16 +171,28 @@ function slug(text: string): string {
 /* Payload rendering                                                 */
 /* ================================================================ */
 
-function renderPayload(payload: ModulePayload): string {
-  switch (payload.kind) {
-    case "prose":
-      return payload.data.paragraphs.join("\n\n");
+function renderPayload(payload: DeliverablePayload): string {
+  const render = MARKDOWN[payload.kind] as (data: DeliverablePayload["data"]) => string;
+  return render(payload.data);
+}
 
-    case "statements":
-      return [
-        payload.data.intro,
+/**
+ * How each payload kind is written into Brand.md and Design.md.
+ *
+ * Declared over every `PayloadKind`, so a kind that reaches the studio screen
+ * but not this file is a compile error rather than a section that silently
+ * exports as an empty string.
+ */
+const MARKDOWN: { [K in PayloadKind]: (data: PayloadOf<K>) => string } = {
+  prose: (data) => {
+    return data.paragraphs.join("\n\n");
+  },
+
+  statements: (data) => {
+    return [
+        data.intro,
         "",
-        payload.data.items
+        data.items
           .map((item) => {
             const parts = [`${h(3, item.label)}`, "", `**${item.statement}**`, "", item.detail];
             if (item.sayThis) parts.push("", `Say: “${item.sayThis}”`);
@@ -190,43 +202,47 @@ function renderPayload(payload: ModulePayload): string {
           })
           .join("\n\n"),
       ].join("\n");
+  },
 
-    case "palette":
-      return [
-        `**${payload.data.name}** — ${payload.data.rationale}`,
+  palette: (data) => {
+    return [
+        `**${data.name}** — ${data.rationale}`,
         "",
         table(
           ["Name", "Role", "HEX", "RGB", "CMYK", "On white", "Use"],
-          payload.data.swatches.map((s) => [
+          data.swatches.map((s) => [
             s.name, s.role, s.hex, s.rgb.join(", "), s.cmyk.join(", "),
             `${s.contrastOnWhite}:1`, s.usage,
           ]),
         ),
         "",
-        `**Pairing rule.** ${payload.data.pairingRule}`,
+        `**Pairing rule.** ${data.pairingRule}`,
       ].join("\n");
+  },
 
-    case "typography":
-      return [
-        `**Class.** ${payload.data.className} — ${payload.data.classNote}`,
+  typography: (data) => {
+    return [
+        `**Class.** ${data.className} — ${data.classNote}`,
         "",
-        `**Primary.** ${payload.data.primary.name} (${payload.data.primary.weights.join(", ")})`,
-        `**Secondary.** ${payload.data.secondary.name} (${payload.data.secondary.weights.join(", ")})`,
-        `**Scale.** ${payload.data.scaleRatio}`,
+        `**Primary.** ${data.primary.name} (${data.primary.weights.join(", ")})`,
+        `**Secondary.** ${data.secondary.name} (${data.secondary.weights.join(", ")})`,
+        `**Scale.** ${data.scaleRatio}`,
         "",
         table(
           ["Level", "Weight", "Size", "Line height", "Tracking", "Use"],
-          payload.data.levels.map((l) => [l.level, l.weight, l.size, l.lineHeight, l.tracking, l.use]),
+          data.levels.map((l) => [l.level, l.weight, l.size, l.lineHeight, l.tracking, l.use]),
         ),
         "",
-        bullets(payload.data.rules),
+        bullets(data.rules),
       ].join("\n");
+  },
 
-    case "logo": {
-      const chosen = payload.data.routes.find((r) => r.id === payload.data.chosenRouteId) ?? payload.data.routes[0];
+  logo: (data) => {
+
+      const chosen = data.routes.find((r) => r.id === data.chosenRouteId) ?? data.routes[0];
       const lines = [];
-      if (payload.data.uploadedMark) {
-        lines.push(`**Working from client artwork.** ${payload.data.uploadedName ?? "Uploaded mark"} — the routes below were not used.`, "");
+      if (data.uploadedMark) {
+        lines.push(`**Working from client artwork.** ${data.uploadedName ?? "Uploaded mark"} — the routes below were not used.`, "");
       }
       if (chosen) {
         lines.push(
@@ -240,15 +256,15 @@ function renderPayload(payload: ModulePayload): string {
           ]),
         );
       }
-      lines.push("", payload.data.wordmarkNote);
+      lines.push("", data.wordmarkNote);
       return lines.join("\n");
-    }
+  },
 
-    case "audience":
-      return [
-        payload.data.read,
+  audience: (data) => {
+    return [
+        data.read,
         "",
-        payload.data.personas
+        data.personas
           .map((p) =>
             [
               h(3, `${p.name} — ${p.archetypeLabel}`),
@@ -272,52 +288,58 @@ function renderPayload(payload: ModulePayload): string {
           )
           .join("\n\n"),
       ].join("\n");
+  },
 
-    case "market":
-      return [
-        `**${payload.data.headline}**`, "", payload.data.summary, "",
-        table(["Figure", "What it is", "Note"], payload.data.figures.map((f) => [f.value, f.label, f.note])),
+  market: (data) => {
+    return [
+        `**${data.headline}**`, "", data.summary, "",
+        table(["Figure", "What it is", "Note"], data.figures.map((f) => [f.value, f.label, f.note])),
         "",
         h(3, "Segments"), "",
-        table(["Segment", "Share", "Note"], payload.data.segments.map((s) => [s.name, `${s.share}%`, s.note])),
+        table(["Segment", "Share", "Note"], data.segments.map((s) => [s.name, `${s.share}%`, s.note])),
         "",
-        h(3, "What is shifting"), "", bullets(payload.data.shifts),
+        h(3, "What is shifting"), "", bullets(data.shifts),
         "",
-        h(3, "Sources"), "", bullets(payload.data.sources),
+        h(3, "Sources"), "", bullets(data.sources),
       ].join("\n");
+  },
 
-    case "competition":
-      return [
-        payload.data.read, "",
+  competition: (data) => {
+    return [
+        data.read, "",
         table(["Competitor", "Position", "Does well", "Leaves open", "Price"],
-          payload.data.rows.map((r) => [r.name, r.position, r.doesWell, r.leavesOpen, r.priceBand])),
+          data.rows.map((r) => [r.name, r.position, r.doesWell, r.leavesOpen, r.priceBand])),
         "",
-        `**Map axes.** ${payload.data.axes.x[0]} ↔ ${payload.data.axes.x[1]} against ${payload.data.axes.y[0]} ↔ ${payload.data.axes.y[1]}.`,
+        `**Map axes.** ${data.axes.x[0]} ↔ ${data.axes.x[1]} against ${data.axes.y[0]} ↔ ${data.axes.y[1]}.`,
       ].join("\n");
+  },
 
-    case "differentiation":
-      return [
-        `**${payload.data.claim}**`, "",
+  differentiation: (data) => {
+    return [
+        `**${data.claim}**`, "",
         h(3, "Proof"), "",
-        payload.data.proofs.map((p) => `- **${p.proof}** ${p.evidence}`).join("\n"),
+        data.proofs.map((p) => `- **${p.proof}** ${p.evidence}`).join("\n"),
         "",
-        `**Only we can say this because.** ${payload.data.onlyWeCan}`,
+        `**Only we can say this because.** ${data.onlyWeCan}`,
         "",
-        h(3, "Not for"), "", bullets(payload.data.notFor),
+        h(3, "Not for"), "", bullets(data.notFor),
       ].join("\n");
+  },
 
-    case "offering":
-      return [
-        payload.data.line, "",
-        payload.data.tiers.map((t) =>
+  offering: (data) => {
+    return [
+        data.line, "",
+        data.tiers.map((t) =>
           [`${h(3, `${t.name} — ${t.price}`)}`, "", `*${t.forWho}*`, "", bullets(t.includes)].join("\n"),
         ).join("\n\n"),
         "",
-        h(3, "Where the edges are"), "", bullets(payload.data.boundaries),
+        h(3, "Where the edges are"), "", bullets(data.boundaries),
       ].join("\n");
+  },
 
-    case "lookfeel": {
-      const chosen = payload.data.directions.find((d) => d.id === payload.data.chosenId) ?? payload.data.directions[0];
+  lookfeel: (data) => {
+
+      const chosen = data.directions.find((d) => d.id === data.chosenId) ?? data.directions[0];
       return [
         `**Direction.** ${chosen.name} — ${chosen.adjectives.join(" · ")}`, "",
         chosen.description, "",
@@ -325,77 +347,78 @@ function renderPayload(payload: ModulePayload): string {
           ["Surfaces", chosen.surfaces.join("; ")],
           ["Photography", chosen.photography],
           ["Motion", chosen.motion],
-          ["Grid", payload.data.gridNote],
-          ["Margins", payload.data.marginRule],
+          ["Grid", data.gridNote],
+          ["Margins", data.marginRule],
         ]),
         "",
-        `Directions not taken: ${payload.data.directions.filter((d) => d.id !== chosen.id).map((d) => d.name).join(", ")}.`,
+        `Directions not taken: ${data.directions.filter((d) => d.id !== chosen.id).map((d) => d.name).join(", ")}.`,
       ].join("\n");
-    }
+  },
 
-    case "packaging":
-      return [
-        table(["Aspect", "Spec"], [["Substrate", payload.data.substrate], ["Finish", payload.data.finish]]),
+  packaging: (data) => {
+    return [
+        table(["Aspect", "Spec"], [["Substrate", data.substrate], ["Finish", data.finish]]),
         "",
-        payload.data.items.map((item) =>
+        data.items.map((item) =>
           [`${h(3, item.name)}`, "", `*${item.format}*`, "", bullets(item.spec),
             item.copy ? `\nCopy: **${item.copy.headline}**${item.copy.sub ? ` / ${item.copy.sub}` : ""}` : ""].join("\n"),
         ).join("\n\n"),
         "",
-        `**Unboxing.** ${payload.data.unboxingNote}`,
+        `**Unboxing.** ${data.unboxingNote}`,
       ].join("\n");
+  },
 
-    case "marketing":
-      return [
-        payload.data.layouts.map((l) =>
+  marketing: (data) => {
+    return [
+        data.layouts.map((l) =>
           [`${h(3, l.name)}`, "", `*${l.ratio}* — ${l.grid}`, "", bullets(l.hierarchy), "",
             `Headline: **${l.headline}**${l.sub ? `\n\nSub: ${l.sub}` : ""}`].join("\n"),
         ).join("\n\n"),
         "",
-        h(3, "Rules that apply to every format"), "", bullets(payload.data.rules),
+        h(3, "Rules that apply to every format"), "", bullets(data.rules),
       ].join("\n");
+  },
 
-    case "social":
-      return [
-        `**${payload.data.handle}** — ${payload.data.bio}`, "",
+  social: (data) => {
+    return [
+        `**${data.handle}** — ${data.bio}`, "",
         h(3, "Content pillars"), "",
         table(["Pillar", "Share", "What it looks like"],
-          payload.data.pillars.map((p) => [p.name, `${p.share}%`, p.example])),
+          data.pillars.map((p) => [p.name, `${p.share}%`, p.example])),
         "",
         h(3, "Post formats"), "",
-        payload.data.posts.map((p) => `- **${p.format}** — “${p.headline}” · ${p.caption}`).join("\n"),
+        data.posts.map((p) => `- **${p.format}** — “${p.headline}” · ${p.caption}`).join("\n"),
         "",
-        `**Banner.** ${payload.data.bannerNote}`,
+        `**Banner.** ${data.bannerNote}`,
         "",
-        `**Cadence.** ${payload.data.cadence}`,
+        `**Cadence.** ${data.cadence}`,
       ].join("\n");
+  },
 
-    case "website":
-      return [
-        `**Navigation.** ${payload.data.navigation.join(" · ")}`, "",
+  website: (data) => {
+    return [
+        `**Navigation.** ${data.navigation.join(" · ")}`, "",
         h(3, "Hero"), "",
-        `Eyebrow: ${payload.data.hero.eyebrow}`,
-        `\n# ${payload.data.hero.headline}\n`,
-        payload.data.hero.sub,
-        `\nPrimary action: **${payload.data.hero.primaryCta}** · Secondary: ${payload.data.hero.secondaryCta}`,
+        `Eyebrow: ${data.hero.eyebrow}`,
+        `\n# ${data.hero.headline}\n`,
+        data.hero.sub,
+        `\nPrimary action: **${data.hero.primaryCta}** · Secondary: ${data.hero.secondaryCta}`,
         "",
         h(3, "Sections"), "",
-        payload.data.sections.map((s) => `**${s.kicker} — ${s.heading}**\n\n${s.body}`).join("\n\n"),
+        data.sections.map((s) => `**${s.kicker} — ${s.heading}**\n\n${s.body}`).join("\n\n"),
         "",
-        `**Proof.** ${payload.data.proof}`,
-        `**Footer.** ${payload.data.footerLine}`,
+        `**Proof.** ${data.proof}`,
+        `**Footer.** ${data.footerLine}`,
       ].join("\n");
+  },
 
-    case "expose":
-      return [
-        `**${payload.data.oneLiner}**`, "",
-        payload.data.paragraphs.join("\n\n"), "",
-        table(["Field", "Value"], payload.data.atAGlance.map((r) => [r.label, r.value])),
+  expose: (data) => {
+    return [
+        `**${data.oneLiner}**`, "",
+        data.paragraphs.join("\n\n"), "",
+        table(["Field", "Value"], data.atAGlance.map((r) => [r.label, r.value])),
         "",
-        payload.data.pressLine,
+        data.pressLine,
       ].join("\n");
-
-    default:
-      return "";
-  }
-}
+  },
+};

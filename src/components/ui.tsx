@@ -9,9 +9,7 @@ export function Panel({
   children, className = "", flush = false,
 }: { children: ReactNode; className?: string; flush?: boolean }) {
   return (
-    <section
-      className={`rounded-lg border border-line bg-panel ${flush ? "" : "p-5"} ${className}`}
-    >
+    <section className={`rounded-lg bg-panel ${flush ? "" : "p-5"} ${className}`}>
       {children}
     </section>
   );
@@ -19,7 +17,7 @@ export function Panel({
 
 export function Kicker({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <p className={`text-[11px] font-medium uppercase tracking-[0.12em] text-ink-faint ${className}`}>
+    <p className={`font-data text-micro uppercase tracking-[0.1em] text-ink-faint ${className}`}>
       {children}
     </p>
   );
@@ -31,8 +29,8 @@ export function SectionHead({
   return (
     <header className="mb-4 flex items-end justify-between gap-4">
       <div>
-        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">{title}</h2>
-        {note ? <p className="mt-0.5 text-[13px] text-ink-soft">{note}</p> : null}
+        <h2 className="text-subhead tracking-[-0.01em]">{title}</h2>
+        {note ? <p className="mt-0.5 text-body text-ink-soft">{note}</p> : null}
       </div>
       {action}
     </header>
@@ -53,7 +51,7 @@ export function Pill({
 }: { children: ReactNode; tone?: Tone; dot?: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${TONES[tone]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-micro font-medium ${TONES[tone]}`}
     >
       {dot ? <span className="size-1.5 rounded-full bg-current" aria-hidden /> : null}
       {children}
@@ -77,7 +75,7 @@ export function Button({
     <button
       type="button"
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-body font-medium transition-colors disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
     >
       {children}
     </button>
@@ -88,10 +86,10 @@ export function StatTile({
   label, value, note,
 }: { label: string; value: string; note?: string }) {
   return (
-    <div className="border-b border-line px-5 py-4 last:border-r-0 sm:border-b-0 sm:border-r [&:nth-last-child(-n+2)]:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0">
-      <p className="text-[11px] text-ink-faint">{label}</p>
-      <p className="mt-1 text-[22px] font-semibold tracking-[-0.02em] tabular-nums">{value}</p>
-      {note ? <p className="mt-0.5 text-[11px] text-ink-faint">{note}</p> : null}
+    <div className="border-b border-line-soft px-5 py-4 last:border-r-0 sm:border-b-0 sm:border-r [&:nth-last-child(-n+2)]:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0">
+      <p className="font-data text-micro uppercase tracking-[0.08em] text-ink-faint">{label}</p>
+      <p className="mt-1.5 font-display text-display tracking-[-0.02em] tabular-nums">{value}</p>
+      {note ? <p className="mt-1 text-micro text-ink-faint">{note}</p> : null}
     </div>
   );
 }
@@ -101,8 +99,8 @@ export function EmptyState({
 }: { title: string; note: string; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line px-6 py-12 text-center">
-      <p className="text-[13px] font-medium">{title}</p>
-      <p className="max-w-sm text-[13px] text-ink-soft">{note}</p>
+      <p className="text-body font-medium">{title}</p>
+      <p className="max-w-sm text-body text-ink-soft">{note}</p>
       {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );
@@ -113,15 +111,15 @@ export function Field({
 }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[12px] font-medium text-ink-soft">{label}</span>
+      <span className="mb-1 block text-body font-medium text-ink-soft">{label}</span>
       {children}
-      {hint ? <span className="mt-1 block text-[11px] text-ink-faint">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-micro text-ink-faint">{hint}</span> : null}
     </label>
   );
 }
 
 export const inputClass =
-  "w-full rounded-md border border-line bg-panel px-3 py-2 text-[14px] text-ink placeholder:text-ink-faint focus:border-ink focus:outline-none";
+  "w-full rounded-md border border-line bg-panel px-3 py-2 text-lead text-ink placeholder:text-ink-faint focus:border-ink focus:outline-none";
 
 /** A hairline rule with a label, used to break long documents into passes. */
 export function RuledHead({ children }: { children: ReactNode }) {

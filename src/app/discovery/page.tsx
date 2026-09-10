@@ -49,7 +49,7 @@ export default function DiscoveryPage() {
                 type="button"
                 onClick={() => setTab(t)}
                 aria-pressed={tab === t}
-                className={`rounded px-3 py-1 text-[13px] capitalize transition-colors ${
+                className={`rounded px-3 py-1 text-body capitalize transition-colors ${
                   tab === t ? "bg-ink text-panel" : "text-ink-soft hover:text-ink"
                 }`}
               >
@@ -73,13 +73,13 @@ export default function DiscoveryPage() {
           <ProgressBar value={index + 1} total={STEPS.length} />
 
           <Panel className="mt-6 min-h-[26rem] rise" key={step.id}>
-            <p className="mb-6 text-[12px] italic text-ink-faint">{phase.intent}</p>
+            <p className="mb-6 text-body italic text-ink-faint">{phase.intent}</p>
 
-            <h2 className="mx-auto max-w-2xl text-center text-[26px] font-semibold leading-tight tracking-[-0.02em]">
+            <h2 className="mx-auto max-w-2xl text-center font-display text-hero leading-tight tracking-[-0.02em]">
               {step.question}
             </h2>
             {step.helper ? (
-              <p className="mx-auto mt-2 max-w-xl text-center text-[13px] leading-relaxed text-ink-soft">
+              <p className="mx-auto mt-2 max-w-xl text-center text-body leading-relaxed text-ink-soft">
                 {step.helper}
               </p>
             ) : null}
@@ -116,7 +116,7 @@ export default function DiscoveryPage() {
                 />
               )}
               {step.kind === "list" ? (
-                <p className="mt-1.5 text-[11px] text-ink-faint">One per line.</p>
+                <p className="mt-1.5 text-micro text-ink-faint">One per line.</p>
               ) : null}
             </div>
           </Panel>
@@ -125,7 +125,7 @@ export default function DiscoveryPage() {
             <Button onClick={() => goToStep(index - 1)} disabled={index === 0}>
               ‹ Back
             </Button>
-            <p className="text-[12px] text-ink-faint">
+            <p className="text-body text-ink-faint">
               {value.trim() || (step.kind === "traits" && project.workshop.ballots.length > 0)
                 ? "Saved"
                 : "Not answered"}
@@ -133,7 +133,7 @@ export default function DiscoveryPage() {
             {index === STEPS.length - 1 ? (
               <Link
                 href="/studio"
-                className="inline-flex items-center gap-2 rounded-md bg-ink px-3 py-1.5 text-[13px] font-medium text-panel hover:bg-ink/90"
+                className="inline-flex items-center gap-2 rounded-md bg-ink px-3 py-1.5 text-body font-medium text-panel hover:bg-ink/90"
               >
                 Open the design studio ›
               </Link>
@@ -204,9 +204,9 @@ function ChoiceGrid({
             }`}
           >
             <span className="flex items-center justify-between gap-2">
-              <span className="text-[14px] font-medium">{labels[option] ?? option}</span>
+              <span className="text-lead font-medium">{labels[option] ?? option}</span>
               <span
-                className={`grid size-4 shrink-0 place-items-center rounded-full border text-[9px] ${
+                className={`grid size-4 shrink-0 place-items-center rounded-full border text-micro ${
                   selected ? "border-ink bg-ink text-panel" : "border-line"
                 }`}
                 aria-hidden
@@ -215,7 +215,7 @@ function ChoiceGrid({
               </span>
             </span>
             {notes[option] ? (
-              <span className="mt-1 block text-[12px] leading-relaxed text-ink-soft">{notes[option]}</span>
+              <span className="mt-1 block text-body leading-relaxed text-ink-soft">{notes[option]}</span>
             ) : null}
           </button>
         );
@@ -233,7 +233,7 @@ function AnswersView() {
         return (
           <Panel key={phase.id}>
             <div className="mb-3 flex items-baseline justify-between gap-3">
-              <h2 className="text-[15px] font-semibold">
+              <h2 className="text-subhead">
                 <span className="text-ink-faint">{String(phaseNumber(phase.id)).padStart(2, "0")}</span>{" "}
                 {phase.name}
               </h2>
@@ -248,8 +248,8 @@ function AnswersView() {
                 const stepIndex = STEPS.indexOf(s);
                 return (
                   <div key={s.id} className="grid gap-1 py-3 sm:grid-cols-[1fr_1.4fr] sm:gap-4">
-                    <dt className="text-[13px] text-ink-soft">{s.question}</dt>
-                    <dd className="text-[13px]">
+                    <dt className="text-body text-ink-soft">{s.question}</dt>
+                    <dd className="text-body">
                       {isTraits ? (
                         project.brief.traits.length > 0 ? (
                           <span className="flex flex-wrap gap-1.5">

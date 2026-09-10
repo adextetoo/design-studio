@@ -1,4 +1,4 @@
-import type { Brief, ModuleId, ModulePayload } from "@/lib/types";
+import type { Brief, DeliverableId, DeliverablePayload } from "@/lib/types";
 import { hashString } from "@/lib/rng";
 import { makeCtx } from "./ctx";
 import { generateMission, generateOffering, generateStory, generateVision } from "./foundation";
@@ -12,9 +12,9 @@ import {
   generateMarketing, generatePackaging, generateSocial, generateWebsite,
 } from "./application";
 
-type Generator = (ctx: ReturnType<typeof makeCtx>) => ModulePayload;
+type Generator = (ctx: ReturnType<typeof makeCtx>) => DeliverablePayload;
 
-const GENERATORS: Record<ModuleId, Generator> = {
+const GENERATORS: Record<DeliverableId, Generator> = {
   story: generateStory,
   mission: generateMission,
   vision: generateVision,
@@ -36,21 +36,21 @@ const GENERATORS: Record<ModuleId, Generator> = {
 };
 
 /**
- * Seed for a module round.
+ * Seed for a deliverable round.
  *
  * Mixing the brief into the seed means two different brands never draw the
  * same round-one output, and mixing the round in means Refresh always moves.
  */
-export function seedFor(brief: Brief, moduleId: ModuleId, round: number): number {
+export function seedFor(brief: Brief, deliverableId: DeliverableId, round: number): number {
   const fingerprint = [
     brief.brandName, brief.sector, brief.offering, brief.priceStance,
-    brief.fontClass, brief.traits.join("|"), moduleId, String(round),
+    brief.fontClass, brief.traits.join("|"), deliverableId, String(round),
   ].join("::");
   return hashString(fingerprint);
 }
 
-export function generate(brief: Brief, moduleId: ModuleId, seed: number): ModulePayload {
-  const generator = GENERATORS[moduleId];
-  if (!generator) throw new Error(`No generator for module ${moduleId}`);
+export function generate(brief: Brief, deliverableId: DeliverableId, seed: number): DeliverablePayload {
+  const generator = GENERATORS[deliverableId];
+  if (!generator) throw new Error(`No generator for deliverable ${deliverableId}`);
   return generator(makeCtx(brief, seed));
 }

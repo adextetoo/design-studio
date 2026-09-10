@@ -1,4 +1,4 @@
-import type { ModulePayload } from "@/lib/types";
+import type { DeliverablePayload } from "@/lib/types";
 import {
   MISSION_SHAPES, MISSION_VERBS, STORY_LANDINGS, STORY_OPENERS, STORY_TURNS,
   VISION_SHAPES,
@@ -9,7 +9,7 @@ import { fill, sentence, STANCE_WORDS, type Ctx } from "./ctx";
 /* Brand Story                                                       */
 /* ---------------------------------------------------------------- */
 
-export function generateStory(ctx: Ctx): ModulePayload {
+export function generateStory(ctx: Ctx): DeliverablePayload {
   const { brandName, location, foundedYear } = ctx.brief;
   const annoyed = ctx.frag("annoyed");
   const firstClient = ctx.a("first-client");
@@ -96,7 +96,7 @@ export function generateStory(ctx: Ctx): ModulePayload {
 /* Mission                                                           */
 /* ---------------------------------------------------------------- */
 
-export function generateMission(ctx: Ctx): ModulePayload {
+export function generateMission(ctx: Ctx): DeliverablePayload {
   const { offering, brandName } = ctx.brief;
   const objectPhrase = objectFromOffering(ctx);
   const statement = fill(ctx.pick(MISSION_SHAPES), {
@@ -147,7 +147,7 @@ function objectFromOffering(ctx: Ctx): string {
 /* Vision                                                            */
 /* ---------------------------------------------------------------- */
 
-export function generateVision(ctx: Ctx): ModulePayload {
+export function generateVision(ctx: Ctx): DeliverablePayload {
   const tenYears = ctx.frag("ten-years");
   const sector = ctx.brief.sector || "this category";
 
@@ -182,7 +182,7 @@ export function generateVision(ctx: Ctx): ModulePayload {
 /* Offering                                                          */
 /* ---------------------------------------------------------------- */
 
-export function generateOffering(ctx: Ctx): ModulePayload {
+export function generateOffering(ctx: Ctx): DeliverablePayload {
   const stance = STANCE_WORDS[ctx.brief.priceStance];
   const offering = ctx.brief.offering || "the core service";
   const sector = ctx.brief.sector || "the category";

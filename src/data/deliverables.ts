@@ -1,4 +1,4 @@
-import type { ModuleId, ModuleMeta, Stage } from "@/lib/types";
+import type { DeliverableId, DeliverableMeta, Stage } from "@/lib/types";
 
 /**
  * The eighteen decisions a brand system is made of, in the order a studio
@@ -6,7 +6,7 @@ import type { ModuleId, ModuleMeta, Stage } from "@/lib/types";
  * design the identity, then prove the identity survives contact with real
  * surfaces.
  */
-export const MODULES: ModuleMeta[] = [
+export const DELIVERABLES: DeliverableMeta[] = [
   // Foundation — what the business is
   { id: "story", title: "Brand Story", stage: "foundation", purpose: "Where this came from, told the way a founder tells it over coffee.", exports: "brand" },
   { id: "mission", title: "Brand Mission", stage: "foundation", purpose: "What the company is here to do, in a sentence anyone can repeat.", exports: "brand" },
@@ -34,11 +34,11 @@ export const MODULES: ModuleMeta[] = [
   { id: "website", title: "Website Copy", stage: "application", purpose: "Navigation, hero and section copy, ready to paste into a build.", exports: "both" },
 ];
 
-export const MODULE_IDS: ModuleId[] = MODULES.map((m) => m.id);
+export const DELIVERABLE_IDS: DeliverableId[] = DELIVERABLES.map((m) => m.id);
 
-export const MODULE_BY_ID: Record<ModuleId, ModuleMeta> = Object.fromEntries(
-  MODULES.map((m) => [m.id, m]),
-) as Record<ModuleId, ModuleMeta>;
+export const DELIVERABLE_BY_ID: Record<DeliverableId, DeliverableMeta> = Object.fromEntries(
+  DELIVERABLES.map((m) => [m.id, m]),
+) as Record<DeliverableId, DeliverableMeta>;
 
 export const STAGES: { id: Stage; label: string; note: string }[] = [
   { id: "foundation", label: "Foundation", note: "What the business is" },
@@ -47,6 +47,6 @@ export const STAGES: { id: Stage; label: string; note: string }[] = [
   { id: "application", label: "Application", note: "Where it has to work" },
 ];
 
-export function modulesInStage(stage: Stage): ModuleMeta[] {
-  return MODULES.filter((m) => m.stage === stage);
+export function deliverablesInStage(stage: Stage): DeliverableMeta[] {
+  return DELIVERABLES.filter((m) => m.stage === stage);
 }

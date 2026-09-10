@@ -1,4 +1,4 @@
-import type { LogoRoute, MarkShape, ModulePayload, NamedStatement, Swatch } from "@/lib/types";
+import type { LogoRoute, MarkShape, DeliverablePayload, NamedStatement, Swatch } from "@/lib/types";
 import { MOODBOARD_DIRECTIONS, VOICE_PILLARS } from "@/data/language";
 import { recipesFor } from "@/data/palettes";
 import { FONT_CLASSES, buildScale } from "@/data/typefaces";
@@ -9,7 +9,7 @@ import { sentence, STANCE_WORDS, type Ctx } from "./ctx";
 /* Tone of voice                                                     */
 /* ---------------------------------------------------------------- */
 
-export function generateTone(ctx: Ctx): ModulePayload {
+export function generateTone(ctx: Ctx): DeliverablePayload {
   const traits = ctx.brief.traits;
   const scored = VOICE_PILLARS.map((p) => ({
     pillar: p,
@@ -62,7 +62,7 @@ export function generateTone(ctx: Ctx): ModulePayload {
 /* Look and feel                                                     */
 /* ---------------------------------------------------------------- */
 
-export function generateLookFeel(ctx: Ctx): ModulePayload {
+export function generateLookFeel(ctx: Ctx): DeliverablePayload {
   const directions = ctx.sample(MOODBOARD_DIRECTIONS, 3).map((d, i) => ({
     id: `direction-${i + 1}`,
     name: d.name,
@@ -105,7 +105,7 @@ const CONSTRUCTIONS: Record<MarkShape, string> = {
   cut: "A solid block with a single diagonal removed at 22.5°. The negative space carries the name.",
 };
 
-export function generateLogo(ctx: Ctx): ModulePayload {
+export function generateLogo(ctx: Ctx): DeliverablePayload {
   const names = ctx.sample(
     ["The Signal", "The Mark", "The Anchor", "The Opening", "The Constant", "The Cut", "The Figure", "The Standard"],
     3,
@@ -128,7 +128,7 @@ export function generateLogo(ctx: Ctx): ModulePayload {
       `Fits the personality without illustrating it. ${ctx.brief.traits[0] ?? "The brand"} is expressed through the construction, not through a picture of the thing.`,
       "The strongest option at small sizes, which is where the mark will spend most of its life — favicons, avatars, app icons.",
       "Holds up in one colour and reversed out, which rules out about half of what gets presented in this category.",
-      "Distinct from every competitor mark reviewed in the competition module, at a glance and in silhouette.",
+      "Distinct from every competitor mark reviewed in the competition deliverable, at a glance and in silhouette.",
     ]),
   }));
 
@@ -161,7 +161,7 @@ function makeSwatch(name: string, role: Swatch["role"], hex: string, usage: stri
   };
 }
 
-export function generatePalette(ctx: Ctx): ModulePayload {
+export function generatePalette(ctx: Ctx): DeliverablePayload {
   const shortlist = recipesFor(ctx.brief.traits, ctx.brief.priceStance);
   const recipe = ctx.pick(shortlist.slice(0, Math.max(4, Math.min(8, shortlist.length))));
 
@@ -211,7 +211,7 @@ export function generatePalette(ctx: Ctx): ModulePayload {
 /* Typography                                                        */
 /* ---------------------------------------------------------------- */
 
-export function generateTypography(ctx: Ctx): ModulePayload {
+export function generateTypography(ctx: Ctx): DeliverablePayload {
   const spec = FONT_CLASSES[ctx.brief.fontClass];
   const primary = ctx.pick(spec.primaries);
   const secondary = ctx.pick(spec.secondaries);

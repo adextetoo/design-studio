@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { generate, seedFor } from "../src/lib/generators/index.ts";
-import { MODULE_IDS } from "../src/data/modules.ts";
+import { DELIVERABLE_IDS } from "../src/data/deliverables.ts";
 import { auditStrings, findJargon, averageSentenceLength } from "../src/lib/jargon.ts";
 import type { Brief } from "../src/lib/types.ts";
 
@@ -65,7 +65,7 @@ const BRIEFS: Brief[] = [
 
 test("every module generates for every brief across many rounds", () => {
   for (const brief of BRIEFS) {
-    for (const id of MODULE_IDS) {
+    for (const id of DELIVERABLE_IDS) {
       for (let round = 0; round < 12; round += 1) {
         const payload = generate(brief, id, seedFor(brief, id, round));
         assert.ok(payload && typeof payload.kind === "string", `${id} round ${round} produced nothing`);
@@ -76,7 +76,7 @@ test("every module generates for every brief across many rounds", () => {
 
 test("generation is deterministic for a given seed", () => {
   const brief = BRIEFS[0];
-  for (const id of MODULE_IDS) {
+  for (const id of DELIVERABLE_IDS) {
     const seed = seedFor(brief, id, 3);
     assert.deepEqual(generate(brief, id, seed), generate(brief, id, seed), `${id} is not deterministic`);
   }
@@ -84,7 +84,7 @@ test("generation is deterministic for a given seed", () => {
 
 test("refresh actually changes the output", () => {
   const brief = BRIEFS[0];
-  for (const id of MODULE_IDS) {
+  for (const id of DELIVERABLE_IDS) {
     const rounds = new Set<string>();
     for (let r = 0; r < 8; r += 1) {
       rounds.add(JSON.stringify(generate(brief, id, seedFor(brief, id, r))));
@@ -96,7 +96,7 @@ test("refresh actually changes the output", () => {
 test("no generated copy contains AI or consultancy jargon", () => {
   const failures: string[] = [];
   for (const brief of BRIEFS) {
-    for (const id of MODULE_IDS) {
+    for (const id of DELIVERABLE_IDS) {
       for (let round = 0; round < 10; round += 1) {
         const payload = generate(brief, id, seedFor(brief, id, round));
         for (const { path, hit } of auditStrings(payload)) {
@@ -170,6 +170,61 @@ test("audience always returns two fully populated personas", () => {
       for (const field of ["motivations", "challenges", "whyThisBrand", "buyingBehaviour"] as const) {
         assert.ok(p[field].length >= 3, `${p.name} ${field} is thin`);
       }
+    }
+  }
+});
+
+test("every deliverable exports non-empty markdown once approved", async () => {
+  const { buildBrandMd, buildDesignMd } = await import("../src/lib/markdown/index.ts");
+  const { DELIVERABLES } = await import("../src/data/deliverables.ts");
+
+  for (const brief of BRIEFS) {
+    // A project with every deliverable approved at round 1.
+    const deliverables = Object.fromEntries(
+      DELIVERABLES.map((d) => {
+        const seed = seedFor(brief, d.id, 0);
+        const variant = {
+          id: `${d.id}_r0`,
+          round: 1,
+          seed,
+          createdAt: "2026-01-01T00:00:00.000Z",
+          payload: generate(brief, d.id, seed),
+        };
+        return [d.id, {
+          status: "approved" as const,
+          variants: [variant],
+          activeVariantId: variant.id,
+          approvedVariantId: variant.id,
+          approvedAt: "2026-01-01T00:00:00.000Z",
+          note: "",
+        }];
+      }),
+    );
+
+    const project = {
+      id: "p_test", brief,
+      workshop: { stepIndex: 0, answers: brief.answers, ballots: [], revealed: false },
+      deliverables,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
+
+    const brand = buildBrandMd(project);
+    const design = buildDesignMd(project);
+
+    assert.ok(!brand.includes("Not yet approved"), "everything is approved, so nothing should be listed as pending");
+    assert.ok(!design.includes("Not yet approved"));
+
+    // The real check: every deliverable's heading is followed by actual content,
+    // not an empty section. A missing renderer used to fail silently here.
+    for (const d of DELIVERABLES) {
+      const file = d.exports === "design" ? design : brand;
+      const heading = `## ${d.title}`;
+      if (!file.includes(heading)) continue;
+      const after = file.slice(file.indexOf(heading) + heading.length);
+      const body = after.slice(0, after.indexOf("\n## ") === -1 ? undefined : after.indexOf("\n## ")).trim();
+      assert.ok(body.length > 40, `${d.title} exported an empty or near-empty section`);
     }
   }
 });

@@ -6,7 +6,7 @@
  * a status, never a fact.
  */
 
-export type ModuleId =
+export type DeliverableId =
   | "story"
   | "mission"
   | "vision"
@@ -28,13 +28,13 @@ export type ModuleId =
 
 export type Stage = "foundation" | "position" | "identity" | "application";
 
-export interface ModuleMeta {
-  id: ModuleId;
+export interface DeliverableMeta {
+  id: DeliverableId;
   title: string;
   stage: Stage;
-  /** One line, written for a designer, explaining what this module decides. */
+  /** One line, written for a designer, explaining what this deliverable decides. */
   purpose: string;
-  /** What lands in the exported markdown when this module is approved. */
+  /** What lands in the exported markdown when this deliverable is approved. */
   exports: "brand" | "design" | "both";
 }
 
@@ -72,7 +72,7 @@ export interface Brief {
 }
 
 /* ------------------------------------------------------------------ */
-/* Module payloads                                                     */
+/* Deliverable payloads                                                     */
 /* ------------------------------------------------------------------ */
 
 export interface Prose {
@@ -278,7 +278,7 @@ export interface ExposePayload {
   pressLine: string;
 }
 
-export type ModulePayload =
+export type DeliverablePayload =
   | { kind: "prose"; data: Prose }
   | { kind: "statements"; data: { intro: string; items: NamedStatement[] } }
   | { kind: "palette"; data: PalettePayload }
@@ -305,13 +305,13 @@ export interface Variant {
   round: number;
   seed: number;
   createdAt: string;
-  payload: ModulePayload;
+  payload: DeliverablePayload;
 }
 
-export type ModuleStatus = "empty" | "draft" | "approved";
+export type DeliverableStatus = "empty" | "draft" | "approved";
 
-export interface ModuleState {
-  status: ModuleStatus;
+export interface DeliverableState {
+  status: DeliverableStatus;
   variants: Variant[];
   activeVariantId: string | null;
   approvedVariantId: string | null;
@@ -336,7 +336,24 @@ export interface Project {
   id: string;
   brief: Brief;
   workshop: WorkshopState;
-  modules: Record<ModuleId, ModuleState>;
+  deliverables: Record<DeliverableId, DeliverableState>;
   createdAt: string;
   updatedAt: string;
 }
+
+/* ------------------------------------------------------------------ */
+/* Payload kinds                                                       */
+/* ------------------------------------------------------------------ */
+
+/** Every shape a generated round can take. */
+export type PayloadKind = DeliverablePayload["kind"];
+
+/** The `data` carried by one payload kind. */
+export type PayloadOf<K extends PayloadKind> = Extract<DeliverablePayload, { kind: K }>["data"];
+
+/*
+ * Two things render a payload — the studio screen and the exported Markdown —
+ * and they live apart so the Markdown builder stays free of React. Each
+ * declares its registry as `{ [K in PayloadKind]: … }`, so the compiler, not a
+ * reviewer, notices when a new kind reaches only one of them.
+ */

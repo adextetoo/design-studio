@@ -1,4 +1,4 @@
-import type { ModulePayload } from "@/lib/types";
+import type { DeliverablePayload } from "@/lib/types";
 import { CTA_VERBS, KICKERS } from "@/data/language";
 import { sentence, STANCE_WORDS, type Ctx } from "./ctx";
 
@@ -6,7 +6,7 @@ import { sentence, STANCE_WORDS, type Ctx } from "./ctx";
 /* Packaging                                                         */
 /* ---------------------------------------------------------------- */
 
-export function generatePackaging(ctx: Ctx): ModulePayload {
+export function generatePackaging(ctx: Ctx): DeliverablePayload {
   const stance = ctx.brief.priceStance;
 
   const substrates: Record<typeof stance, string[]> = {
@@ -83,7 +83,7 @@ export function generatePackaging(ctx: Ctx): ModulePayload {
 /* Marketing material                                                */
 /* ---------------------------------------------------------------- */
 
-export function generateMarketing(ctx: Ctx): ModulePayload {
+export function generateMarketing(ctx: Ctx): DeliverablePayload {
   const name = ctx.brief.brandName || "The brand";
   const headlines = [
     ctx.a("hard-truth") ? shorten(ctx.a("hard-truth")) : `${name}. One job, done properly.`,
@@ -156,7 +156,7 @@ function shorten(text: string): string {
 /* Social media                                                      */
 /* ---------------------------------------------------------------- */
 
-export function generateSocial(ctx: Ctx): ModulePayload {
+export function generateSocial(ctx: Ctx): DeliverablePayload {
   const name = ctx.brief.brandName || "brand";
   const handle = `@${name.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
 
@@ -219,7 +219,7 @@ export function generateSocial(ctx: Ctx): ModulePayload {
 /* Website copy                                                      */
 /* ---------------------------------------------------------------- */
 
-export function generateWebsite(ctx: Ctx): ModulePayload {
+export function generateWebsite(ctx: Ctx): DeliverablePayload {
   const name = ctx.brief.brandName || "Brand";
   const stance = STANCE_WORDS[ctx.brief.priceStance];
 

@@ -2,24 +2,24 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { MODULES, MODULE_BY_ID } from "@/data/modules";
-import type { ModuleId, PalettePayload, TypographyPayload } from "@/lib/types";
+import { DELIVERABLES, DELIVERABLE_BY_ID } from "@/data/deliverables";
+import type { DeliverableId, PalettePayload, TypographyPayload } from "@/lib/types";
 import { readableOn } from "@/lib/color";
 import { useStudio } from "@/lib/store";
 import { PageHead } from "@/components/Shell";
-import { ModuleView } from "@/components/modules";
+import { DeliverableView } from "@/components/deliverables";
 import { Button, EmptyState, Kicker, Pill } from "@/components/ui";
 
 /**
  * The Brand Hub.
  *
  * What the client actually receives: the approved system as a single site,
- * ordered and numbered the way a printed brand guide is. Draft modules are
+ * ordered and numbered the way a printed brand guide is. Draft deliverables are
  * absent rather than shown greyed out — a guideline nobody signed is not a
  * guideline, and putting it here would make it look like one.
  */
 
-const HUB_ORDER: ModuleId[] = [
+const HUB_ORDER: DeliverableId[] = [
   "story", "mission", "vision", "expose", "tone",
   "lookfeel", "logo", "palette", "typography",
   "packaging", "marketing", "social", "website",
@@ -28,30 +28,30 @@ const HUB_ORDER: ModuleId[] = [
 
 export default function HubPage() {
   const { project } = useStudio();
-  const [openId, setOpenId] = useState<ModuleId | null>(null);
+  const [openId, setOpenId] = useState<DeliverableId | null>(null);
 
   const approved = useMemo(
-    () => HUB_ORDER.filter((id) => project.modules[id].status === "approved"),
-    [project.modules],
+    () => HUB_ORDER.filter((id) => project.deliverables[id].status === "approved"),
+    [project.deliverables],
   );
 
   const palette = useMemo<PalettePayload | null>(() => {
-    const s = project.modules.palette;
+    const s = project.deliverables.palette;
     const v = s.variants.find((x) => x.id === (s.approvedVariantId ?? s.activeVariantId));
     return v && v.payload.kind === "palette" ? v.payload.data : null;
-  }, [project.modules.palette]);
+  }, [project.deliverables.palette]);
 
   const typography = useMemo<TypographyPayload | null>(() => {
-    const s = project.modules.typography;
+    const s = project.deliverables.typography;
     const v = s.variants.find((x) => x.id === (s.approvedVariantId ?? s.activeVariantId));
     return v && v.payload.kind === "typography" ? v.payload.data : null;
-  }, [project.modules.typography]);
+  }, [project.deliverables.typography]);
 
   const brandColor = palette?.swatches.find((s) => s.role === "primary")?.hex ?? "#17150F";
   const inkColor = palette?.swatches.find((s) => s.role === "ink")?.hex ?? "#17150F";
   const name = project.brief.brandName || "Untitled";
   const active = openId ?? approved[0] ?? null;
-  const activeState = active ? project.modules[active] : null;
+  const activeState = active ? project.deliverables[active] : null;
   const activeVariant = activeState?.variants.find((v) => v.id === activeState.approvedVariantId) ?? null;
 
   return (
@@ -61,13 +61,13 @@ export default function HubPage() {
         title={`${name} Brand Hub`}
         note="The approved system, in the order a printed guide runs. Anything still in draft is deliberately missing — publishing an unapproved page is how a guideline gets ignored."
         status={{
-          label: `${approved.length} of ${MODULES.length} pages live`,
+          label: `${approved.length} of ${DELIVERABLES.length} pages live`,
           tone: approved.length > 0 ? "go" : "neutral",
         }}
         actions={
           <Link
             href="/handoff"
-            className="rounded-md bg-ink px-3 py-1.5 text-[13px] font-medium text-panel hover:bg-ink/90"
+            className="rounded-md bg-ink px-3 py-1.5 text-body font-medium text-panel hover:bg-ink/90"
           >
             Download the kit ›
           </Link>
@@ -78,11 +78,11 @@ export default function HubPage() {
         <div className="mx-auto max-w-2xl px-5 py-16 md:px-8">
           <EmptyState
             title="Nothing published yet"
-            note="The hub fills up as modules get approved in the studio. Approve one and it appears here as a numbered page."
+            note="The hub fills up as deliverables get approved in the studio. Approve one and it appears here as a numbered page."
             action={
               <Link
                 href="/studio"
-                className="rounded-md bg-ink px-3 py-1.5 text-[13px] font-medium text-panel hover:bg-ink/90"
+                className="rounded-md bg-ink px-3 py-1.5 text-body font-medium text-panel hover:bg-ink/90"
               >
                 Open the design studio
               </Link>
@@ -96,15 +96,15 @@ export default function HubPage() {
               className="mb-4 flex items-center gap-2.5 rounded-lg p-3"
               style={{ background: brandColor, color: readableOn(brandColor) }}
             >
-              <span className="text-[16px]" aria-hidden>◆</span>
+              <span className="text-lead" aria-hidden>◆</span>
               <div className="min-w-0">
                 <p
-                  className="truncate text-[15px] font-semibold tracking-[-0.01em]"
+                  className="truncate font-display text-subhead tracking-[-0.01em]"
                   style={{ fontFamily: typography?.primary.stack }}
                 >
                   {name}
                 </p>
-                <p className="truncate text-[11px] opacity-70">
+                <p className="truncate text-micro opacity-70">
                   Updated {new Date(project.updatedAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
                 </p>
               </div>
@@ -117,34 +117,34 @@ export default function HubPage() {
                     type="button"
                     onClick={() => setOpenId(id)}
                     aria-current={id === active ? "true" : undefined}
-                    className={`mb-0.5 flex w-full items-baseline gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[13px] transition-colors ${
+                    className={`mb-0.5 flex w-full items-baseline gap-2.5 rounded-md px-2.5 py-1.5 text-left text-body transition-colors ${
                       id === active ? "bg-sunken font-medium text-ink" : "text-ink-soft hover:bg-sunken/60"
                     }`}
                   >
                     <span className="tabular-nums text-ink-faint">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="truncate">{MODULE_BY_ID[id].title}</span>
+                    <span className="truncate">{DELIVERABLE_BY_ID[id].title}</span>
                   </button>
                 </li>
               ))}
             </ul>
 
 {(() => {
-              const unpublished = HUB_ORDER.filter((id) => project.modules[id].status !== "approved");
+              const unpublished = HUB_ORDER.filter((id) => project.deliverables[id].status !== "approved");
               if (unpublished.length === 0) {
                 return (
-                  <p className="mt-5 border-t border-line pt-4 text-[12px] leading-relaxed text-ink-faint">
-                    Every module is approved and live. Nothing is being held back.
+                  <p className="mt-5 border-t border-line pt-4 text-body leading-relaxed text-ink-faint">
+                    Every deliverable is approved and live. Nothing is being held back.
                   </p>
                 );
               }
               return (
                 <div className="mt-5 border-t border-line pt-4">
                   <Kicker className="mb-2">Not published</Kicker>
-                  <ul className="space-y-0.5 text-[12px] text-ink-faint">
+                  <ul className="space-y-0.5 text-body text-ink-faint">
                     {unpublished.map((id) => (
                       <li key={id} className="flex items-center justify-between gap-2">
-                        <span className="truncate">{MODULE_BY_ID[id].title}</span>
-                        <span className="shrink-0">{project.modules[id].status === "draft" ? "draft" : "—"}</span>
+                        <span className="truncate">{DELIVERABLE_BY_ID[id].title}</span>
+                        <span className="shrink-0">{project.deliverables[id].status === "draft" ? "draft" : "—"}</span>
                       </li>
                     ))}
                   </ul>
@@ -160,25 +160,25 @@ export default function HubPage() {
                   className="flex items-end justify-between gap-4 px-6 py-8"
                   style={{ background: inkColor, color: readableOn(inkColor) }}
                 >
-                  <span className="text-[clamp(28px,5vw,52px)] font-semibold leading-none tracking-[-0.03em] tabular-nums opacity-60">
+                  <span className="font-data text-[clamp(28px,5vw,52px)] font-medium leading-none tracking-[-0.02em] tabular-nums opacity-50">
                     {String(approved.indexOf(active) + 1).padStart(2, "0")}
                   </span>
                   <h2
-                    className="text-[clamp(20px,3.4vw,34px)] font-semibold uppercase leading-none tracking-[0.02em]"
+                    className="font-data text-[clamp(20px,3.4vw,34px)] font-medium uppercase leading-none tracking-[0.04em]"
                     style={{ fontFamily: typography?.primary.stack }}
                   >
-                    {MODULE_BY_ID[active].title}
+                    {DELIVERABLE_BY_ID[active].title}
                   </h2>
                 </header>
 
                 <div className="border-b border-line px-6 py-4">
-                  <p className="max-w-2xl text-[14px] leading-relaxed text-ink-soft">
-                    {MODULE_BY_ID[active].purpose}
+                  <p className="max-w-2xl text-lead leading-relaxed text-ink-soft">
+                    {DELIVERABLE_BY_ID[active].purpose}
                   </p>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Pill tone="go" dot>Approved</Pill>
                     {activeState?.approvedAt ? (
-                      <span className="text-[11px] text-ink-faint">
+                      <span className="text-micro text-ink-faint">
                         {new Date(activeState.approvedAt).toLocaleDateString("en-GB", {
                           day: "numeric", month: "long", year: "numeric",
                         })}
@@ -188,8 +188,8 @@ export default function HubPage() {
                 </div>
 
                 <div className="p-6">
-                  <ModuleView
-                    moduleId={active}
+                  <DeliverableView
+                    deliverableId={active}
                     payload={activeVariant.payload}
                     palette={palette}
                     typeStack={typography?.primary.stack ?? null}
@@ -202,13 +202,13 @@ export default function HubPage() {
                 {activeState?.note ? (
                   <footer className="border-t border-line bg-sunken/50 px-6 py-4">
                     <Kicker className="mb-1">Studio note</Kicker>
-                    <p className="max-w-2xl whitespace-pre-line text-[13px] leading-relaxed text-ink-soft">
+                    <p className="max-w-2xl whitespace-pre-line text-body leading-relaxed text-ink-soft">
                       {activeState.note}
                     </p>
                   </footer>
                 ) : null}
 
-                <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3 text-[11px] text-ink-faint">
+                <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3 text-micro text-ink-faint">
                   <span>
                     {name} · Brand hub · {new Date().getFullYear()}
                   </span>

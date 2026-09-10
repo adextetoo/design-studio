@@ -1,31 +1,64 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------
-   Studio chrome tokens.
-   Quiet, near-monochrome, one signal colour. The reference studio
-   software is deliberately unbranded so the client's brand is the
-   only colourful thing on screen — we keep that discipline.
-   --------------------------------------------------------------- */
-@theme {
-  --color-canvas: #f6f5f3;
-  --color-panel: #ffffff;
-  --color-sunken: #efedea;
-  --color-ink: #17150f;
-  --color-ink-soft: #55504a;
-  --color-ink-faint: #8b857d;
-  --color-line: #e3e0da;
-  --color-line-soft: #eeece7;
-  --color-signal: #d94a1f;
-  --color-signal-soft: #fdf0eb;
-  --color-go: #2f7d4f;
-  --color-go-soft: #eaf5ee;
+   The studio's own design system.
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
-    ui-serif, serif;
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
-    "Liberation Mono", monospace;
+   The rule this app sells is that a brand should obey a declared type
+   scale and ration its colour. It would be embarrassing to sell that
+   from an interface built on ad-hoc pixel values, so the chrome is set
+   on the same kind of modular scale the Typography deliverable
+   generates — a minor third from a 13px base — and colour stays
+   near-monochrome so the client's brand is the only saturated thing on
+   screen.
+   --------------------------------------------------------------- */
+
+@theme {
+  /* Warm neutrals. Chosen, not inherited: every grey is biased toward the
+     paper tone so the interface reads as a working document rather than a
+     dashboard. */
+  --color-canvas: #f2efe8;
+  --color-panel: #fffefb;
+  --color-sunken: #eae6dc;
+  --color-ink: #17150f;
+  --color-ink-soft: #56514a;
+  --color-ink-faint: #8a847a;
+  --color-line: #ded9cd;
+  --color-line-soft: #ebe7dc;
+
+  /* Rationed. Signal marks the one thing that needs attention; go marks a
+     decision a person has taken. Neither is a brand colour. */
+  --color-signal: #b8391a;
+  --color-signal-soft: #fbeee9;
+  --color-go: #2f6d4a;
+  --color-go-soft: #e9f2ec;
+
+  /* Three type roles.
+     Display — Newsreader, an editorial serif, for titles and for the prose
+       the studio generates, because the product here is documents.
+     UI — Work Sans, humanist and legible small, for everything you operate.
+     Data — IBM Plex Mono for labels, hex values and anything in a column,
+       so data looks like data. */
+  --font-display: Newsreader, "Iowan Old Style", Palatino, Georgia, ui-serif, serif;
+  --font-ui: "Work Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: var(--font-ui);
+
+  /* Minor third from 13px. Seven steps, and nothing off the scale. */
+  --text-micro: 11px;
+  --text-body: 13px;
+  --text-lead: 16px;
+  --text-subhead: 19px;
+  --text-title: 23px;
+  --text-display: 28px;
+  --text-hero: 34px;
+
+  --text-micro--line-height: 1.4;
+  --text-body--line-height: 1.5;
+  --text-lead--line-height: 1.65;
+  --text-subhead--line-height: 1.35;
+  --text-title--line-height: 1.2;
+  --text-display--line-height: 1.1;
+  --text-hero--line-height: 1.05;
 }
 
 :root {
@@ -40,9 +73,19 @@ body {
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Headings are set in the display face and want their line breaks balanced. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  font-weight: 600;
 }
 
 /* Scrollbars stay out of the way — this is a document-heavy tool. */
@@ -86,24 +129,4 @@ body {
 
 .rise {
   animation: rise 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-
-@keyframes sweep {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
-
-.sweep {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-sunken) 20%,
-    var(--color-line-soft) 40%,
-    var(--color-sunken) 60%
-  );
-  background-size: 200% 100%;
-  animation: sweep 1.4s linear infinite;
 }
