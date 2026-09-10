@@ -11,15 +11,21 @@ a printed brand guide, and a strategy workshop exercise.
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm test           # generator + tone tests
+npm run dev              # http://localhost:3000
+npm test                 # generator + tone tests
 npm run typecheck
 npm run lint
-npm run build
+npm run build            # Next.js production build
+npm run build:standalone # dist/studio.html — the whole studio in one file
 ```
 
 No API keys, no backend, no account. The project lives in `localStorage` and
 nothing leaves the browser.
+
+`npm run build:standalone` compiles the same source into a single self-contained
+`dist/studio.html` — React and Tailwind inlined, `next/link` and `next/navigation`
+aliased to a hash router in `src/standalone/`. That file opens from disk, and is
+what gets published as an Artifact.
 
 ---
 
@@ -141,6 +147,15 @@ flow in *Rebrand: AI Logo Maker*, backed by `Room Redesign` in *Arch: AI Home
 Design*. The full reasoning — including why those beat the much larger
 `Onboarding` flow, the Mobbin MCP server and the design skills — is in
 [`docs/UI-FLOW-SOURCING.md`](docs/UI-FLOW-SOURCING.md).
+
+## Saving files
+
+`src/lib/download.ts` handles the one thing that differs between the two builds.
+As an ordinary web page, a blob plus an anchor saves `Brand.md`. Published as an
+Artifact the page is framed and that anchor is inert, so the save goes through
+the platform's `downloads` capability, which asks the viewer to confirm. The
+presence of `window.claude.use` decides which path is real — and when saving is
+off in a view, the page says so and points at Copy instead of failing quietly.
 
 ## Known limits
 

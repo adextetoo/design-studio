@@ -88,7 +88,7 @@ export function StatTile({
   label, value, note,
 }: { label: string; value: string; note?: string }) {
   return (
-    <div className="border-r border-line px-5 py-4 last:border-r-0">
+    <div className="border-b border-line px-5 py-4 last:border-r-0 sm:border-b-0 sm:border-r [&:nth-last-child(-n+2)]:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0">
       <p className="text-[11px] text-ink-faint">{label}</p>
       <p className="mt-1 text-[22px] font-semibold tracking-[-0.02em] tabular-nums">{value}</p>
       {note ? <p className="mt-0.5 text-[11px] text-ink-faint">{note}</p> : null}

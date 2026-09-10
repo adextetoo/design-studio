@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { MODULES } from "@/data/modules";
 import { buildBrandMd, buildDesignMd } from "@/lib/markdown";
+import { saveMarkdown } from "@/lib/download";
 import { useStudio } from "@/lib/store";
 import { PageHead } from "@/components/Shell";
 import { Button, Kicker, Panel, Pill, ProgressBar, SectionHead } from "@/components/ui";
@@ -14,6 +15,8 @@ export default function HandoffPage() {
   const { project, approvedCount } = useStudio();
   const [open, setOpen] = useState<FileKey>("brand");
   const [copied, setCopied] = useState<FileKey | null>(null);
+  const [saving, setSaving] = useState<FileKey | null>(null);
+  const [saveNote, setSaveNote] = useState<{ key: FileKey; text: string } | null>(null);
 
   const files = useMemo(
     () => ({
@@ -26,17 +29,22 @@ export default function HandoffPage() {
   const pending = MODULES.filter((m) => project.modules[m.id].status !== "approved");
   const slug = (project.brief.brandName || "brand").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const download = (key: FileKey) => {
+  const download = async (key: FileKey) => {
     const file = files[key];
-    const blob = new Blob([file.body], { type: "text/markdown;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${slug}-${file.name}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    setSaving(key);
+    setSaveNote(null);
+    const outcome = await saveMarkdown(`${slug}-${file.name}`, file.body);
+    setSaving(null);
+    if (outcome.status === "saved") return;
+    setSaveNote({
+      key,
+      text:
+        outcome.status === "declined"
+          ? "Not saved. Nothing was written to your machine."
+          : outcome.status === "unavailable"
+            ? "Saving files is off in this view. Use Copy to clipboard instead — the whole file is on the clipboard."
+            : outcome.message,
+    });
   };
 
   const copy = async (key: FileKey) => {
@@ -119,14 +127,19 @@ export default function HandoffPage() {
                   action={<Pill>{lines} lines</Pill>}
                 />
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button variant="primary" onClick={() => download(key)}>
-                    <span aria-hidden>↓</span> Download {file.name}
+                  <Button variant="primary" onClick={() => download(key)} disabled={saving === key}>
+                    <span aria-hidden>↓</span> {saving === key ? "Saving…" : `Download ${file.name}`}
                   </Button>
                   <Button onClick={() => copy(key)}>{copied === key ? "Copied" : "Copy to clipboard"}</Button>
                   <Button variant="ghost" onClick={() => setOpen(key)}>
                     Preview
                   </Button>
                 </div>
+                {saveNote?.key === key ? (
+                  <p role="status" className="mt-3 rounded-md bg-sunken px-3 py-2 text-[12px] leading-relaxed text-ink-soft">
+                    {saveNote.text}
+                  </p>
+                ) : null}
                 <p className="mt-3 text-[11px] tabular-nums text-ink-faint">
                   {words.toLocaleString("en-GB")} words · {(new Blob([file.body]).size / 1024).toFixed(1)} KB
                 </p>

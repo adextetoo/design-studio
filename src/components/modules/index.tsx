@@ -246,7 +246,7 @@ function TypographyView({ data }: { data: Extract<ModulePayload, { kind: "typogr
 
       <RuledHead>Hierarchy · {data.scaleRatio}</RuledHead>
       <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[44rem] text-left text-[13px]">
+        <table className="w-full min-w-[38rem] text-left text-[13px]">
           <thead>
             <tr className="border-b border-line text-ink-faint">
               <th className="py-2 pr-4 font-medium">Level</th>
@@ -265,7 +265,7 @@ function TypographyView({ data }: { data: Extract<ModulePayload, { kind: "typogr
                 <td className="py-2.5 pr-4 tabular-nums text-ink-soft">{l.size}</td>
                 <td className="py-2.5 pr-4 tabular-nums text-ink-soft">{l.lineHeight}</td>
                 <td className="py-2.5 pr-4 tabular-nums text-ink-soft">{l.tracking}</td>
-                <td className="py-2.5 text-ink-soft">{l.use}</td>
+                <td className="min-w-[13rem] py-2.5 text-ink-soft">{l.use}</td>
               </tr>
             ))}
           </tbody>
