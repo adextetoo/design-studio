@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Studio chrome tokens.
+   Quiet, near-monochrome, one signal colour. The reference studio
+   software is deliberately unbranded so the client's brand is the
+   only colourful thing on screen — we keep that discipline.
+   --------------------------------------------------------------- */
+@theme {
+  --color-canvas: #f6f5f3;
+  --color-panel: #ffffff;
+  --color-sunken: #efedea;
+  --color-ink: #17150f;
+  --color-ink-soft: #55504a;
+  --color-ink-faint: #8b857d;
+  --color-line: #e3e0da;
+  --color-line-soft: #eeece7;
+  --color-signal: #d94a1f;
+  --color-signal-soft: #fdf0eb;
+  --color-go: #2f7d4f;
+  --color-go-soft: #eaf5ee;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    ui-serif, serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbars stay out of the way — this is a document-heavy tool. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-panel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus ring: visible, but not shouty. */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.sweep {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-sunken) 20%,
+    var(--color-line-soft) 40%,
+    var(--color-sunken) 60%
+  );
+  background-size: 200% 100%;
+  animation: sweep 1.4s linear infinite;
+}
