@@ -8,15 +8,27 @@
 import { build } from "esbuild";
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { createRequire } from "node:module";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const TMP = "build-tmp";
 rmSync(TMP, { recursive: true, force: true });
 mkdirSync(TMP, { recursive: true });
 
 // 1. Tailwind, compiled against the real source tree.
+//
+// The CLI's own JS entry point is run with this same Node binary rather than
+// going through npx. On Windows the launchers are .cmd shims, and since the
+// fix for CVE-2024-27980 Node refuses to spawn those without a shell, so
+// `npx`/`tailwindcss` both fail there with EINVAL. Resolving the entry point
+// keeps one code path on every platform and skips the shell entirely.
+const require = createRequire(import.meta.url);
+const tailwind = fileURLToPath(
+  new URL("./dist/index.mjs", pathToFileURL(require.resolve("@tailwindcss/cli/package.json"))),
+);
 execFileSync(
-  "npx",
-  ["@tailwindcss/cli", "-i", "src/app/globals.css", "-o", `${TMP}/studio.css`, "--minify"],
+  process.execPath,
+  [tailwind, "-i", "src/app/globals.css", "-o", `${TMP}/studio.css`, "--minify"],
   { stdio: "inherit" },
 );
 
@@ -48,15 +60,17 @@ const js = readFileSync(`${TMP}/studio.js`, "utf8");
  * to whatever the viewer happens to have installed.
  */
 const FONTS = [
-  // Chrome faces first: display, UI, data.
+  // The chrome is set in the system face, which needs no webfont on Apple
+  // hardware. Inter is the fallback everywhere else, loaded with the
+  // optical-size axis so it tracks the way SF does across the scale.
+  "Inter:opsz,wght@14..32,300..800",
+  // Then every face the Typography deliverable can name.
   "Newsreader:wght@400;500;600",
   "Work+Sans:wght@400;500;600",
   "IBM+Plex+Mono:wght@400;500;600",
-  // Then every face the Typography deliverable can name.
   "Manrope:wght@200;400;500;700",
   "Space+Grotesk:wght@300;400;500;700",
   "Poppins:wght@300;400;500;600",
-  "Inter:wght@300;400;500;600;700",
   "Source+Sans+3:wght@400;600;700",
   "Lato:wght@300;400;700",
   "Source+Serif+4:wght@400;600;700",
@@ -71,7 +85,7 @@ const FONTS = [
   .map((f) => `family=${f}`)
   .join("&");
 
-const html = `<title>Design Studio</title>
+const head = `<title>Design Studio</title>
 <meta name="description" content="Run a brand engagement end to end and export Brand.md and Design.md.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,10 +99,39 @@ ${css}
  */
 html, body { background: var(--color-canvas); color: var(--color-ink); }
 #root { min-height: 100vh; }
-</style>
-<div id="root"></div>
-<script>${js}</script>
+</style>`;
+
+const mount = `<div id="root"></div>
+<script>${js}</script>`;
+
+/*
+ * Two outputs from one bundle.
+ *
+ * `dist/studio.html` is a fragment: an artifact host supplies the document
+ * around it, so it must not carry a doctype or a <head> of its own.
+ *
+ * `index.html` is the same payload as a complete document, for opening from
+ * disk or serving from any static host. It is committed, so the repository
+ * runs straight after a clone with no toolchain and no build step.
+ */
+const fragment = `${head}\n${mount}\n`;
+const page = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${head}
+</head>
+<body>
+${mount}
+</body>
+</html>
 `;
 
-writeFileSync("dist/studio.html", html);
-console.log(`\nstudio.html — ${(Buffer.byteLength(html) / 1024).toFixed(0)} KB`);
+mkdirSync("dist", { recursive: true });
+writeFileSync("dist/studio.html", fragment);
+writeFileSync("index.html", page);
+
+const kb = (s) => `${(Buffer.byteLength(s) / 1024).toFixed(0)} KB`;
+console.log(`\ndist/studio.html  ${kb(fragment)}  (artifact fragment)`);
+console.log(`index.html        ${kb(page)}  (standalone, for local hosting)`);

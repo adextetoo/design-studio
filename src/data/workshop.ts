@@ -21,6 +21,14 @@ export interface WorkshopStep {
   helper?: string;
   placeholder?: string;
   options?: string[];
+  /**
+   * Common answers offered as chips beside the field, so a question does not
+   * have to be answered from a blank page. Suggestions never replace the
+   * field: a text step fills it, a long or list step adds to what is there.
+   * `"picked-traits"` resolves at render to the five traits chosen in the
+   * ballot, which is what "those words" refers to in step 17.
+   */
+  suggest?: string[] | "picked-traits";
   /** Where this answer lands in the brief. */
   binds?:
     | "brandName"
@@ -54,6 +62,27 @@ export const TRAIT_BANK = [
   "Adventurous", "Precise", "Optimistic", "Proven",
 ] as const;
 
+/**
+ * The categories a stranger would actually file a company under. Broad on
+ * purpose: the question asks what you are compared to, not what you are.
+ */
+export const SECTOR_SUGGESTIONS = [
+  "Personal finance", "Fintech", "SaaS", "E-commerce", "Healthcare",
+  "Education", "Professional services", "Hospitality", "Property",
+  "Manufacturing", "Creative agency", "Non-profit",
+] as const;
+
+/**
+ * Drawn from the same machine-tell and consultancy-filler vocabulary the
+ * Human Tone Check scores generated copy against, so the two features agree
+ * with each other rather than contradicting.
+ */
+export const BANNED_WORD_SUGGESTIONS = [
+  "solutions", "leverage", "synergy", "journey", "empower", "seamless",
+  "innovative", "world-class", "cutting-edge", "best-in-class",
+  "game-changing", "disruptive", "holistic", "robust", "elevate",
+] as const;
+
 export const FONT_CLASS_OPTIONS = [
   { value: "geometric-sans", label: "Geometric sans", note: "Circles and straight lines. Reads modern, engineered, a little cool." },
   { value: "neo-grotesque", label: "Neo-grotesque", note: "Neutral and hard-working. Gets out of the way of the message." },
@@ -75,7 +104,7 @@ export const STEPS: WorkshopStep[] = [
   // Phase 1 — Introduction (4)
   { id: "name", phaseId: "intro", kind: "text", binds: "brandName", question: "What is the company called?", helper: "Exactly as it should be set in type, including any casing you care about.", placeholder: "Monty" },
   { id: "offering", phaseId: "intro", kind: "long", binds: "offering", question: "What do you sell, in your own words?", helper: "No positioning yet. Say it the way you would to a friend who does not work in your industry.", placeholder: "We help people close to retirement see everything they own in one place." },
-  { id: "sector", phaseId: "intro", kind: "text", binds: "sector", question: "What sector would a stranger file you under?", helper: "Even if it is wrong. We need to know what you are being compared to.", placeholder: "Personal finance" },
+  { id: "sector", phaseId: "intro", kind: "text", binds: "sector", question: "What sector would a stranger file you under?", helper: "Even if it is wrong. We need to know what you are being compared to.", placeholder: "Personal finance", suggest: [...SECTOR_SUGGESTIONS] },
   { id: "why-name", phaseId: "intro", kind: "long", question: "Why did you choose your brand name?", helper: "The story behind the name usually points at the thing the brand really cares about.", placeholder: "It was my grandfather's name. He kept every receipt he ever got." },
 
   // Phase 2 — Origin (4)
@@ -97,7 +126,7 @@ export const STEPS: WorkshopStep[] = [
 
   // Phase 5 — Brand Personality (3)
   { id: "traits", phaseId: "personality", kind: "traits", question: "Pick your top 5 traits", helper: "Select the words that best describe your brand personality. Everyone picks in private — nobody sees the room until the reveal." },
-  { id: "not-traits", phaseId: "personality", kind: "long", question: "Which of those words would your competitors also claim?", helper: "Anything both of you can say is not a personality, it is a category requirement.", placeholder: "Trusted. Everyone in finance says trusted." },
+  { id: "not-traits", phaseId: "personality", kind: "long", question: "Which of those words would your competitors also claim?", helper: "Anything both of you can say is not a personality, it is a category requirement.", placeholder: "Trusted. Everyone in finance says trusted.", suggest: "picked-traits" },
   { id: "person", phaseId: "personality", kind: "long", question: "If the brand walked into a meeting, how would it behave?", placeholder: "Arrives early, says the uncomfortable thing kindly, leaves on time." },
 
   // Phase 6 — Market & Rivals (3)
@@ -107,7 +136,7 @@ export const STEPS: WorkshopStep[] = [
 
   // Phase 7 — Voice (3)
   { id: "sound-like", phaseId: "voice", kind: "long", question: "Whose writing do you wish your brand sounded like?", helper: "A publication, a person, a product. Anything you can point at.", placeholder: "The way a good GP explains a diagnosis." },
-  { id: "never-say", phaseId: "voice", kind: "list", question: "List words this brand will never use.", helper: "One per line. These go into the guidelines as a hard rule.", placeholder: "solutions\nleverage\njourney" },
+  { id: "never-say", phaseId: "voice", kind: "list", question: "List words this brand will never use.", helper: "One per line. These go into the guidelines as a hard rule.", placeholder: "solutions\nleverage\njourney", suggest: [...BANNED_WORD_SUGGESTIONS] },
   { id: "hard-truth", phaseId: "voice", kind: "long", question: "What is the hardest true thing you tell customers?", helper: "A brand that can say one hard thing gets believed about everything else.", placeholder: "If you are under forty, you probably do not need us yet." },
 
   // Phase 8 — Craft (3)

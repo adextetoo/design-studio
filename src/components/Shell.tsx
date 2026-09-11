@@ -23,7 +23,12 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-line bg-panel md:flex">
+      {/* data-sidebar, not a class, because the studio page uses <aside> again
+          for its meta column and must not pick up the source-list material. */}
+      <aside
+        data-sidebar
+        className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-line bg-panel md:flex"
+      >
         <div className="flex items-center gap-2.5 px-4 py-4">
           <span
             className="grid size-7 shrink-0 place-items-center rounded-md bg-ink text-body font-bold text-panel"
@@ -132,7 +137,7 @@ export function PageHead({
   status?: { label: string; tone: "go" | "neutral" | "signal" };
 }) {
   return (
-    <header className="border-b border-line bg-panel px-5 py-5 md:px-8">
+    <header data-toolbar className="border-b border-line bg-panel px-5 py-5 md:px-8">
       <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           {eyebrow ? (
