@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  FONT_CLASS_OPTIONS, PHASES, PRICE_STANCE_OPTIONS, STEPS, phaseNumber, phaseOf,
+  FONT_CLASS_OPTIONS, PHASES, PRICE_STANCE_OPTIONS, STEPS, TRAIT_BANK,
+  phaseNumber, phaseOf, type WorkshopStep,
 } from "@/data/workshop";
 import { useStudio } from "@/lib/store";
 import { PageHead } from "@/components/Shell";
@@ -118,6 +119,12 @@ export default function DiscoveryPage() {
               {step.kind === "list" ? (
                 <p className="mt-1.5 text-micro text-ink-faint">One per line.</p>
               ) : null}
+              <SuggestionChips
+                step={step}
+                value={value}
+                pickedTraits={project.brief.traits}
+                onChange={(next) => answer(step.id, next)}
+              />
             </div>
           </Panel>
 
@@ -169,6 +176,87 @@ export default function DiscoveryPage() {
         <AnswersView />
       )}
     </>
+  );
+}
+
+/**
+ * Common answers, offered as chips beside the field.
+ *
+ * Three of the open questions were asking people to invent vocabulary from a
+ * blank page: the sector they are filed under, the words a competitor would
+ * also claim, and the words the brand refuses to use. None of them are
+ * multiple choice — the field stays authoritative and a chip is a shortcut
+ * into it, so anything typed by hand survives untouched.
+ *
+ * A `text` step holds one value, so picking replaces it. Everything else
+ * accumulates, in whatever separator that field already uses: a `list` keeps
+ * one per line, a `long` answer keeps a comma series.
+ */
+function SuggestionChips({
+  step, value, pickedTraits, onChange,
+}: {
+  step: WorkshopStep;
+  value: string;
+  pickedTraits: string[];
+  onChange: (next: string) => void;
+}) {
+  const options =
+    step.suggest === "picked-traits"
+      ? pickedTraits.length > 0
+        ? pickedTraits
+        : TRAIT_BANK.slice(0, 12)
+      : step.suggest;
+
+  if (!options || options.length === 0) return null;
+
+  const single = step.kind === "text";
+  const isList = step.kind === "list";
+  const separator = isList ? "\n" : ", ";
+  const current = value
+    .split(isList ? /\r?\n/ : /,/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  const chosen = (option: string) =>
+    current.some((entry) => entry.toLowerCase() === option.toLowerCase());
+
+  const toggle = (option: string) => {
+    if (single) {
+      onChange(chosen(option) ? "" : option);
+      return;
+    }
+    const next = chosen(option)
+      ? current.filter((entry) => entry.toLowerCase() !== option.toLowerCase())
+      : [...current, option];
+    onChange(next.join(separator));
+  };
+
+  return (
+    <div className="mt-3">
+      <p className="mb-2 font-data text-micro uppercase tracking-[0.1em] text-ink-faint">
+        {single ? "Common answers, tap to fill" : "Common answers, tap to add"}
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((option) => {
+          const selected = chosen(option);
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => toggle(option)}
+              aria-pressed={selected}
+              className={`chip rounded-full px-3 py-1 text-body transition-[background-color,border-color,color,transform] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.96] ${
+                selected
+                  ? "bg-ink text-panel"
+                  : "border border-line text-ink-soft hover:border-ink hover:text-ink"
+              }`}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
