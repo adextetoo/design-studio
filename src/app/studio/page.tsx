@@ -118,8 +118,13 @@ function Studio() {
             )}
           </Panel>
 
+          {/* This bar genuinely overlaps the content it sits on, so it takes a
+              real translucent material rather than an opaque cap. */}
           {variant ? (
-            <div className="sticky bottom-0 z-20 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel px-4 py-3 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.18)]">
+            <div
+              data-actionbar
+              className="sticky bottom-0 z-20 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel px-4 py-3"
+            >
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => {
