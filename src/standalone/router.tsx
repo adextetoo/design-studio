@@ -18,12 +18,21 @@ function notify() {
   for (const listener of listeners) listener();
 }
 
-function subscribe(listener: Listener) {
+export function subscribe(listener: Listener) {
+  /*
+   * One window listener serves every subscriber, so it is reference-counted
+   * against the set rather than attached per subscriber. `notify` is a stable
+   * module-level function, so repeat `addEventListener` calls collapse into a
+   * single registration and the first `removeEventListener` would tear that
+   * one registration down for everybody -- leaving the studio page used to
+   * kill routing for the Shell that was still mounted, and every later
+   * navigation changed the URL while the page stayed put.
+   */
+  if (listeners.size === 0) window.addEventListener("hashchange", notify);
   listeners.add(listener);
-  window.addEventListener("hashchange", notify);
   return () => {
-    listeners.delete(listener);
-    window.removeEventListener("hashchange", notify);
+    if (!listeners.delete(listener)) return;
+    if (listeners.size === 0) window.removeEventListener("hashchange", notify);
   };
 }
 
