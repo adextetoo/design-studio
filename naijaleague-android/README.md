@@ -36,7 +36,8 @@ Honesty matters more here than a clean-looking claim.
 | Rules engine + example data (`rules/`, `data/`) | **Compiled and tested — 49 tests, 0 failures.** Pure Kotlin, no Android dependencies, runs on the JVM. |
 | Brand guard rails (`app/src/test/.../BrandGuardrailsTest.kt`) | **Written, not executed here** — it needs AndroidX. The contrast maths in it was verified independently against the hex values in `Color.kt`. Run it with `./gradlew testDebugUnitTest`. |
 | All Kotlin sources parse | **Verified — 0 syntax errors** via the Kotlin 2.1 compiler over every file. |
-| Compose UI compiles and renders | **Not verified in this environment.** `dl.google.com` and `maven.google.com` are blocked by egress policy here, so AndroidX/Compose could not be resolved and no APK could be produced. Open in Android Studio and run `./gradlew assembleDebug` — expect to fix small API details, not structure. |
+| Compose UI type-checks | **Verified against a hand-written stub of the AndroidX API** using the Kotlin 2.0.21 compiler — 0 errors. The stub is not the real library, so gaps are possible, but every call signature, scope receiver (`RowScope.weight`, `BoxScope.matchParentSize`), `R.font.*` reference and import path was checked. |
+| Compose UI compiles against real AndroidX and renders | **Not verified in this environment.** `dl.google.com` and `maven.google.com` are blocked by egress policy here, so no APK could be produced. Open in Android Studio and run `./gradlew assembleDebug`. |
 
 The rules engine is deliberately Android-free so the part of this product that
 is *hard to get right* — and that carries the brand's whole argument — is

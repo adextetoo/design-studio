@@ -69,12 +69,11 @@ fun NaijaLeagueRoot() {
                 // §13: the deadline is permanent furniture, not a banner. It is the
                 // clock the whole product is organised around, so it sits above
                 // every tab rather than on Home alone.
-                Column(Modifier.statusBarsPadding()) {
-                    DeadlineStrip(
-                        deadlineLabel = SampleData.deadlineLabel,
-                        hoursRemaining = SampleData.hoursToDeadline()
-                    )
-                }
+                DeadlineStrip(
+                    deadlineLabel = SampleData.deadlineLabel,
+                    hoursRemaining = SampleData.hoursToDeadline(),
+                    modifier = Modifier.statusBarsPadding()
+                )
                 Box(Modifier.weight(1f)) {
                     when (tab) {
                         Tab.HOME -> HomeScreen(

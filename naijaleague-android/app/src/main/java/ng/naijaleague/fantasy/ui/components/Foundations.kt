@@ -322,19 +322,22 @@ fun StatBar(label: String, home: Int, away: Int, modifier: Modifier = Modifier) 
             Text(away.toString(), style = BrandType.ScoreAndData.data, color = palette.ink)
         }
         Spacer(Modifier.height(6.dp))
+        // RowScope.weight requires a value greater than zero, so a genuine
+        // 0-3 stat line would throw during composition. Clamping also keeps a
+        // zero side visible as a sliver rather than vanishing, which reads
+        // better than an empty track.
+        val homeFraction = (home.toFloat() / total).coerceIn(0.02f, 0.98f)
         Row(Modifier.fillMaxWidth().height(5.dp)) {
             Box(
                 Modifier
-                    .weight(home.toFloat() / total)
-                    .fillMaxWidth()
+                    .weight(homeFraction)
                     .height(5.dp)
                     .background(palette.accent)
             )
             Spacer(Modifier.width(3.dp))
             Box(
                 Modifier
-                    .weight(away.toFloat() / total)
-                    .fillMaxWidth()
+                    .weight(1f - homeFraction)
                     .height(5.dp)
                     .background(BrandColor.UliClay)
             )
