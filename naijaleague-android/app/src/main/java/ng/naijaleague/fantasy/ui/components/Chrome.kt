@@ -211,7 +211,7 @@ fun ClubBadge(shortName: String, sizeDp: Int = 32, modifier: Modifier = Modifier
     ) {
         Text(
             shortName.take(3),
-            style = BrandType.InterfaceAndGuidance.label,
+            style = BrandType.InterfaceAndGuidance.label.copy(fontFamily = BrandType.NigerianText),
             color = palette.accent
         )
     }

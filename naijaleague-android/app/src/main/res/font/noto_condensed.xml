@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long club names. Condensed via Noto's own wdth axis rather than by
+     switching to the display face, which has no glyphs for the marks. This is
+     what lets "Bendel Insurance" and "3SC" sit on one card without either
+     looking like a mistake (§02), with the diacritics intact. -->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/noto_sans_variable"
+        android:fontStyle="normal"
+        android:fontWeight="600"
+        android:fontVariationSettings="'wght' 600, 'wdth' 87" />
+</font-family>

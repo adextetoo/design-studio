@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.brand.NaijaLeagueTheme
+import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.ui.components.BrandBottomBar
+import ng.naijaleague.fantasy.ui.components.DeadlineStrip
 import ng.naijaleague.fantasy.ui.components.Tab
 import ng.naijaleague.fantasy.ui.screens.ChoosePlayersScreen
 import ng.naijaleague.fantasy.ui.screens.HomeScreen
@@ -64,7 +66,16 @@ fun NaijaLeagueRoot() {
         val palette = LocalBrandPalette.current
         Box(Modifier.fillMaxSize().background(palette.ground)) {
             Column(Modifier.fillMaxSize()) {
-                Box(Modifier.weight(1f).statusBarsPadding()) {
+                // §13: the deadline is permanent furniture, not a banner. It is the
+                // clock the whole product is organised around, so it sits above
+                // every tab rather than on Home alone.
+                Column(Modifier.statusBarsPadding()) {
+                    DeadlineStrip(
+                        deadlineLabel = SampleData.deadlineLabel,
+                        hoursRemaining = SampleData.hoursToDeadline()
+                    )
+                }
+                Box(Modifier.weight(1f)) {
                     when (tab) {
                         Tab.HOME -> HomeScreen(
                             onViewTeam = { tab = Tab.TEAM },

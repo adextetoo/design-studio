@@ -69,10 +69,12 @@ fun LeaguesScreen() {
                 val active = candidate == tab
                 Box(
                     Modifier
+                        .heightIn(min = BrandDimens.MinTapTarget)
                         .clip(RoundedCornerShape(BrandDimens.ChipRadius))
                         .background(if (active) palette.accent else palette.raised)
                         .clickable { tab = candidate }
-                        .padding(horizontal = BrandDimens.SpaceLg, vertical = BrandDimens.SpaceSm)
+                        .padding(horizontal = BrandDimens.SpaceLg),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         candidate.label,

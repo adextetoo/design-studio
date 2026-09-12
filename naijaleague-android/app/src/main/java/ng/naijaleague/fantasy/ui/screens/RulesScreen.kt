@@ -24,6 +24,7 @@ import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.rules.Chip
 import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.rules.Position
+import ng.naijaleague.fantasy.rules.Scoring
 import ng.naijaleague.fantasy.rules.SquadRules
 import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.BrandRule
@@ -37,9 +38,9 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
  * surface the brand system reserves for anything you actually read, and it is
  * the only screen in the app that uses it.
  *
- * Every number on this page is pulled from the rules engine rather than typed
- * in, so the page and the game can never disagree. If a scoring value changes
- * in Scoring.kt, this page changes with it.
+ * Every number on this page is derived from the rules engine rather than typed
+ * in, so the page and the game cannot disagree. If a scoring value changes in
+ * Scoring.kt, this page changes with it.
  */
 private data class ScoreRow(
     val action: String,
@@ -49,22 +50,40 @@ private data class ScoreRow(
     val fwd: String
 )
 
-private val scoringRows = listOf(
-    ScoreRow("Played up to 59 minutes", "1", "1", "1", "1"),
-    ScoreRow("Played 60 minutes or more", "2", "2", "2", "2"),
-    ScoreRow("Goal", "6", "6", "5", "4"),
-    ScoreRow("Assist", "3", "3", "3", "3"),
-    ScoreRow("Clean sheet (60 mins+)", "4", "4", "1", "—"),
-    ScoreRow("Every 3 saves", "1", "—", "—", "—"),
-    ScoreRow("Penalty saved", "5", "—", "—", "—"),
-    ScoreRow("Away goal or assist", "+1", "+1", "+1", "+1"),
-    ScoreRow("Away clean sheet", "+2", "+2", "—", "—"),
-    ScoreRow("The Three", "3/2/1", "3/2/1", "3/2/1", "3/2/1"),
-    ScoreRow("Every 2 goals conceded", "−1", "−1", "—", "—"),
-    ScoreRow("Yellow card", "−1", "−1", "−1", "−1"),
-    ScoreRow("Red card", "−3", "−3", "−3", "−3"),
-    ScoreRow("Penalty missed", "−2", "−2", "−2", "−2"),
-    ScoreRow("Own goal", "−2", "−2", "−2", "−2")
+private fun byPosition(value: (Position) -> Int) =
+    Position.entries.map { p -> value(p).let { if (it == 0) "\u2014" else it.toString() } }
+
+private fun row(action: String, values: List<String>) =
+    ScoreRow(action, values[0], values[1], values[2], values[3])
+
+private fun all(value: String) = List(4) { value }
+
+/** Built from Scoring, so the page and the engine cannot drift apart. */
+private val scoringRows: List<ScoreRow> = listOf(
+    row("Played up to 59 minutes", all("${Scoring.APPEARANCE_UNDER_60}")),
+    row("Played 60 minutes or more", all("${Scoring.APPEARANCE_60_PLUS}")),
+    row("Goal", byPosition { Scoring.goalValue(it) }),
+    row("Assist", all("${Scoring.ASSIST}")),
+    row("Clean sheet (60 mins+)", byPosition { Scoring.cleanSheetValue(it) }),
+    row("Every ${Scoring.SAVES_PER_POINT} saves", listOf("1", "\u2014", "\u2014", "\u2014")),
+    row("Penalty saved", listOf("${Scoring.PENALTY_SAVED}", "\u2014", "\u2014", "\u2014")),
+    row("Away goal or assist", all("+${Scoring.AWAY_GOAL_OR_ASSIST_BONUS}")),
+    row(
+        "Away clean sheet",
+        listOf(
+            "+${Scoring.AWAY_CLEAN_SHEET_BONUS}", "+${Scoring.AWAY_CLEAN_SHEET_BONUS}",
+            "\u2014", "\u2014"
+        )
+    ),
+    row("The Three", all("3/2/1")),
+    row(
+        "Every ${Scoring.CONCEDED_PER_DEDUCTION} goals conceded",
+        listOf("\u22121", "\u22121", "\u2014", "\u2014")
+    ),
+    row("Yellow card", all("\u2212${-Scoring.YELLOW_CARD}")),
+    row("Red card", all("\u2212${-Scoring.RED_CARD}")),
+    row("Penalty missed", all("\u2212${-Scoring.PENALTY_MISSED}")),
+    row("Own goal", all("\u2212${-Scoring.OWN_GOAL}"))
 )
 
 @Composable

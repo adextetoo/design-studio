@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,7 +50,6 @@ import ng.naijaleague.fantasy.ui.components.BrandButtonSecondary
 import ng.naijaleague.fantasy.ui.components.BrandMark
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
-import ng.naijaleague.fantasy.ui.components.EndlineLockup
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 
 /**
@@ -142,8 +142,9 @@ private fun StepHook(onNext: () -> Unit) {
         BrandButton(label = "Start building", onClick = onNext)
         Spacer(Modifier.height(BrandDimens.SpaceMd))
         BrandButtonSecondary(label = "I already have a squad", onClick = onNext)
-        Spacer(Modifier.height(BrandDimens.SpaceXl))
-        EndlineLockup(Modifier.fillMaxWidth())
+        // No endline here. §12: "real fans" is an invitation, never a test, and
+        // never in onboarding — screen one of a signup flow is the door with a
+        // bouncer on it that the rule exists to prevent.
         Spacer(Modifier.height(BrandDimens.SpaceXl))
     }
 }
@@ -216,11 +217,9 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         Text(
             club.name,
-            style = BrandType.InterfaceAndGuidance.micro,
+            style = BrandType.IdentityAndEditorial.nameMicro,
             color = palette.ink,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            textAlign = TextAlign.Center
         )
         Text(
             club.city,
@@ -353,7 +352,10 @@ private fun StepName(value: String, onValue: (String) -> Unit, onNext: () -> Uni
                 value = value,
                 onValueChange = onValue,
                 singleLine = true,
-                textStyle = BrandType.InterfaceAndGuidance.body.copy(color = palette.ink),
+                textStyle = BrandType.InterfaceAndGuidance.body.copy(
+                    color = palette.ink,
+                    fontFamily = BrandType.NigerianText
+                ),
                 cursorBrush = SolidColor(palette.accent),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -373,6 +375,10 @@ private fun StepName(value: String, onValue: (String) -> Unit, onNext: () -> Uni
 @Composable
 private fun StepSave(phone: String, onPhone: (String) -> Unit, onFinish: () -> Unit) {
     val palette = LocalBrandPalette.current
+    // The celebration is gated behind the save. A Class 4 treatment sitting on
+    // screen before anything has happened is the exact failure §02 warns about:
+    // it stops meaning anything, and the one moment we need it for is dead.
+    var saved by rememberSaveable { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxSize()
@@ -426,28 +432,32 @@ private fun StepSave(phone: String, onPhone: (String) -> Unit, onFinish: () -> U
         Spacer(Modifier.height(BrandDimens.SpaceXl))
         BrandButton(
             label = "Save squad",
-            onClick = onFinish,
-            enabled = phone.length >= 10
+            onClick = { saved = true },
+            enabled = phone.length >= 10 && !saved
         )
 
-        Spacer(Modifier.height(BrandDimens.SpaceXxl))
-        BrandRule()
-        Spacer(Modifier.height(BrandDimens.SpaceLg))
+        if (saved) {
+            Spacer(Modifier.height(BrandDimens.SpaceXxl))
+            BrandRule()
+            Spacer(Modifier.height(BrandDimens.SpaceLg))
 
-        // Class 4 type. One of only four moments it is allowed (§02).
-        Text(
-            "SQUAD LOCKED.\nNOW GO AND TALK.",
-            style = BrandType.CelebrationAndMotion.celebration,
-            color = palette.accent
-        )
-        Spacer(Modifier.height(BrandDimens.SpaceMd))
-        Text(
-            "A league with one person inside is just a spreadsheet. Add your people.",
-            style = BrandType.InterfaceAndGuidance.body,
-            color = palette.inkDim
-        )
-        Spacer(Modifier.height(BrandDimens.SpaceMd))
-        BrandButtonSecondary(label = "Share invite to WhatsApp", onClick = onFinish)
+            // Class 4, earned. §03 names this exact moment in the first-session
+            // table: "OTP, saved. Confirmation in Class 4 type."
+            Text(
+                "SQUAD LOCKED.\nNOW GO AND TALK.",
+                style = BrandType.CelebrationAndMotion.celebration,
+                color = palette.accent,
+                modifier = Modifier.rotate(-1f)
+            )
+            Spacer(Modifier.height(BrandDimens.SpaceMd))
+            Text(
+                "A league with one person inside is just a spreadsheet. Add your people.",
+                style = BrandType.InterfaceAndGuidance.body,
+                color = palette.inkDim
+            )
+            Spacer(Modifier.height(BrandDimens.SpaceMd))
+            BrandButtonSecondary(label = "Share invite to WhatsApp", onClick = onFinish)
+        }
         Spacer(Modifier.height(BrandDimens.SpaceXxl))
     }
 }

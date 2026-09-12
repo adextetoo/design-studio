@@ -25,13 +25,29 @@ import kotlin.math.roundToLong
  */
 object Scoring {
 
-    private fun goalValue(position: Position) = when (position) {
+    /** Away Day Bonus, published so the rules page cannot drift from it (§05). */
+    const val AWAY_GOAL_OR_ASSIST_BONUS = 1
+    const val AWAY_CLEAN_SHEET_BONUS = 2
+    const val SAVES_PER_POINT = 3
+    const val CONCEDED_PER_DEDUCTION = 2
+    const val ASSIST = 3
+    const val PENALTY_SAVED = 5
+    const val YELLOW_CARD = -1
+    const val RED_CARD = -3
+    const val PENALTY_MISSED = -2
+    const val OWN_GOAL = -2
+    const val APPEARANCE_UNDER_60 = 1
+    const val APPEARANCE_60_PLUS = 2
+
+    /** Public so the rules page can render the table from the engine itself. */
+    fun goalValue(position: Position) = when (position) {
         Position.GK, Position.DEF -> 6
         Position.MID -> 5
         Position.FWD -> 4
     }
 
-    private fun cleanSheetValue(position: Position) = when (position) {
+    /** Public so the rules page can render the table from the engine itself. */
+    fun cleanSheetValue(position: Position) = when (position) {
         Position.GK, Position.DEF -> 4
         Position.MID -> 1
         Position.FWD -> 0

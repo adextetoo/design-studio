@@ -26,12 +26,12 @@ import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.rules.Scoring
+import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.AwayBonusBadge
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandCard
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
-import ng.naijaleague.fantasy.ui.components.DeadlineStrip
 import ng.naijaleague.fantasy.ui.components.OfflineBadge
 import ng.naijaleague.fantasy.ui.components.PointsCounter
 import ng.naijaleague.fantasy.ui.components.ScreenHeader
@@ -64,8 +64,6 @@ fun HomeScreen(
     val provisional = remember(gameweek) { gameweek.isProvisional(SampleData.gameweek12) }
 
     Column(Modifier.fillMaxWidth()) {
-        DeadlineStrip(deadlineLabel = SampleData.deadlineLabel, hoursRemaining = 26)
-
         LazyColumn(Modifier.fillMaxWidth()) {
             item {
                 ScreenHeader(
@@ -97,7 +95,7 @@ fun HomeScreen(
                         Text(
                             "Provisional until Monday 12:00. Flag anything wrong.",
                             style = BrandType.InterfaceAndGuidance.micro,
-                            color = BrandColor.IfeBrass
+                            color = palette.inkDim
                         )
                     }
                     Spacer(Modifier.height(BrandDimens.SpaceLg))
@@ -132,13 +130,16 @@ fun HomeScreen(
                         Column {
                             SectionLabel("Free transfers", color = palette.inkDim)
                             Spacer(Modifier.height(6.dp))
+                            // Ask the engine. Open-coding "banked + 1" would
+                            // advertise 6 free transfers at banked = 5, while
+                            // Transfers caps at 5 and charges -4 for the sixth.
                             Text(
-                                "${SampleData.bankedTransfers + 1}",
+                                "${Transfers.availableThisGameweek(SampleData.bankedTransfers)}",
                                 style = BrandType.ScoreAndData.scorelineMid,
                                 color = palette.ink
                             )
                             Text(
-                                "banked, max 5",
+                                "free this week · bank up to ${Transfers.MAX_BANKED}",
                                 style = BrandType.InterfaceAndGuidance.micro,
                                 color = palette.inkDim
                             )
@@ -264,8 +265,9 @@ private fun FixtureRow(
             Spacer(Modifier.width(BrandDimens.SpaceSm))
             Text(
                 home,
-                style = BrandType.IdentityAndEditorial.name,
+                style = BrandType.IdentityAndEditorial.nameCondensed,
                 color = palette.ink,
+                maxLines = 2,
                 modifier = Modifier.weight(1f)
             )
             Text(
@@ -277,8 +279,9 @@ private fun FixtureRow(
             )
             Text(
                 away,
-                style = BrandType.IdentityAndEditorial.name,
+                style = BrandType.IdentityAndEditorial.nameCondensed,
                 color = palette.ink,
+                maxLines = 2,
                 modifier = Modifier.weight(1f)
             )
             Spacer(Modifier.width(BrandDimens.SpaceSm))

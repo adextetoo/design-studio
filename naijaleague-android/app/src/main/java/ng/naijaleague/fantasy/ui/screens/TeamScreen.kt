@@ -98,7 +98,7 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
             Spacer(Modifier.height(BrandDimens.SpaceMd))
             Text(
                 "You cannot buy points. Not a chip, not a transfer, not a multiplier.",
-                style = BrandType.InterfaceAndGuidance.bodySmall,
+                style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim
             )
             Spacer(Modifier.height(BrandDimens.SpaceXxl))
@@ -208,10 +208,9 @@ private fun PlayerPill(
         }
         Text(
             player.name.split(" ").last(),
-            style = BrandType.IdentityAndEditorial.name.copy(fontSize = 12.sp),
+            style = BrandType.IdentityAndEditorial.name.copy(fontSize = 15.sp),
             color = palette.ink,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(2.dp))
@@ -226,7 +225,7 @@ private fun PlayerPill(
                 Text(
                     "A",
                     style = BrandType.InterfaceAndGuidance.label,
-                    color = BrandColor.IfeBrass
+                    color = palette.accent
                 )
             }
         }
@@ -252,15 +251,17 @@ private fun ChipCard(chip: Chip) {
             .background(palette.raised)
             .padding(BrandDimens.SpaceMd)
     ) {
+        // Class 2, not Class 4. Five celebration treatments sitting permanently
+        // on an ordinary screen is exactly how Class 4 stops meaning anything.
         Text(
             chip.chipName.uppercase(),
-            style = BrandType.CelebrationAndMotion.celebrationSub,
+            style = BrandType.InterfaceAndGuidance.label,
             color = palette.accent
         )
         Spacer(Modifier.height(BrandDimens.SpaceXs))
         Text(
             chip.explanation,
-            style = BrandType.InterfaceAndGuidance.bodySmall,
+            style = BrandType.InterfaceAndGuidance.body,
             color = palette.inkDim
         )
     }

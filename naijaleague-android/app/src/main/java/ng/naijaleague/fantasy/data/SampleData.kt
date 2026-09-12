@@ -206,6 +206,20 @@ object SampleData {
 
     const val gameweekNumber = 12
     const val deadlineLabel = "Sun 16 Nov · 3:00 PM"
+
+    /**
+     * Deadline as an instant, so the strip can actually count down and reach its
+     * final-hour state. In the live build this comes from the fixture feed; here
+     * it is anchored 26 hours ahead of first launch so the demo shows a plausible
+     * countdown rather than a frozen literal.
+     */
+    private val deadlineEpochMillis: Long =
+        System.currentTimeMillis() + 26L * 60L * 60L * 1000L
+
+    fun hoursToDeadline(nowMillis: Long = System.currentTimeMillis()): Int {
+        val remaining = deadlineEpochMillis - nowMillis
+        return if (remaining <= 0) 0 else (remaining / (60L * 60L * 1000L)).toInt()
+    }
     const val overallRank = 128_432
     const val totalManagers = 1_245_678
     const val bankedTransfers = 1

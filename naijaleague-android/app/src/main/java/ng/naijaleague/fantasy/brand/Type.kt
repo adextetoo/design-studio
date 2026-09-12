@@ -6,7 +6,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextGeometricTransform
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import ng.naijaleague.fantasy.R
@@ -48,7 +49,10 @@ object BrandType {
         Font(R.font.display_black, FontWeight.Black, FontStyle.Normal)
     )
 
-    /** For long club names, where the expanded display face will not fit. */
+    /**
+     * Condensed display, for long EDITORIAL strings only — never a name. It has
+     * no glyphs for the Nigerian marks, which is the whole point of §02.
+     */
     val DisplayCondensed: FontFamily = FontFamily(
         Font(R.font.display_condensed, FontWeight.Bold, FontStyle.Normal)
     )
@@ -63,9 +67,29 @@ object BrandType {
 
     /**
      * Any string that can carry Yoruba, Igbo or Hausa marks — which in this app
-     * means every player name and every club name. Resolves to Noto.
+     * means every player name and every club name.
+     *
+     * This is a BUNDLED subset of Noto Sans, not FontFamily.Default. The
+     * difference matters: FontFamily.Default resolves to whatever the OEM ships
+     * as its system sans — SamsungOne, MiSans, OnePlus Sans on exactly the
+     * mid-range handsets this product targets — so the stacked mark-to-mark
+     * positioning in "Ọ̀gbọ́nna" would be at the mercy of an unaudited font. The
+     * bundled subset carries the full Yoruba/Igbo/Hausa glyph set plus the GPOS
+     * and GDEF tables that position a tone mark over a dotted vowel.
      */
-    val NigerianText: FontFamily = FontFamily.Default
+    val NigerianText: FontFamily = FontFamily(
+        Font(R.font.noto_regular, FontWeight.Normal, FontStyle.Normal),
+        Font(R.font.noto_semibold, FontWeight.SemiBold, FontStyle.Normal)
+    )
+
+    /**
+     * The same family narrowed on Noto's own wdth axis, for long club names.
+     * Condensing this way rather than switching to the display face is what
+     * keeps "Ọ̀gbọ́nna" intact while still fitting "Bendel Insurance" on a card.
+     */
+    val NigerianTextCondensed: FontFamily = FontFamily(
+        Font(R.font.noto_condensed, FontWeight.SemiBold, FontStyle.Normal)
+    )
 
     // ---------- CLASS 1 — SCORE & DATA ----------
     /**
@@ -79,17 +103,23 @@ object BrandType {
             fontFamily = Display, fontWeight = FontWeight.Black,
             fontSize = 64.sp, lineHeight = 58.sp, letterSpacing = (-0.01).em
         )
+        /** The secondary figure — rank, transfers, a scoreline. Display 2's size. */
         val scorelineMid = TextStyle(
             fontFamily = Display, fontWeight = FontWeight.Black,
-            fontSize = 34.sp, lineHeight = 34.sp, letterSpacing = (-0.01).em
+            fontSize = 28.sp, lineHeight = 30.sp, letterSpacing = (-0.01).em
         )
         val data = TextStyle(
             fontFamily = Interface, fontWeight = FontWeight.Medium,
             fontSize = 15.sp, lineHeight = 16.sp, letterSpacing = 0.01.em
         )
+        /**
+         * Deliberately the same size as [data]. There is no 13sp level on the
+         * scale, and the sites that used one were carrying money, the deadline
+         * and the two-per-club cap — all of which §02 keeps at 15sp or above.
+         */
         val dataSmall = TextStyle(
             fontFamily = Interface, fontWeight = FontWeight.Medium,
-            fontSize = 13.sp, lineHeight = 14.sp, letterSpacing = 0.01.em
+            fontSize = 15.sp, lineHeight = 18.sp, letterSpacing = 0.01.em
         )
     }
 
@@ -109,9 +139,16 @@ object BrandType {
             fontFamily = NigerianText, fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp, lineHeight = 20.sp, letterSpacing = (-0.005).em
         )
+        /** Club names in small print — still Noto, so the marks survive. */
+        val nameMicro = TextStyle(
+            fontFamily = NigerianText, fontWeight = FontWeight.Normal,
+            fontSize = 12.sp, lineHeight = 16.sp
+        )
+
+        /** Long club names on a tight row. Still Noto — just narrower. */
         val nameCondensed = TextStyle(
-            fontFamily = DisplayCondensed, fontWeight = FontWeight.Bold,
-            fontSize = 17.sp, lineHeight = 20.sp
+            fontFamily = NigerianTextCondensed, fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp, lineHeight = 20.sp
         )
     }
 
@@ -155,10 +192,19 @@ object BrandType {
      * a mini-league, and the receipt card. Its scarcity is the point.
      */
     object CelebrationAndMotion {
+        /**
+         * The signwriter treatment: heavy caps with a Jara Lime offset shadow
+         * standing in for the painted outline. Rotation is applied at the call
+         * site with Modifier.rotate(-1f); it cannot live in a TextStyle.
+         */
         val celebration = TextStyle(
             fontFamily = Display, fontWeight = FontWeight.Black,
-            fontSize = 38.sp, lineHeight = 36.sp, letterSpacing = (-0.01).em,
-            textGeometricTransform = TextGeometricTransform(scaleX = 1.0f)
+            fontSize = 40.sp, lineHeight = 38.sp, letterSpacing = (-0.01).em,
+            shadow = Shadow(
+                color = BrandColor.JaraLime,
+                offset = Offset(3f, 3f),
+                blurRadius = 0f
+            )
         )
         val celebrationSub = TextStyle(
             fontFamily = Display, fontWeight = FontWeight.ExtraBold,

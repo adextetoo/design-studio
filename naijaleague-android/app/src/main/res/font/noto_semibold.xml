@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Player and club names. Subset of Noto Sans carrying the Yoruba, Igbo and
+     Hausa glyph set plus GPOS/GDEF mark positioning, which is what makes a
+     stacked tone mark sit correctly over a dotted vowel. -->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/noto_sans_variable"
+        android:fontStyle="normal"
+        android:fontWeight="600"
+        android:fontVariationSettings="'wght' 600" />
+</font-family>

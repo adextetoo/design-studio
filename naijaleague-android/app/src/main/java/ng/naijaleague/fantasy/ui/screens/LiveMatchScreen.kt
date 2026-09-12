@@ -126,10 +126,11 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                     textAlign = TextAlign.Center
                 )
                 // Away is flagged everywhere in this app, because away is worth more.
+                // Lime: this is a scoring gain, not an honour.
                 Text(
                     "Away · bonus live",
                     style = BrandType.InterfaceAndGuidance.label,
-                    color = BrandColor.IfeBrass
+                    color = palette.accent
                 )
             }
         }
@@ -150,7 +151,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                     Text(
                         "Filed by the scorer at the ground. Every award comes with the reason, " +
                             "and you have two hours after full time to flag it with the clip.",
-                        style = BrandType.InterfaceAndGuidance.bodySmall,
+                        style = BrandType.InterfaceAndGuidance.body,
                         color = palette.inkDim
                     )
                 }

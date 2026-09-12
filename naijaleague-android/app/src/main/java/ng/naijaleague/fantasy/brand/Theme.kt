@@ -98,7 +98,9 @@ private val darkScheme = darkColorScheme(
     primaryContainer = BrandColor.EagleDark,
     onPrimaryContainer = BrandColor.ChalkWhite,
     secondary = BrandColor.LiveGreen,
-    onSecondary = BrandColor.ChalkWhite,
+    // White on Live Green is 3.57:1 — large text only. Night Pitch keeps any
+    // stock component that lands on `secondary` legible at label sizes.
+    onSecondary = BrandColor.NightPitch,
     tertiary = BrandColor.IfeBrass,
     onTertiary = BrandColor.NightPitch,
     background = BrandColor.NightPitch,
@@ -109,8 +111,8 @@ private val darkScheme = darkColorScheme(
     onSurfaceVariant = BrandColor.HazeDim,
     error = BrandColor.IvieCoralLit,
     onError = BrandColor.NightPitch,
-    outline = Color(0xFF3A5E4C),
-    outlineVariant = Color(0xFF1E4133)
+    outline = BrandColor.HarmattanHaze.copy(alpha = 0.45f),
+    outlineVariant = BrandColor.HarmattanHaze.copy(alpha = 0.20f)
 )
 
 private val chalkScheme = lightColorScheme(
@@ -119,7 +121,7 @@ private val chalkScheme = lightColorScheme(
     primaryContainer = BrandColor.EagleDark,
     onPrimaryContainer = BrandColor.ChalkWhite,
     secondary = BrandColor.LiveGreen,
-    onSecondary = BrandColor.ChalkWhite,
+    onSecondary = BrandColor.NightPitch,
     tertiary = BrandColor.UliClay,
     onTertiary = BrandColor.ChalkWhite,
     background = BrandColor.NzuChalk,
@@ -130,8 +132,8 @@ private val chalkScheme = lightColorScheme(
     onSurfaceVariant = BrandColor.ChalkInkDim,
     error = BrandColor.IvieCoral,
     onError = BrandColor.ChalkWhite,
-    outline = Color(0xFFB3B8AE),
-    outlineVariant = Color(0xFFD8D2C6)
+    outline = BrandColor.NightPitch.copy(alpha = 0.28f),
+    outlineVariant = BrandColor.NightPitch.copy(alpha = 0.16f)
 )
 
 /**

@@ -56,8 +56,15 @@ data class Squad(
     fun countBy(position: Position) = allPlayers.count { it.position == position }
     fun countByClub(clubId: String) = allPlayers.count { it.clubId == clubId }
 
-    /** Empty list means the squad is legal and can be saved. */
-    fun validate(): List<Violation> {
+    /**
+     * Empty list means the squad is legal and can be saved.
+     *
+     * @param clubName resolves a club id to its display name. This package is
+     * deliberately Android-free, so it cannot reach the club list itself — but a
+     * manager must never be shown a database key like "3SC" in a message that is
+     * blocking them (§12: always name the specific thing).
+     */
+    fun validate(clubName: (String) -> String = { it }): List<Violation> {
         val v = mutableListOf<Violation>()
 
         if (allPlayers.size != SquadRules.SQUAD_SIZE) {
@@ -88,8 +95,8 @@ data class Squad(
             .forEach { (clubId, players) ->
                 v += Violation(
                     "CLUB_CAP",
-                    "You have ${players.size} players from one club. The limit is 2 — drop " +
-                        "${players.size - SquadRules.MAX_PER_CLUB} from $clubId."
+                    "You have ${players.size} players from ${clubName(clubId)}. The limit is 2 — " +
+                        "drop ${players.size - SquadRules.MAX_PER_CLUB}."
                 )
             }
 

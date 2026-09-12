@@ -44,6 +44,7 @@ import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.rules.Player
 import ng.naijaleague.fantasy.rules.Position
 import ng.naijaleague.fantasy.rules.SquadRules
+import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
@@ -65,6 +66,10 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
     val squad = SampleData.squad
     val ownedIds = remember { squad.allPlayers.map { it.id }.toSet() }
     val clubCounts = remember { squad.allPlayers.groupingBy { it.clubId }.eachCount() }
+
+    // In the live build this comes from the squad view-model; the screen only
+    // needs to know how many changes are pending in order to price them.
+    val transfersMade = 0
 
     val shown = remember(filter, query) {
         SampleData.pool
@@ -135,7 +140,10 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
                 value = query,
                 onValueChange = { query = it },
                 singleLine = true,
-                textStyle = BrandType.InterfaceAndGuidance.body.copy(color = palette.ink),
+                textStyle = BrandType.InterfaceAndGuidance.body.copy(
+                    color = palette.ink,
+                    fontFamily = BrandType.NigerianText
+                ),
                 cursorBrush = androidx.compose.ui.graphics.SolidColor(palette.accent),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -168,9 +176,10 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
                 PlayerRow(
                     player = player,
                     owned = owned,
+                    onToggle = { /* wired to the squad view-model in the live build */ },
                     blockedReason = when {
                         owned -> null
-                        clubFull -> "2 from ${player.clubId} already"
+                        clubFull -> "2 from ${SampleData.club(player.clubId).name} already"
                         tooExpensive -> "Over your budget"
                         else -> null
                     }
@@ -183,6 +192,21 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
                 .background(palette.ground)
                 .padding(BrandDimens.Gutter)
         ) {
+            // The rules page promises "the app tells you the cost before you
+            // confirm, every single time". This is where that promise is kept.
+            Text(
+                Transfers.confirmationCopy(
+                    bankedComingIn = SampleData.bankedTransfers,
+                    transfersMade = transfersMade
+                ),
+                style = BrandType.InterfaceAndGuidance.body,
+                color = if (Transfers.pointsHit(SampleData.bankedTransfers, transfersMade) > 0) {
+                    palette.negative
+                } else {
+                    palette.inkDim
+                }
+            )
+            Spacer(Modifier.height(BrandDimens.SpaceMd))
             BrandButton(label = "Save squad", onClick = onClose, enabled = squad.isValid)
         }
     }
@@ -193,10 +217,12 @@ private fun FilterPill(label: String, active: Boolean, onClick: () -> Unit) {
     val palette = LocalBrandPalette.current
     Box(
         Modifier
+            .heightIn(min = BrandDimens.MinTapTarget)
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(if (active) palette.accent else palette.raised)
             .clickable(onClick = onClick)
-            .padding(horizontal = BrandDimens.SpaceLg, vertical = BrandDimens.SpaceSm)
+            .padding(horizontal = BrandDimens.SpaceLg),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             label,
@@ -213,7 +239,12 @@ private fun FilterPill(label: String, active: Boolean, onClick: () -> Unit) {
  * decision, not trivia — under 5% pays 1.25x, under 2% pays 1.5x (§08).
  */
 @Composable
-private fun PlayerRow(player: Player, owned: Boolean, blockedReason: String?) {
+private fun PlayerRow(
+    player: Player,
+    owned: Boolean,
+    onToggle: () -> Unit,
+    blockedReason: String?
+) {
     val palette = LocalBrandPalette.current
     val tier = DifferentialTier.forOwnership(player.ownershipPct)
     val enabled = blockedReason == null && !owned
@@ -239,7 +270,7 @@ private fun PlayerRow(player: Player, owned: Boolean, blockedReason: String?) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         "${player.position.short} · ${SampleData.club(player.clubId).name}",
-                        style = BrandType.InterfaceAndGuidance.micro,
+                        style = BrandType.IdentityAndEditorial.nameMicro,
                         color = palette.inkDim,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -271,31 +302,37 @@ private fun PlayerRow(player: Player, owned: Boolean, blockedReason: String?) {
                 }
             }
             Spacer(Modifier.width(BrandDimens.SpaceMd))
-            AddButton(enabled = enabled, owned = owned)
+            AddButton(enabled = enabled, owned = owned, onToggle = onToggle)
         }
         BrandRule(Modifier.padding(start = BrandDimens.Gutter))
     }
 }
 
 @Composable
-private fun AddButton(enabled: Boolean, owned: Boolean) {
+private fun AddButton(enabled: Boolean, owned: Boolean, onToggle: () -> Unit) {
     val palette = LocalBrandPalette.current
+    // Brass is honours only. Owning a player is a state, not a trophy.
     val fill = when {
-        owned -> BrandColor.IfeBrass
+        owned -> palette.raised
         enabled -> palette.accent
         else -> palette.raised
     }
     Box(
         Modifier
-            .size(30.dp)
+            .size(BrandDimens.MinTapTarget)
             .clip(CircleShape)
-            .background(fill),
+            .background(fill)
+            .clickable(enabled = enabled || owned, onClick = onToggle),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            if (owned) "-" else "+",
+            if (owned) "−" else "+",
             style = BrandType.InterfaceAndGuidance.title,
-            color = if (enabled || owned) BrandColor.NightPitch else palette.inkDim
+            color = when {
+                owned -> palette.ink
+                enabled -> palette.accentInk
+                else -> palette.inkDim
+            }
         )
     }
 }

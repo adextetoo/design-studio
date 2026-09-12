@@ -34,6 +34,7 @@ Honesty matters more here than a clean-looking claim.
 | Area | Status |
 |---|---|
 | Rules engine + example data (`rules/`, `data/`) | **Compiled and tested — 49 tests, 0 failures.** Pure Kotlin, no Android dependencies, runs on the JVM. |
+| Brand guard rails (`app/src/test/.../BrandGuardrailsTest.kt`) | **Written, not executed here** — it needs AndroidX. The contrast maths in it was verified independently against the hex values in `Color.kt`. Run it with `./gradlew testDebugUnitTest`. |
 | All Kotlin sources parse | **Verified — 0 syntax errors** via the Kotlin 2.1 compiler over every file. |
 | Compose UI compiles and renders | **Not verified in this environment.** `dl.google.com` and `maven.google.com` are blocked by egress policy here, so AndroidX/Compose could not be resolved and no APK could be produced. Open in Android Studio and run `./gradlew assembleDebug` — expect to fix small API details, not structure. |
 
@@ -82,6 +83,14 @@ Flagged rather than buried, because each is a real product call:
    product. Adds ~1.5MB; revisit against the 4MB Lite-mode target.
 4. **No dynamic colour.** Material You would repaint a brand whose whole equity
    is one specific green in the wallpaper's colour.
+5. **Three sizes pulled onto the scale.** An earlier pass had invented 34sp, 13sp
+   and 38sp levels. They are now 28sp, 12sp and 40sp — all on §02's nine-level
+   scale — and a test fails if a new one appears.
+6. **The endline is not shown in onboarding.** §04 says the endline sits under
+   the logo on every execution; §12 says "real fans" must never appear in
+   onboarding, an empty state, or aimed at a user. §12 is the more specific rule
+   and names onboarding directly, so the product carve-out wins: `EndlineLockup`
+   is reserved for the store listing, an About screen and share cards.
 
 ## Where the reference mockups were overridden
 
@@ -98,11 +107,31 @@ The brand system wins, per the brief.
 - Reference "Key features" panel (Intelligence / Supply / Research / Analytics)
   is generic B2B copy and is not in the brand system's voice (§12). Not carried.
 
+## Brand compliance
+
+`BrandGuardrailsTest` turns the brand system's numeric rules into something CI
+catches, rather than prose nobody re-reads:
+
+- every palette's ink, dim ink, accent and negative clear 4.5:1 on their own ground
+- the five ratios §01 publishes still measure what §01 says they measure
+- the banned pairings stay banned (Eagle Dark on Live Green under 3:1; lime can
+  never become the chalk accent)
+- no `TextStyle` used for body, rules, money or names drops below the 15sp floor
+- no size drifts off §02's nine-level scale
+- anything that can carry a name uses the Noto-backed family, and `NigerianText`
+  is never `FontFamily.Default`
+- no interaction animation exceeds the 240ms ceiling
+
+These exist because an independent audit of this code found the guard rails were
+declared and enforcing nothing: a 13sp money label, a 12sp player name, brass on
+a sync dot, and `NigerianText` silently resolving to the OEM system font. All
+fixed; the tests stop them coming back.
+
 ## Licensed typefaces
 
 Ships with the brand system's named open-source fallbacks — Inter and Archivo
-Expanded — bundled as variable fonts with the axes pinned in the `res/font` XML
-resources. To install the licensed pairing: drop `sohne_*.otf` and `druk_*.otf`
+Expanded — plus a subset of **Noto Sans** for names, all bundled as variable
+fonts with the axes pinned in the `res/font` XML resources. To install the licensed pairing: drop `sohne_*.otf` and `druk_*.otf`
 into `app/src/main/res/font/`, point the families in `brand/Type.kt` at them, and
 delete the variation XML. See `licenses/` for the OFL.
 
@@ -110,6 +139,15 @@ delete the variation XML. See `licenses/` for the OFL.
 example set use stacked combining marks (`Ọ̀gbọ́nna`, `Ìfẹ́anyì Ụ̀zọ̀`) that Druk has
 no glyphs for; they render through `BrandType.NigerianText`. There is a test
 that fails if the example set stops exercising this.
+
+`NigerianText` is a **bundled 537KB subset of Noto Sans** (Latin + Latin Ext-A/B
++ IPA + combining marks + Latin Extended Additional + ₦), carrying the GPOS and
+GDEF tables that position a tone mark over a dotted vowel. It is deliberately not
+`FontFamily.Default`, which resolves to SamsungOne, MiSans or OnePlus Sans on the
+handsets this product targets — an unaudited face deciding how Nigerian names
+render. Long club names use `NigerianTextCondensed`, narrowed on Noto's own
+`wdth` axis rather than switched to the display face, so "Bendel Insurance" fits
+beside "3SC" with the marks intact.
 
 ## Example data
 

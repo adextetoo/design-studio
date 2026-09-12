@@ -64,7 +64,7 @@ enum class DifferentialTier(val multiplier: Double, val label: String) {
 enum class Chip(val chipName: String, val explanation: String) {
     JARA("Jara", "Your captain scores triple instead of double."),
     OWAMBE("Owambe", "All 15 players score, bench included."),
-    ASO_EBI("Aso Ebi", "Unlimited transfers for one gameweek."),
+    ASO_EBI("Aso Ebi", "Unlimited transfers for one gameweek. The changes are permanent."),
     WAKA_PASS("Waka Pass", "One gameweek with a different squad, then your old one returns."),
     GROUND_MAN("Ground Man", "Every player of yours at home this gameweek gets a 1.5x multiplier.")
 }

@@ -137,7 +137,8 @@ fun PointsCounter(
     Text(
         text = shown.toString(),
         style = if (large) BrandType.ScoreAndData.scoreline else BrandType.ScoreAndData.scorelineMid,
-        color = palette.accent,
+        // Lime is "the number going up". A negative gameweek is not that.
+        color = if (points < 0) palette.negative else palette.accent,
         modifier = modifier
     )
 }
@@ -196,7 +197,8 @@ fun OfflineBadge(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Canvas(Modifier.size(8.dp)) {
-            drawCircle(color = BrandColor.IfeBrass)
+            // Haze, not brass. Brass means something was won; this is a sync state.
+            drawCircle(color = BrandColor.HarmattanHaze)
         }
         Spacer(Modifier.width(6.dp))
         Text(
@@ -237,8 +239,14 @@ fun BrandRule(modifier: Modifier = Modifier) {
 }
 
 /**
- * The endline lockup (§summary, §04). Locked under the mark on every execution.
- * In-app it appears once per session, on the welcome screen, at Label size.
+ * The endline lockup (§summary, §04).
+ *
+ * Locked under the mark on advertising, the store listing and share cards —
+ * but NOT in onboarding. §12 is explicit that "real fans" is an invitation and
+ * never a test, and must never appear in onboarding, in an empty state, or
+ * aimed at a user. Screen one of a signup flow is exactly the door-with-a-
+ * bouncer this rule exists to prevent, so this composable is reserved for the
+ * About screen and the receipt/share card.
  */
 @Composable
 fun EndlineLockup(modifier: Modifier = Modifier) {
