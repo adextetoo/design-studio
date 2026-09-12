@@ -51,8 +51,6 @@ import ng.naijaleague.fantasy.ui.components.ClubBadge
 /**
  * Choose players.
  *
- * The screen the board renamed: it was "Draft", it is now "Choose", everywhere.
- *
  * Two brand rules are enforced in the UI and not just in the engine, because a
  * rule a manager only discovers at save time is a rule they experience as a
  * bug: the two-per-club cap (§08) and the budget. A player you cannot legally
