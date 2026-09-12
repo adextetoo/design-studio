@@ -28,6 +28,7 @@ import ng.naijaleague.fantasy.rules.Scoring
 import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.AwayBonusBadge
 import ng.naijaleague.fantasy.ui.components.BrandButton
+import ng.naijaleague.fantasy.ui.components.BrandButtonSecondary
 import ng.naijaleague.fantasy.ui.components.BrandCard
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
@@ -46,7 +47,8 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
 @Composable
 fun HomeScreen(
     onViewTeam: () -> Unit,
-    onOpenLive: () -> Unit
+    onOpenLive: () -> Unit,
+    onOpenReceipt: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
 
@@ -151,6 +153,10 @@ fun HomeScreen(
             item {
                 Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
                     BrandButton(label = "View team", onClick = onViewTeam)
+                    Spacer(Modifier.height(BrandDimens.SpaceMd))
+                    // The Monday receipt: the campaign's central asset (§04),
+                    // offered at the moment a manager has a score to brag about.
+                    BrandButtonSecondary(label = "Share your receipt", onClick = onOpenReceipt)
                     Spacer(Modifier.height(BrandDimens.SpaceMd))
                     OfflineBadge()
                     Spacer(Modifier.height(BrandDimens.SpaceXl))

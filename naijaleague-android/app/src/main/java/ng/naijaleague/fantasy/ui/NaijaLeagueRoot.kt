@@ -19,10 +19,12 @@ import ng.naijaleague.fantasy.ui.components.BrandBottomBar
 import ng.naijaleague.fantasy.ui.components.DeadlineStrip
 import ng.naijaleague.fantasy.ui.components.Tab
 import ng.naijaleague.fantasy.ui.screens.ChoosePlayersScreen
+import ng.naijaleague.fantasy.ui.screens.GafferPassScreen
 import ng.naijaleague.fantasy.ui.screens.HomeScreen
 import ng.naijaleague.fantasy.ui.screens.LeaguesScreen
 import ng.naijaleague.fantasy.ui.screens.LiveMatchScreen
 import ng.naijaleague.fantasy.ui.screens.OnboardingScreen
+import ng.naijaleague.fantasy.ui.screens.ReceiptScreen
 import ng.naijaleague.fantasy.ui.screens.RulesScreen
 import ng.naijaleague.fantasy.ui.screens.TeamScreen
 
@@ -33,7 +35,7 @@ import ng.naijaleague.fantasy.ui.screens.TeamScreen
  * does not need a nav host, and the fewer moving parts between a thumb and a
  * squad the better on a slow handset.
  */
-private enum class Overlay { NONE, CHOOSE_PLAYERS, LIVE_MATCH }
+private enum class Overlay { NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS }
 
 @Composable
 fun NaijaLeagueRoot() {
@@ -53,6 +55,14 @@ fun NaijaLeagueRoot() {
         }
         Overlay.LIVE_MATCH -> {
             LiveMatchScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.RECEIPT -> {
+            ReceiptScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.GAFFER_PASS -> {
+            GafferPassScreen(onClose = { overlay = Overlay.NONE })
             return
         }
         Overlay.NONE -> Unit
@@ -78,10 +88,13 @@ fun NaijaLeagueRoot() {
                     when (tab) {
                         Tab.HOME -> HomeScreen(
                             onViewTeam = { tab = Tab.TEAM },
-                            onOpenLive = { overlay = Overlay.LIVE_MATCH }
+                            onOpenLive = { overlay = Overlay.LIVE_MATCH },
+                            onOpenReceipt = { overlay = Overlay.RECEIPT }
                         )
                         Tab.TEAM -> TeamScreen(onChoosePlayers = { overlay = Overlay.CHOOSE_PLAYERS })
-                        Tab.LEAGUES -> LeaguesScreen()
+                        Tab.LEAGUES -> LeaguesScreen(
+                            onOpenGafferPass = { overlay = Overlay.GAFFER_PASS }
+                        )
                         Tab.RULES -> RulesScreen()
                     }
                 }

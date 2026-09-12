@@ -51,7 +51,7 @@ private enum class LeagueTab(val label: String) {
  * allowed brass, because brass means something was won (§01).
  */
 @Composable
-fun LeaguesScreen() {
+fun LeaguesScreen(onOpenGafferPass: () -> Unit) {
     val palette = LocalBrandPalette.current
     var tab by remember { mutableStateOf(LeagueTab.MINI) }
 
@@ -115,6 +115,28 @@ fun LeaguesScreen() {
                         .padding(top = BrandDimens.SpaceLg)
                 ) {
                     // The empty-state line from §12, used as the invitation it is.
+                    // Gaffer Pass sits here rather than interrupting the game:
+                    // it is offered next to the thing it helps with, and never
+                    // as a modal over a squad someone is in the middle of.
+                    BrandCard(onClick = onOpenGafferPass) {
+                        Column {
+                            SectionLabel("Gaffer Pass", color = BrandColor.IfeBrass)
+                            Spacer(Modifier.height(BrandDimens.SpaceSm))
+                            Text(
+                                "Better information. Not better odds.",
+                                style = BrandType.InterfaceAndGuidance.title,
+                                color = palette.ink
+                            )
+                            Spacer(Modifier.height(BrandDimens.SpaceXs))
+                            Text(
+                                "The Differential Board, team news by SMS, and the Monday " +
+                                    "voice note. From ₦400 a week.",
+                                style = BrandType.InterfaceAndGuidance.body,
+                                color = palette.inkDim
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(BrandDimens.SpaceLg))
                     BrandCard {
                         Column {
                             SectionLabel("Add your people")
