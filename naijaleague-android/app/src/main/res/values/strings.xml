@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand system v1.1. The name, tagline and endline are board-approved and
+         locked: do not edit these three without a board decision. -->
+    <string name="app_name">NaijaLeague Fantasy</string>
+    <string name="app_name_short">NaijaLeague</string>
+    <string name="tagline">Build Your NPFL Dream Team</string>
+    <string name="endline">Fantasy football for real NPFL fans</string>
+    <string name="campaign_line">Table no dey lie.</string>
+
+    <!-- Onboarding, five screens (§03) -->
+    <string name="onb1_head">Build your NPFL dream team.\nThen prove am.</string>
+    <string name="onb1_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
+    <string name="onb1_cta">Start building</string>
+    <string name="onb1_alt">I already have a squad</string>
+
+    <string name="onb2_head">Who do you support?</string>
+    <string name="onb2_body">Pick one. We\'ll never ask you to switch.</string>
+    <string name="onb2_alt">I follow the whole league</string>
+
+    <string name="onb3_head">₦100,000,000. 15 players. Max 2 from any club.</string>
+    <string name="onb3_body">Tap a position to fill it. Nothing is final until Sunday 3pm, so guess freely.</string>
+
+    <string name="onb4_head">Your squad needs a name your group chat will remember.</string>
+    <string name="onb4_hint">Squad name</string>
+    <string name="onb4_examples">e.g. Aba Boys Academy · Oga At The Top United · Jagaban FC · Harmattan Rangers</string>
+
+    <string name="onb5_head">Save your squad</string>
+    <string name="onb5_body">Continue with your phone number. One code, no password to forget.</string>
+    <string name="onb5_league">A league with one person inside is just a spreadsheet. Add your people.</string>
+    <string name="onb5_share">Share invite to WhatsApp</string>
+    <string name="onb5_later">Do it later</string>
+
+    <!-- Confirmation, Class 4 type. One of only four moments it is allowed (§02). -->
+    <string name="squad_locked">Squad locked. Now go and talk.</string>
+
+    <!-- Interface and guidance. Class 3 is never funny (§12). -->
+    <string name="err_no_network">That didn\'t save — your network dropped. We kept your squad. Try once more.</string>
+    <string name="offline_badge">Saved on your phone · will sync</string>
+    <string name="empty_leagues">A league with one person inside is just a spreadsheet. Add your people.</string>
+    <string name="deadline_prefix">Deadline</string>
+    <string name="provisional">Provisional until Monday 12:00</string>
+    <string name="notif_permission">Want us to shout before the 3pm deadline?</string>
+
+    <!-- Away Day Bonus, the rule no other fantasy game has (§05) -->
+    <string name="away_bonus_title">Away Day Bonus</string>
+    <string name="away_bonus_body">In the NPFL, home teams win. Everybody knows it — the pitches, the travel, the nine hours on a bus, the crowd. So backing an away player is the bravest thing you can do in this game, and we pay you for it.</string>
+    <string name="the_three_title">The Three — and why it\'s not a secret</string>
+    <string name="the_three_body">Three points to the best player in each match, two to the next, one to the next. The difference between us and everybody else is that we publish the reason.</string>
+    <string name="no_buying_points">You cannot buy points. Not a chip, not a transfer, not a multiplier. The day money buys points, the table starts lying.</string>
+</resources>

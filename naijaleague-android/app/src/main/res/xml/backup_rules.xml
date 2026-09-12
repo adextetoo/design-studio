@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- The squad draft is worth restoring; the auth token is not. -->
+    <include domain="sharedpref" path="squad_draft.xml" />
+    <exclude domain="sharedpref" path="auth.xml" />
+</full-backup-content>

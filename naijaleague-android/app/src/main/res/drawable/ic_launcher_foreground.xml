@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The mark of the word "correct" — and of a confirmation: what you get when
+     you were right and everybody said you were wrong (§03). Blunt square caps,
+     the way a signwriter's brush ends. Kept inside the adaptive safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path
+        android:strokeColor="#9FE773"
+        android:strokeWidth="14"
+        android:strokeLineCap="square"
+        android:strokeLineJoin="miter"
+        android:pathData="M33,56 L47,70 L75,40" />
+</vector>

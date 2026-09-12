@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors brand/Color.kt. Needed in XML only for the window background and
+         the launcher icon; every in-app colour comes from the Compose tokens. -->
+    <color name="night_pitch">#FF04231A</color>
+    <color name="eagle_dark">#FF00583C</color>
+    <color name="jara_lime">#FF9FE773</color>
+</resources>

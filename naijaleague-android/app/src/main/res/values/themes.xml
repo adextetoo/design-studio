@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The window background is Night Pitch so the very first frame the handset
+         paints is already the brand, not a white flash. On a cheap device that
+         flash is the first thing a user sees of this product. -->
+    <style name="Theme.NaijaLeague" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/night_pitch</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- No dynamic colour anywhere: Material You would repaint a brand whose
+             whole equity is one specific green in the wallpaper's colour. -->
+    </style>
+</resources>

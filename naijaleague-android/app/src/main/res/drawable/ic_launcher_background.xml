@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#00583C" android:pathData="M0,0h108v108h-108z" />
+    <!-- Adire eleko crackle: invisible at 48dp, quietly there at 512dp. -->
+    <group android:name="crackle">
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M14,0 C22,30 8,60 18,108" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M48,0 C40,28 54,62 44,108" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M82,0 C90,32 76,58 86,108" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M0,26 C36,20 72,34 108,24" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M0,60 C40,68 76,52 108,62" />
+        <path android:strokeColor="#FFFFFF" android:strokeWidth="1" android:strokeAlpha="0.06"
+            android:pathData="M0,90 C32,84 78,96 108,88" />
+    </group>
+</vector>

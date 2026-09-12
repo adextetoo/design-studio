@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Class 2/4 — Druk Wide Bold + Druk Condensed Super stand-in. Scoreline and celebration. -->
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/archivo_variable"
+        android:fontStyle="normal"
+        android:fontWeight="900"
+        android:fontVariationSettings="'wght' 900, 'wdth' 118" />
+</font-family>

@@ -1,0 +1,212 @@
+package ng.naijaleague.fantasy.data
+
+import ng.naijaleague.fantasy.rules.Chip
+import ng.naijaleague.fantasy.rules.Club
+import ng.naijaleague.fantasy.rules.Performance
+import ng.naijaleague.fantasy.rules.Player
+import ng.naijaleague.fantasy.rules.Position
+import ng.naijaleague.fantasy.rules.Squad
+import ng.naijaleague.fantasy.rules.Venue
+
+/**
+ * EXAMPLE DATA — not a real squad, not real players.
+ *
+ * The clubs are the real NPFL. The players are invented, deliberately: putting
+ * real internationals into NPFL squads (as the reference mockups did) states
+ * something false about where those players actually play, and this product's
+ * whole credibility rests on knowing the league.
+ *
+ * The names are chosen to exercise the typography constraint in §02 for real —
+ * Yoruba under-dots and tone marks, Igbo dotted vowels, Hausa hooked letters.
+ * If a screen renders these wrong, the bug is visible immediately instead of at
+ * launch. That is the point of shipping them as the sample set.
+ *
+ * No Android imports here, so the same data can be run through the rules engine
+ * on the JVM.
+ */
+object SampleData {
+
+    val clubs = listOf(
+        Club("ENY", "Enyimba", "ENY", "Aba"),
+        Club("RAN", "Rangers International", "RAN", "Enugu"),
+        Club("REM", "Remo Stars", "REM", "Ikenne"),
+        Club("KAN", "Kano Pillars", "KAN", "Kano"),
+        Club("3SC", "Shooting Stars", "3SC", "Ibadan"),
+        Club("RIV", "Rivers United", "RIV", "Port Harcourt"),
+        Club("PLA", "Plateau United", "PLA", "Jos"),
+        Club("LOB", "Lobi Stars", "LOB", "Makurdi"),
+        Club("BEN", "Bendel Insurance", "BEN", "Benin City"),
+        Club("NAS", "Nasarawa United", "NAS", "Lafia"),
+        Club("ABW", "Abia Warriors", "ABW", "Umuahia"),
+        Club("SPL", "Sporting Lagos", "SPL", "Lagos"),
+        Club("WIK", "Wikki Tourists", "WIK", "Bauchi"),
+        Club("IKO", "Ikorodu City", "IKO", "Ikorodu"),
+        Club("DOM", "Doma United", "DOM", "Gombe"),
+        Club("HRT", "Heartland", "HRT", "Owerri")
+    )
+
+    fun club(id: String): Club = clubs.first { it.id == id }
+
+    private fun p(
+        id: String, name: String, club: String, pos: Position,
+        millions: Double, ownership: Double
+    ) = Player(id, name, club, pos, (millions * 1_000_000).toLong(), ownership)
+
+    /** The selection pool the Choose Players screen browses. */
+    val pool: List<Player> = listOf(
+        // Goalkeepers
+        p("gk1", "Ọláyínká Bámídélé", "REM", Position.GK, 5.5, 34.2),
+        p("gk2", "Sulaimon Ƙasim", "KAN", Position.GK, 4.5, 18.7),
+        p("gk3", "Ṅnaemeka Ọ̀diké", "RAN", Position.GK, 5.0, 22.1),
+        p("gk4", "Ɗauda Aliyu", "WIK", Position.GK, 4.0, 6.4),
+        p("gk5", "Ebenezer Ìgè", "3SC", Position.GK, 4.5, 9.8),
+        // Defenders
+        p("df1", "Chidiébéré Ọ̀nụ̀", "ENY", Position.DEF, 6.0, 41.3),
+        p("df2", "Ṣọlá Adéyẹmí", "3SC", Position.DEF, 5.5, 27.9),
+        p("df3", "Ibrahim Ɗanjuma", "KAN", Position.DEF, 5.0, 19.4),
+        p("df4", "Ẹmẹká Ùchè", "RAN", Position.DEF, 6.0, 31.6),
+        p("df5", "Tunde Ògúndélé", "REM", Position.DEF, 5.0, 14.2),
+        p("df6", "Ọ̀bínna Ezè", "ABW", Position.DEF, 4.5, 3.1),
+        p("df7", "Yakubu Ƴaro", "NAS", Position.DEF, 4.5, 7.7),
+        p("df8", "Ṣàmúẹ̀l Òkè", "BEN", Position.DEF, 5.0, 11.5),
+        p("df9", "Terver Ìorhemba", "LOB", Position.DEF, 4.0, 2.4),
+        p("df10", "Bólájí Adétólá", "SPL", Position.DEF, 5.5, 6.8),
+        // Midfielders
+        p("md1", "Ìfẹ́anyì Ụ̀zọ̀", "ENY", Position.MID, 8.0, 52.8),
+        p("md2", "Abdulƙadir Ṣehu", "WIK", Position.MID, 6.5, 4.2),
+        p("md3", "Chinedu Ọ̀kụ̀", "RAN", Position.MID, 8.5, 47.1),
+        p("md4", "Ṣeun Adélékè", "SPL", Position.MID, 7.0, 23.6),
+        p("md5", "Ndubuisi Ámádí", "ABW", Position.MID, 6.0, 8.9),
+        p("md6", "Kelechi Ọ̀gbọ́nna", "HRT", Position.MID, 6.5, 12.7),
+        p("md7", "Bashir Ɓello", "DOM", Position.MID, 5.5, 1.6),
+        p("md8", "Olúwáṣẹ́gun Fáyẹmí", "REM", Position.MID, 9.0, 38.4),
+        p("md9", "Sunday Ìkpè", "PLA", Position.MID, 6.0, 9.3),
+        p("md10", "Ịkechukwu Ńwosu", "HRT", Position.MID, 5.5, 2.9),
+        // Forwards
+        p("fw1", "Ọlámidé Àkànbí", "3SC", Position.FWD, 10.5, 61.4),
+        p("fw2", "Musa Ƴaro", "NAS", Position.FWD, 7.0, 15.8),
+        p("fw3", "Godspower Ìhè", "RIV", Position.FWD, 7.0, 1.8),
+        p("fw4", "Ṣẹ̀gun Olátúnjí", "IKO", Position.FWD, 6.5, 5.9),
+        p("fw5", "Chukwudi Ọ̀nwụ", "ENY", Position.FWD, 9.5, 44.0),
+        p("fw6", "Hamisu Ɗantata", "KAN", Position.FWD, 8.0, 20.3)
+    )
+
+    fun player(id: String): Player = pool.first { it.id == id }
+
+    /**
+     * A legal example squad: 15 players, 10 clubs, no more than 2 from any one,
+     * ₦98,000,000 spent of ₦100,000,000. Formation 4-3-3.
+     */
+    val squadPlayerIds = listOf(
+        "gk1", "gk2",
+        "df1", "df2", "df3", "df4", "df5",
+        "md1", "md2", "md3", "md4", "md5",
+        "fw1", "fw2", "fw3"
+    )
+
+    val startingIds = setOf(
+        "gk1",
+        "df1", "df2", "df3", "df4",
+        "md1", "md3", "md4",
+        "fw1", "fw2", "fw3"
+    )
+
+    val squad = Squad(
+        allPlayers = squadPlayerIds.map { player(it) },
+        startingIds = startingIds,
+        captainId = "fw1",
+        viceCaptainId = "md1"
+    )
+
+    /**
+     * Gameweek 12 results, as filed by the scorers at the ten grounds.
+     * Note how many of the good returns are away fixtures — that is the Away Day
+     * Bonus doing its job, and it is what the pitch screen should make obvious.
+     */
+    val gameweek12: Map<String, Performance> = mapOf(
+        // 1 GK - home, kept a clean sheet with five saves
+        "gk1" to Performance("gk1", Venue.HOME, 90, cleanSheet = true, saves = 5, theThree = 2,
+            theThreeReason = "Two saves at 1-0 in the last ten minutes.", provisional = false),
+        // 4 DEF
+        "df1" to Performance("df1", Venue.AWAY, 90, cleanSheet = true, provisional = false),
+        "df2" to Performance("df2", Venue.HOME, 90, goalsConceded = 2, provisional = false),
+        "df3" to Performance("df3", Venue.AWAY, 78, assists = 1, provisional = false),
+        "df4" to Performance("df4", Venue.HOME, 90, cleanSheet = true, theThree = 1,
+            theThreeReason = "Won everything in the air.", provisional = false),
+        // 3 MID
+        "md1" to Performance("md1", Venue.HOME, 90, goals = 1, assists = 1, theThree = 3,
+            theThreeReason = "Made both goals. Ran the second half.", provisional = false),
+        "md3" to Performance("md3", Venue.AWAY, 90, goals = 1, yellowCards = 1, provisional = false),
+        "md4" to Performance("md4", Venue.HOME, 64, provisional = false),
+        // 3 FWD - the captain blanked, the 1.8%-owned differential did not
+        "fw1" to Performance("fw1", Venue.HOME, 90, provisional = false),
+        "fw2" to Performance("fw2", Venue.AWAY, 90, goals = 1, provisional = false),
+        "fw3" to Performance("fw3", Venue.AWAY, 87, goals = 2, assists = 1, theThree = 3,
+            theThreeReason = "Two away goals and the assist. Nobody owned him.", provisional = true),
+        // Bench, which only counts under Owambe
+        "gk2" to Performance("gk2", Venue.AWAY, 0, provisional = false),
+        "df5" to Performance("df5", Venue.HOME, 90, cleanSheet = true, provisional = false),
+        "md2" to Performance("md2", Venue.AWAY, 90, assists = 1, provisional = false),
+        "md5" to Performance("md5", Venue.HOME, 12, provisional = false)
+    )
+
+    val activeChip: Chip? = null
+
+    /** Mini-league table. Real-looking squad names, because that is what people write. */
+    data class LeagueEntry(
+        val rank: Int,
+        val squadName: String,
+        val manager: String,
+        val town: String,
+        val gameweekPoints: Int,
+        val totalPoints: Int
+    )
+
+    val miniLeague = listOf(
+        LeagueEntry(1, "Aba Boys Academy", "Chidi O.", "Aba", 81, 982),
+        LeagueEntry(2, "Oga At The Top United", "Bukola A.", "Ibadan", 64, 964),
+        LeagueEntry(3, "Harmattan Rangers", "Sadiq M.", "Kano", 59, 931),
+        LeagueEntry(4, "Jagaban FC", "Emeka N.", "Enugu", 72, 905),
+        LeagueEntry(5, "No Wahala XI", "Tunde B.", "Lagos", 44, 876),
+        LeagueEntry(6, "Correct Eleven", "Halima Y.", "Jos", 51, 842),
+        LeagueEntry(7, "Owambe Selects", "Femi K.", "Abeokuta", 38, 801),
+        LeagueEntry(8, "Table No Dey Lie", "Ngozi E.", "Owerri", 66, 765)
+    )
+
+    data class Fixture(
+        val homeClubId: String,
+        val awayClubId: String,
+        val kickoff: String,
+        val homeScore: Int? = null,
+        val awayScore: Int? = null,
+        val minute: Int? = null
+    ) {
+        val isLive: Boolean get() = minute != null
+    }
+
+    val fixtures = listOf(
+        Fixture("RAN", "ENY", "Sun 16 Nov · 4:00 PM"),
+        Fixture("REM", "PLA", "Sun 16 Nov · 4:00 PM"),
+        Fixture("KAN", "HRT", "Sun 16 Nov · 4:00 PM"),
+        Fixture("RIV", "3SC", "Sun 16 Nov · 4:00 PM"),
+        Fixture("BEN", "LOB", "Sun 16 Nov · 4:00 PM"),
+        Fixture("NAS", "WIK", "Wed 19 Nov · 4:00 PM")
+    )
+
+    val liveFixture = Fixture("RIV", "KAN", "Live", homeScore = 1, awayScore = 0, minute = 67)
+
+    data class LiveStat(val label: String, val home: Int, val away: Int)
+
+    val liveStats = listOf(
+        LiveStat("Possession", 58, 42),
+        LiveStat("Shots on target", 6, 3),
+        LiveStat("Corners", 4, 2),
+        LiveStat("Fouls", 8, 12)
+    )
+
+    const val gameweekNumber = 12
+    const val deadlineLabel = "Sun 16 Nov · 3:00 PM"
+    const val overallRank = 128_432
+    const val totalManagers = 1_245_678
+    const val bankedTransfers = 1
+}
