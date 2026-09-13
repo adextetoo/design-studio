@@ -37,8 +37,6 @@ import ng.naijaleague.fantasy.ui.components.ClubBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 import ng.naijaleague.fantasy.ui.components.NeutralGroundNote
 import ng.naijaleague.fantasy.ui.components.StatBar
-import ng.naijaleague.fantasy.ui.components.motifField
-import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Live match.
@@ -57,7 +55,6 @@ fun LiveMatchScreen(onClose: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
-            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
     ) {
@@ -104,7 +101,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                ClubBadge(home.shortName, 44, clubId = home.id)
+                ClubBadge(home.shortName, 44)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     home.name,
@@ -125,7 +122,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                 modifier = Modifier.padding(horizontal = BrandDimens.SpaceMd)
             )
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                ClubBadge(away.shortName, 44, clubId = away.id)
+                ClubBadge(away.shortName, 44)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     away.name,

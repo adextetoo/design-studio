@@ -37,8 +37,6 @@ import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.SectionLabel
-import ng.naijaleague.fantasy.ui.components.motifField
-import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Three Pick — the weekly predictor (§15).
@@ -68,7 +66,6 @@ fun ThreePickScreen(onClose: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
-            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
     ) {
         Row(

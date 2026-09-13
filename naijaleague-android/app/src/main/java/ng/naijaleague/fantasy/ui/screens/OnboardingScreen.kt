@@ -54,8 +54,6 @@ import ng.naijaleague.fantasy.ui.components.BrandMark
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
-import ng.naijaleague.fantasy.ui.components.motifField
-import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Onboarding — the five screens from §03, in order.
@@ -84,7 +82,6 @@ fun OnboardingScreen(onFinished: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
-            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
     ) {
         StepIndicator(step = step, total = 5, modifier = Modifier.padding(BrandDimens.Gutter))
@@ -221,7 +218,7 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
             .padding(vertical = BrandDimens.SpaceMd, horizontal = BrandDimens.SpaceSm),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ClubBadge(club.shortName, 36, clubId = club.id)
+        ClubBadge(club.shortName, 36)
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         Text(
             club.name,
@@ -310,7 +307,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
                     .padding(vertical = BrandDimens.SpaceSm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ClubBadge(SampleData.club(player.clubId).shortName, 32, clubId = player.clubId)
+                ClubBadge(SampleData.club(player.clubId).shortName, 32)
                 Spacer(Modifier.width(BrandDimens.SpaceMd))
                 Column(Modifier.weight(1f)) {
                     Text(

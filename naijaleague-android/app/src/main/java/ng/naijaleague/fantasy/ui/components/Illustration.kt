@@ -110,11 +110,17 @@ fun Modifier.motifField(motif: Motif): Modifier = composed {
 }
 
 /**
- * A full-bleed brand ground with its motif already on it.
+ * A full-bleed brand ground.
  *
- * The screens use this instead of `background(palette.ground)` so that adding a
- * screen cannot accidentally produce a flat surface that looks like a different
- * app.
+ * THE MOTIF LAYER IS CURRENTLY OFF. The tiles below were built and shipped as
+ * vector drawables, and then rolled back on a design call: the app's surfaces
+ * are flat again, as they were before the illustration system landed. The
+ * machinery and the assets are kept rather than deleted, because the decision
+ * is a design one and may go the other way — switching it back on means
+ * restoring the `.motifField(motifFor(surface))` line here and in [HeroBackdrop].
+ *
+ * Screens still call this rather than `background(palette.ground)`, so whichever
+ * way that decision lands, it lands in one file instead of eighteen.
  */
 @Composable
 fun BrandBackdrop(
@@ -127,18 +133,19 @@ fun BrandBackdrop(
     Box(
         modifier
             .fillMaxSize()
-            .drawBehind { drawRect(palette.ground) }
-            .motifField(motif),
+            .drawBehind { drawRect(palette.ground) },
         content = content
     )
 }
 
 /**
- * The hero treatment: the ground, its motif, and the pitch markings over both.
+ * The hero ground, for the three screens that carry the product rather than a
+ * task — the splash, the first onboarding card, and the end card.
  *
- * For the three screens that carry the product rather than a task — the splash,
- * the first onboarding card, and the end card. Everywhere else this would be
- * noise competing with a score.
+ * Identical to [BrandBackdrop] while the motif layer is off. It stays a separate
+ * function because the distinction between "this screen is the product" and
+ * "this screen is a job" is a real one that outlives the treatment currently
+ * applied to it.
  */
 @Composable
 fun HeroBackdrop(
@@ -150,9 +157,7 @@ fun HeroBackdrop(
     Box(
         modifier
             .fillMaxSize()
-            .drawBehind { drawRect(palette.ground) }
-            .motifField(motifFor(surface))
-            .motifField(Motif.PITCH),
+            .drawBehind { drawRect(palette.ground) },
         content = content
     )
 }

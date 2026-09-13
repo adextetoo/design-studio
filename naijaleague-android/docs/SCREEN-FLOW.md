@@ -106,38 +106,44 @@ less credential for this product to store.
 
 **7. Prices are in Naira.** `Money.format` / `Money.compact`, never "12.5M".
 
-## Backgrounds: drawn, not photographed
+## Backgrounds: flat, with the motifs shelved
 
 The draft's hero screens sit on photographs of players celebrating. Those
 photographs are of the internationals in point 3, and putting one behind an NPFL
-app says what an invented player name says.
+app says what an invented player name says. So no photograph.
 
-So the illustration system in `ui/components/Illustration.kt` draws the grounds
-instead, from the four motif traditions §01 names plus the pitch markings:
+What was built instead — tiled motifs from the four traditions §01 names, plus
+the pitch markings, shipping as Android vector drawables — was applied across
+every surface and then **rolled back on a design call**. The app's grounds are
+flat again, as they were before the illustration system landed.
 
-| Asset | Tradition | Used on |
+Nothing was deleted. The five vectors are still in `res/drawable`, `colors.xml`
+still carries the full palette, `IllustrationAssetTest` still guards them, and
+`Illustration.kt` still holds `Motif`, `motifFor` and `motifField`. Screens call
+`BrandBackdrop` / `HeroBackdrop` rather than painting `palette.ground`
+themselves, so switching the treatment back on is two lines in one file instead
+of a change to eighteen screens.
+
+| Asset | Tradition | Intended surface |
 | --- | --- | --- |
-| `il_adire_eleko.xml` | Yoruba resist-dye grid | Adire Indigo surface |
-| `il_uli_linework.xml` | Igbo curvilinear painting | available; never with Adire |
-| `il_nsibidi_marks.xml` | Igbo ideographic strokes | Night Pitch surface |
-| `il_arewa_lattice.xml` | Northern geometric interlace | Nzu Chalk surface |
-| `il_pitch_arcs.xml` | Pitch markings | hero screens only |
+| `il_adire_eleko.xml` | Yoruba resist-dye grid | Adire Indigo |
+| `il_uli_linework.xml` | Igbo curvilinear painting | never with Adire |
+| `il_nsibidi_marks.xml` | Igbo ideographic strokes | Night Pitch |
+| `il_arewa_lattice.xml` | Northern geometric interlace | Nzu Chalk |
+| `il_pitch_arcs.xml` | Pitch markings | hero screens |
 
-They are Android vector drawables — the platform's own format — rather than
-raster exports, so one file serves every density and all three surfaces.
+Every colour in them is a reference, never a literal — `android:tint="@color/uli_clay"`,
+not `#A8552F`. `IllustrationAssetTest` fails the build on a literal hex, on a
+tint naming a colour that does not exist, and on a background drawn strongly
+enough to compete with a score. That guard holds whether or not the tiles are
+currently drawn.
 
-**Every colour is a reference, never a literal.** `android:tint="@color/uli_clay"`,
-not `#A8552F`. A baked hex is correct on one ground and invisible on the other
-two, and nobody finds that by reading. `IllustrationAssetTest` fails the build
-on a literal hex in any illustration, on a tint naming a colour that does not
-exist, and on a background drawn strongly enough to compete with a score.
-
-`colors.xml` is now the full palette rather than three entries, and the same
-test asserts it against `brand/Color.kt` so the two copies cannot drift.
-
-One rule inside the system: **Adire is a grid and Uli is freehand.** They are
-different disciplines and they fight on the same surface, so `motifFor()` never
-returns both and no screen asks for both.
+**Club badges went back to one mark too.** They briefly filled with each club's
+own sourced kit colour. Fourteen clubs rendering fourteen colours puts a second
+palette on every list row, competing with the one thing a row exists to show.
+The colour data and its confidence stay on `NpflClubs`, and
+`BrandColor.legibleInkOn` still picks legible text for an arbitrary fill, so
+that decision is reversible in one function.
 
 ## A note on the tooling that was asked for
 

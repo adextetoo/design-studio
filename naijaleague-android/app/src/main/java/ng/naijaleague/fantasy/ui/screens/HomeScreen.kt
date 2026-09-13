@@ -270,8 +270,6 @@ fun HomeScreen(
                     away = SampleData.club(fixture.awayClubId).name,
                     awayShort = SampleData.club(fixture.awayClubId).shortName,
                     kickoff = fixture.kickoff,
-                    homeClubId = fixture.homeClubId,
-                    awayClubId = fixture.awayClubId,
                     venueNote = if (fixture.homeAtNeutralGround) {
                         "At ${homeRecord.stadium} — not ${homeRecord.homeGroundOfRecord}. " +
                             "Ground Man does not pay out here."
@@ -318,9 +316,6 @@ private fun FixtureRow(
     away: String,
     awayShort: String,
     kickoff: String,
-    /** Club ids, so each badge can carry its club's own colour where one is sourced. */
-    homeClubId: String? = null,
-    awayClubId: String? = null,
     /**
      * Where it is actually played, when that is not the home club's own ground.
      * Two clubs are in that position for all of 2026/27 and it changes how a
@@ -336,7 +331,7 @@ private fun FixtureRow(
                 .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceMd),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClubBadge(homeShort, 28, clubId = homeClubId)
+            ClubBadge(homeShort, 28)
             Spacer(Modifier.width(BrandDimens.SpaceSm))
             Text(
                 home,
@@ -360,7 +355,7 @@ private fun FixtureRow(
                 modifier = Modifier.weight(1f)
             )
             Spacer(Modifier.width(BrandDimens.SpaceSm))
-            ClubBadge(awayShort, 28, clubId = awayClubId)
+            ClubBadge(awayShort, 28)
         }
         Text(
             kickoff,

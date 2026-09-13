@@ -231,7 +231,7 @@ private fun TransferEnd(label: String, player: Player, arriving: Boolean) {
                 Modifier.fillMaxWidth().heightIn(min = BrandDimens.MinTapTarget),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ClubBadge(club.shortName, 36, clubId = club.id)
+                ClubBadge(club.shortName, 36)
                 Spacer(Modifier.width(BrandDimens.SpaceMd))
                 Column(Modifier.weight(1f)) {
                     // Noto. A player name set in the display family loses the

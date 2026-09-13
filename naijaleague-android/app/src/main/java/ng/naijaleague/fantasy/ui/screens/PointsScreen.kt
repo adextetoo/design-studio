@@ -337,7 +337,7 @@ private fun PlayerPointsRow(
                 .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClubBadge(club.shortName, 28, clubId = club.id)
+            ClubBadge(club.shortName, 28)
             Spacer(Modifier.width(BrandDimens.SpaceMd))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -682,7 +682,7 @@ private fun TransferSide(label: String, player: Player, emphasis: Boolean = fals
             color = if (emphasis) palette.accent else palette.inkDim,
             modifier = Modifier.width(36.dp)
         )
-        ClubBadge(club.shortName, 28, clubId = club.id)
+        ClubBadge(club.shortName, 28)
         Spacer(Modifier.width(BrandDimens.SpaceMd))
         Column(Modifier.weight(1f)) {
             Text(
@@ -739,7 +739,7 @@ private fun FixtureLine(fixture: SampleData.Fixture) {
                 .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClubBadge(home.shortName, 28, clubId = home.id)
+            ClubBadge(home.shortName, 28)
             Spacer(Modifier.width(BrandDimens.SpaceSm))
             Text(
                 home.name,
@@ -763,7 +763,7 @@ private fun FixtureLine(fixture: SampleData.Fixture) {
                 modifier = Modifier.weight(1f)
             )
             Spacer(Modifier.width(BrandDimens.SpaceSm))
-            ClubBadge(away.shortName, 28, clubId = away.id)
+            ClubBadge(away.shortName, 28)
         }
         Text(
             fixture.kickoff,

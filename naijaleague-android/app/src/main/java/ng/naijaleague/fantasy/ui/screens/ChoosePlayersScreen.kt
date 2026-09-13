@@ -58,8 +58,6 @@ import ng.naijaleague.fantasy.ui.components.SourceNote
 import ng.naijaleague.fantasy.ui.components.StandInTag
 import ng.naijaleague.fantasy.ui.components.squadDataSummary
 import ng.naijaleague.fantasy.ui.components.squadSourceLine
-import ng.naijaleague.fantasy.ui.components.motifField
-import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Choose players.
@@ -101,7 +99,6 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
-            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
     ) {
         // ---- Header: budget is the number that matters here, so it is the hero ----
@@ -295,7 +292,7 @@ private fun PlayerRow(
                 .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClubBadge(SampleData.club(player.clubId).shortName, 34, clubId = player.clubId)
+            ClubBadge(SampleData.club(player.clubId).shortName, 34)
             Spacer(Modifier.width(BrandDimens.SpaceMd))
             Column(Modifier.weight(1f)) {
                 Text(

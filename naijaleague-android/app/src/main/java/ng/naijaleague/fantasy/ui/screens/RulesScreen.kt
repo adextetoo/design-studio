@@ -93,10 +93,7 @@ private val scoringRows: List<ScoreRow> = listOf(
 fun RulesScreen() {
     val palette = LocalBrandPalette.current
 
-    // No ground here: this screen sits inside the app's themed Box, which has
-    // already painted Nzu Chalk and laid its motif on it. Painting again would
-    // cover the motif and make the reading surface the one flat screen.
-    LazyColumn(Modifier.fillMaxWidth()) {
+    LazyColumn(Modifier.fillMaxWidth().background(palette.ground)) {
         item {
             ScreenHeader(
                 title = "How scoring works",

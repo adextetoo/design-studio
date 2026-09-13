@@ -17,8 +17,6 @@ import ng.naijaleague.fantasy.brand.NaijaLeagueTheme
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.ui.components.BrandBottomBar
 import ng.naijaleague.fantasy.ui.components.DeadlineStrip
-import ng.naijaleague.fantasy.ui.components.motifField
-import ng.naijaleague.fantasy.ui.components.motifFor
 import ng.naijaleague.fantasy.ui.components.Tab
 import ng.naijaleague.fantasy.ui.screens.ChoosePlayersScreen
 import ng.naijaleague.fantasy.ui.screens.GafferPassScreen
@@ -158,16 +156,7 @@ fun NaijaLeagueRoot() {
 
     NaijaLeagueTheme(surface = surface) {
         val palette = LocalBrandPalette.current
-        // One ground for the whole app, so the motif is applied in one place
-        // rather than remembered on every new screen. Each surface keeps its own
-        // motif (§01) — a manager moving between tabs should not be moving
-        // between visual languages.
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(palette.ground)
-                .motifField(motifFor(surface))
-        ) {
+        Box(Modifier.fillMaxSize().background(palette.ground)) {
             Column(Modifier.fillMaxSize()) {
                 // §13: the deadline is permanent furniture, not a banner. It is the
                 // clock the whole product is organised around, so it sits above
