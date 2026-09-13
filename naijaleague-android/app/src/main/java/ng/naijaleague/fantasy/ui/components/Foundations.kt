@@ -1,6 +1,7 @@
 package ng.naijaleague.fantasy.ui.components
 
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,9 +23,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -37,6 +44,7 @@ import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandMotion
 import ng.naijaleague.fantasy.brand.BrandType
+import kotlinx.coroutines.delay
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 
 /**
@@ -155,8 +163,28 @@ fun PointsCounter(
 @Composable
 fun AwayBonusBadge(extraPoints: Int, modifier: Modifier = Modifier) {
     val palette = LocalBrandPalette.current
+    val animate = LocalAnimationsEnabled.current
+
+    // The second beat. The base total counts up first; the away bonus lands
+    // after it, so the manager feels the extra rather than reading one blended
+    // number. §13 calls this the most screenshotted moment in the product.
+    var landed by remember(extraPoints) { mutableStateOf(!animate) }
+    LaunchedEffect(extraPoints, animate) {
+        if (animate) {
+            delay(BrandMotion.AWAY_BONUS_BEAT_DELAY_MS.toLong())
+            landed = true
+        }
+    }
+    val appear by animateFloatAsState(
+        targetValue = if (landed) 1f else 0f,
+        animationSpec = BrandMotion.standard(),
+        label = "awayBonusBeat"
+    )
+
     Row(
         modifier = modifier
+            .offset(y = ((1f - appear) * 6f).dp)
+            .alpha(appear)
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(palette.accent)
             .padding(horizontal = 8.dp, vertical = 4.dp),

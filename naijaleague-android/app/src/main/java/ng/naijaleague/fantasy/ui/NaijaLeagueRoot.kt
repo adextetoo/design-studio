@@ -26,6 +26,7 @@ import ng.naijaleague.fantasy.ui.screens.LiveMatchScreen
 import ng.naijaleague.fantasy.ui.screens.OnboardingScreen
 import ng.naijaleague.fantasy.ui.screens.ReceiptScreen
 import ng.naijaleague.fantasy.ui.screens.RulesScreen
+import ng.naijaleague.fantasy.ui.screens.ThreePickScreen
 import ng.naijaleague.fantasy.ui.screens.TeamScreen
 
 /**
@@ -35,7 +36,7 @@ import ng.naijaleague.fantasy.ui.screens.TeamScreen
  * does not need a nav host, and the fewer moving parts between a thumb and a
  * squad the better on a slow handset.
  */
-private enum class Overlay { NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS }
+private enum class Overlay { NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS, THREE_PICK }
 
 @Composable
 fun NaijaLeagueRoot() {
@@ -65,6 +66,10 @@ fun NaijaLeagueRoot() {
             GafferPassScreen(onClose = { overlay = Overlay.NONE })
             return
         }
+        Overlay.THREE_PICK -> {
+            ThreePickScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
         Overlay.NONE -> Unit
     }
 
@@ -89,7 +94,8 @@ fun NaijaLeagueRoot() {
                         Tab.HOME -> HomeScreen(
                             onViewTeam = { tab = Tab.TEAM },
                             onOpenLive = { overlay = Overlay.LIVE_MATCH },
-                            onOpenReceipt = { overlay = Overlay.RECEIPT }
+                            onOpenReceipt = { overlay = Overlay.RECEIPT },
+                            onOpenThreePick = { overlay = Overlay.THREE_PICK }
                         )
                         Tab.TEAM -> TeamScreen(onChoosePlayers = { overlay = Overlay.CHOOSE_PLAYERS })
                         Tab.LEAGUES -> LeaguesScreen(

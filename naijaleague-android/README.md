@@ -67,6 +67,8 @@ provable without an emulator.
 | §13 Nsibidi icon grammar (one blunt stroke) | `components/Chrome.kt` → `TabGlyph`, drawn not imported |
 | §06 Gaffer Pass pricing and the "never sells points" promise | `ui/screens/GafferPassScreen.kt`, on the Adire Indigo surface |
 | §04 The Monday Receipt share card, and the campaign line | `ui/screens/ReceiptScreen.kt` |
+| §15 Three Pick, the F1-derived weekly predictor | `ui/screens/ThreePickScreen.kt` |
+| §13 The away-bonus second beat | `components/AwayBonusBadge`, driven by `BrandMotion.standard()` |
 
 ## Decisions the brand system left open
 

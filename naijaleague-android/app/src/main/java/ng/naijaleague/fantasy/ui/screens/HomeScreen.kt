@@ -50,7 +50,8 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
 fun HomeScreen(
     onViewTeam: () -> Unit,
     onOpenLive: () -> Unit,
-    onOpenReceipt: () -> Unit
+    onOpenReceipt: () -> Unit,
+    onOpenThreePick: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
 
@@ -168,6 +169,27 @@ fun HomeScreen(
             // ---- Live now ----
             item {
                 Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    // Three Pick sits above the fold on Home because it is the
+                    // on-ramp: thirty seconds, no squad needed, and a manager can
+                    // play it before they ever build one (§15).
+                    BrandCard(onClick = onOpenThreePick) {
+                        Column {
+                            SectionLabel(stringResource(R.string.three_pick))
+                            Spacer(Modifier.height(BrandDimens.SpaceSm))
+                            Text(
+                                stringResource(R.string.three_pick_strap),
+                                style = BrandType.InterfaceAndGuidance.title,
+                                color = palette.ink
+                            )
+                            Spacer(Modifier.height(BrandDimens.SpaceXs))
+                            Text(
+                                stringResource(R.string.three_pick_prize_two),
+                                style = BrandType.InterfaceAndGuidance.body,
+                                color = palette.inkDim
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
                     SectionLabel("Live now")
                     Spacer(Modifier.height(BrandDimens.SpaceSm))
                     BrandCard(onClick = onOpenLive) {

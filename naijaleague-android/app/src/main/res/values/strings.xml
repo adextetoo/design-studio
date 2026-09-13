@@ -90,4 +90,18 @@
     <string name="gaffer_body">Everything in Gaffer Pass is information, convenience or vanity. None of it is points.</string>
     <string name="gaffer_promo">The Differential Board, team news by SMS, and the Monday voice note. From ₦400 a week.</string>
     <string name="gaffer_cancel">Cancel any time in Settings. No auto-upgrade, no price change without a message first.</string>
+    <!-- ===== Three Pick (§15) — the F1-derived weekly predictor =====
+         Free to enter and sponsor-funded, which is what keeps it outside
+         gaming regulation (§06). The free/prize wording is not decoration. -->
+    <string name="three_pick">Three Pick</string>
+    <string name="three_pick_strap">Three picks. 30 seconds. No squad needed.</string>
+    <string name="three_pick_window">Opens Friday 4pm. Closes Sunday 2:55pm.</string>
+    <string name="three_pick_q1">Highest-scoring player of the round</string>
+    <string name="three_pick_q2">The upset — name one away team that wins</string>
+    <string name="three_pick_q3">Exact scoreline, Match of the Week</string>
+    <string name="three_pick_prize_all">All three right: ₦50,000 and your name on the front of the app all week.</string>
+    <string name="three_pick_prize_two">Two right: ₦2,000 airtime.</string>
+    <string name="three_pick_free">Free to enter. Always. Prizes are put up by our sponsor, not by other players — nobody loses money in this game.</string>
+    <string name="three_pick_eligibility">Cash prizes are for entrants aged 18 and over. Under 18s who win take airtime, data or a match ticket instead.</string>
+    <string name="three_pick_cta">Lock in my three</string>
 </resources>
