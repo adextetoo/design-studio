@@ -24,7 +24,7 @@
     <!-- ===== Onboarding (§03) ===== -->
     <!-- Display 1 treatment is ALL CAPS per §02; the transform is applied at
          the call site so the resource stays readable and translatable. -->
-    <string name="onb1_head">Build your NPFL dream team.\nThen prove am.</string>
+    <string name="onb1_head">Build your dream team.\nNPFL Fantasy.</string>
     <string name="onb1_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
     <string name="onb1_cta">Start building</string>
     <string name="onb1_alt">I already have a squad</string>
