@@ -23,7 +23,19 @@ data class Club(
     val id: String,
     val name: String,
     val shortName: String,
-    val city: String
+    val city: String,
+    /**
+     * True when the club's "home" fixtures are played somewhere that is not
+     * home. Two clubs are in that position all of 2026/27: Rangers are at the
+     * MKO Abiola Sports Arena in Abeokuta, some 600km from Enugu, while Nnamdi
+     * Azikiwe Stadium is renovated, and Doma United play their Nasarawa home
+     * fixtures at Pantami Stadium in Gombe.
+     *
+     * The engine needs this, not just the club page: the Ground Man chip pays
+     * for playing at home, and a fixture list that calls Abeokuta a home game
+     * for Enugu is wrong about the only thing that chip rewards.
+     */
+    val playsHomeAtNeutralGround: Boolean = false
 )
 
 data class Player(
@@ -34,7 +46,21 @@ data class Player(
     /** Whole naira. Integer money only — no floating point anywhere near a price. */
     val priceNaira: Long,
     /** Ownership locked at the deadline and held for the gameweek (§08). */
-    val ownershipPct: Double
+    val ownershipPct: Double,
+    /** Shirt number as the club publishes it. Null when no source gives one. */
+    val squadNumber: Int? = null,
+    /**
+     * True when this is a labelled stand-in rather than a person.
+     *
+     * Only two of the twenty clubs publish a squad anybody can source, so
+     * eighteen of them have no real players to show. The honest answer is a
+     * stand-in that says on its face that it is one — never an invented
+     * Nigerian name, which would read as real to exactly the users who know
+     * the league best. Every surface that shows a player must show this too.
+     */
+    val isPlaceholder: Boolean = false,
+    /** Where the name came from, or what a source disputed about it. */
+    val sourceNote: String? = null
 )
 
 /**
@@ -77,6 +103,12 @@ enum class Chip(val chipName: String, val explanation: String) {
 data class Performance(
     val playerId: String,
     val venue: Venue,
+    /**
+     * True when a fixture the table calls a home game was played at a ground
+     * that is not the club's. Filed by the scorer, because the scorer is at the
+     * ground and knows. Ground Man does not pay out on these — see Scoring.
+     */
+    val atNeutralGround: Boolean = false,
     val minutes: Int,
     val goals: Int = 0,
     val assists: Int = 0,

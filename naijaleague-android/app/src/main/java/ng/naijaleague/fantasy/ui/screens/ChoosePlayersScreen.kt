@@ -32,12 +32,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.data.NpflSquads
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.rules.DifferentialTier
 import ng.naijaleague.fantasy.rules.Money
@@ -48,6 +51,12 @@ import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
+import ng.naijaleague.fantasy.ui.components.NoteTone
+import ng.naijaleague.fantasy.ui.components.ShirtNumber
+import ng.naijaleague.fantasy.ui.components.SourceNote
+import ng.naijaleague.fantasy.ui.components.StandInTag
+import ng.naijaleague.fantasy.ui.components.squadDataSummary
+import ng.naijaleague.fantasy.ui.components.squadSourceLine
 
 /**
  * Choose players.
@@ -62,6 +71,10 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
     val palette = LocalBrandPalette.current
     var filter by remember { mutableStateOf<Position?>(null) }
     var query by remember { mutableStateOf("") }
+    // Off by default: hiding eighteen clubs would be a stranger first impression
+    // than showing stand-ins. On, it is the list a manager who only wants real
+    // players actually wants.
+    var sourcedOnly by remember { mutableStateOf(false) }
 
     val squad = SampleData.squad
     val ownedIds = remember { squad.allPlayers.map { it.id }.toSet() }
@@ -71,11 +84,14 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
     // needs to know how many changes are pending in order to price them.
     val transfersMade = 0
 
-    val shown = remember(filter, query) {
+    val shown = remember(filter, query, sourcedOnly) {
         SampleData.pool
             .filter { filter == null || it.position == filter }
             .filter { query.isBlank() || it.name.contains(query, ignoreCase = true) }
-            .sortedByDescending { it.priceNaira }
+            .filter { !sourcedOnly || !it.isPlaceholder }
+            // Real players first at equal price, so a manager scanning the list
+            // meets the people before the stand-ins.
+            .sortedWith(compareBy({ it.isPlaceholder }, { -it.priceNaira }))
     }
 
     Column(
@@ -162,10 +178,19 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
             Position.entries.forEach { position ->
                 FilterPill(position.short, filter == position) { filter = position }
             }
+            FilterPill(stringResource(R.string.choose_real_only), sourcedOnly) { sourcedOnly = !sourcedOnly }
         }
 
         Spacer(Modifier.height(BrandDimens.SpaceMd))
-        BrandRule()
+
+        // Said once, at the top, in the app's own voice. Somebody who knows the
+        // NPFL already knows nineteen club sites have no squad page; hiding it
+        // would only tell them we do not.
+        SourceNote(
+            label = stringResource(R.string.squad_data_label),
+            detail = squadDataSummary,
+            tone = NoteTone.CAUTION
+        )
 
         // ---- The list. Dense on purpose: this audience reads tables for pleasure. ----
         LazyColumn(Modifier.weight(1f)) {
@@ -184,6 +209,15 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
                         else -> null
                     }
                 )
+            }
+
+            // "Where did you get that" answered at the bottom of the list it
+            // applies to, once per sourced club, rather than buried in an about
+            // page nobody opens.
+            items(NpflSquads.sources, key = { it.clubId }) { source ->
+                squadSourceLine(source.clubId)?.let { (label, detail) ->
+                    SourceNote(label = label, detail = detail)
+                }
             }
         }
 
@@ -268,6 +302,13 @@ private fun PlayerRow(
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (player.isPlaceholder) {
+                        StandInTag()
+                        Spacer(Modifier.width(6.dp))
+                    } else if (player.squadNumber != null) {
+                        ShirtNumber(player.squadNumber)
+                        Spacer(Modifier.width(6.dp))
+                    }
                     Text(
                         "${player.position.short} · ${SampleData.club(player.clubId).name}",
                         style = BrandType.IdentityAndEditorial.nameMicro,

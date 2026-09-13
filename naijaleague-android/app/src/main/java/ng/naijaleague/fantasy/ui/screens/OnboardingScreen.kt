@@ -42,6 +42,7 @@ import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.data.NpflClubs
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.rules.Club
 import ng.naijaleague.fantasy.rules.Money
@@ -224,13 +225,44 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
             color = palette.ink,
             textAlign = TextAlign.Center
         )
-        // Three clubs in the 2026/27 field have no city on the source table, so
-        // the line is omitted rather than rendered blank.
-        if (club.city.isNotBlank()) {
+        // Every club in the 2026/27 field now has a sourced city — the three the
+        // Transfermarkt table left blank were filled from per-club research that
+        // cites its sources, so this line no longer has to be conditional.
+        Text(
+            club.city,
+            style = BrandType.InterfaceAndGuidance.label,
+            color = palette.inkDim,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
+        // One more line, and it earns its place: a manager choosing a club wants
+        // to know what it is. Honours if there are any, because nine titles is
+        // the reason to pick Rangers or Enyimba; otherwise that they have just
+        // come up, which is the reason to pick Sporting Lagos.
+        val record = NpflClubs.record(club.id)
+        val line = when {
+            record.leagueTitles > 0 ->
+                "${record.leagueTitles} ${if (record.leagueTitles == 1) "title" else "titles"}"
+            record.standing == NpflClubs.Standing.PROMOTED -> "Newly promoted"
+            record.nickname != null -> record.nickname
+            else -> null
+        }
+        if (line != null) {
             Text(
-                club.city,
+                line,
                 style = BrandType.InterfaceAndGuidance.label,
-                color = palette.inkDim,
+                color = if (record.leagueTitles > 0) palette.honours else palette.inkDim,
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
+        // The season's oddity, on the tile where it affects the choice: two clubs
+        // play every home fixture somewhere else.
+        if (record.playsHomeAtNeutralGround) {
+            Text(
+                "Away all season",
+                style = BrandType.InterfaceAndGuidance.label,
+                color = palette.accent,
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )

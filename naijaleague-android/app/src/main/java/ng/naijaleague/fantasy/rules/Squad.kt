@@ -150,10 +150,18 @@ data class Squad(
         return v
     }
 
-    /** e.g. "4-3-3", read off the XI rather than stored, so it can never drift. */
+    /**
+     * e.g. "4-3-3", read off the XI rather than stored, so it can never drift.
+     *
+     * Delegates to [Formations] so the label and the legality check come from
+     * the same enumeration. An XI that is not a legal shape reports its split
+     * anyway — the manager is mid-edit and needs to see what they currently
+     * have, not a blank.
+     */
     val formation: String
-        get() = listOf(Position.DEF, Position.MID, Position.FWD)
-            .joinToString("-") { pos -> startingXi.count { it.position == pos }.toString() }
+        get() = Formations.of(startingXi)?.label
+            ?: listOf(Position.DEF, Position.MID, Position.FWD)
+                .joinToString("-") { pos -> startingXi.count { it.position == pos }.toString() }
 
     val isValid: Boolean get() = validate().isEmpty()
 }

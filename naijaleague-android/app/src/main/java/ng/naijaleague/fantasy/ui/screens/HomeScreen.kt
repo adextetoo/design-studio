@@ -25,6 +25,7 @@ import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.data.NpflClubs
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.rules.Scoring
 import ng.naijaleague.fantasy.rules.Transfers
@@ -235,12 +236,19 @@ fun HomeScreen(
                 }
             }
             items(SampleData.fixtures) { fixture ->
+                val homeRecord = NpflClubs.record(fixture.homeClubId)
                 FixtureRow(
                     home = SampleData.club(fixture.homeClubId).name,
                     homeShort = SampleData.club(fixture.homeClubId).shortName,
                     away = SampleData.club(fixture.awayClubId).name,
                     awayShort = SampleData.club(fixture.awayClubId).shortName,
-                    kickoff = fixture.kickoff
+                    kickoff = fixture.kickoff,
+                    venueNote = if (fixture.homeAtNeutralGround) {
+                        "At ${homeRecord.stadium} — not ${homeRecord.homeGroundOfRecord}. " +
+                            "Ground Man does not pay out here."
+                    } else {
+                        null
+                    }
                 )
             }
 
@@ -280,7 +288,13 @@ private fun FixtureRow(
     homeShort: String,
     away: String,
     awayShort: String,
-    kickoff: String
+    kickoff: String,
+    /**
+     * Where it is actually played, when that is not the home club's own ground.
+     * Two clubs are in that position for all of 2026/27 and it changes how a
+     * fixture should be read, so it goes on the row and not in a footnote.
+     */
+    venueNote: String? = null
 ) {
     val palette = LocalBrandPalette.current
     Column {
@@ -320,8 +334,22 @@ private fun FixtureRow(
             kickoff,
             style = BrandType.InterfaceAndGuidance.micro,
             color = palette.inkDim,
-            modifier = Modifier.padding(start = BrandDimens.Gutter + 36.dp, bottom = BrandDimens.SpaceMd)
+            modifier = Modifier.padding(
+                start = BrandDimens.Gutter + 36.dp,
+                bottom = if (venueNote == null) BrandDimens.SpaceMd else 2.dp
+            )
         )
+        if (venueNote != null) {
+            Text(
+                venueNote,
+                style = BrandType.InterfaceAndGuidance.micro,
+                color = palette.accent,
+                modifier = Modifier.padding(
+                    start = BrandDimens.Gutter + 36.dp,
+                    bottom = BrandDimens.SpaceMd
+                )
+            )
+        }
         BrandRule(Modifier.padding(horizontal = BrandDimens.Gutter))
     }
 }

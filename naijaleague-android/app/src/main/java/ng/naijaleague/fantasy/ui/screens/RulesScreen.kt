@@ -22,7 +22,9 @@ import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.data.NpflClubs
 import ng.naijaleague.fantasy.rules.Chip
+import ng.naijaleague.fantasy.rules.Formations
 import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.rules.Position
 import ng.naijaleague.fantasy.rules.Scoring
@@ -212,6 +214,15 @@ fun RulesScreen() {
                     }
                 )
                 RuleLine("Maximum from one club", "${SquadRules.MAX_PER_CLUB} players")
+                // Enumerated from the same constants the validator uses, so this
+                // page cannot list a shape the app would then refuse to save.
+                RuleLine("Formations you can play", "${Formations.legal.size}")
+                Spacer(Modifier.height(BrandDimens.SpaceSm))
+                Text(
+                    Formations.labels.joinToString("  ·  "),
+                    style = BrandType.ScoreAndData.dataSmall,
+                    color = palette.inkDim
+                )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     stringResource(R.string.club_cap_note),
@@ -246,6 +257,32 @@ fun RulesScreen() {
             }
         }
 
+        // ---- Substitutions. The NPFL-specific rule, so it gets its own section ----
+        item {
+            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                SectionLabel(stringResource(R.string.subs_title))
+                Spacer(Modifier.height(BrandDimens.SpaceSm))
+                Text(
+                    stringResource(R.string.subs_body),
+                    style = BrandType.InterfaceAndGuidance.body,
+                    color = palette.ink
+                )
+                Spacer(Modifier.height(BrandDimens.SpaceMd))
+                Text(
+                    stringResource(R.string.subs_postponed_title),
+                    style = BrandType.InterfaceAndGuidance.title,
+                    color = palette.accent
+                )
+                Spacer(Modifier.height(BrandDimens.SpaceSm))
+                Text(
+                    stringResource(R.string.subs_postponed_body),
+                    style = BrandType.InterfaceAndGuidance.body,
+                    color = palette.inkDim
+                )
+                Spacer(Modifier.height(BrandDimens.SpaceXl))
+            }
+        }
+
         // ---- Chips, straight off the enum ----
         item {
             Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
@@ -265,6 +302,24 @@ fun RulesScreen() {
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
+                // Stating the exception where the chip is explained, not in a
+                // footnote. Read off the club table, so it disappears by itself
+                // the season Rangers get their ground back.
+                if (chip == Chip.GROUND_MAN) {
+                    val displaced = NpflClubs.displaced()
+                    if (displaced.isNotEmpty()) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            displaced.joinToString(" and ") { it.club.shortName } +
+                                " do not count. " +
+                                (if (displaced.size == 1) "That club plays" else "Those clubs play") +
+                                " every home fixture this season at a ground that is " +
+                                "not theirs, and this chip pays for playing at home.",
+                            style = BrandType.InterfaceAndGuidance.body,
+                            color = palette.accent
+                        )
+                    }
+                }
             }
         }
 

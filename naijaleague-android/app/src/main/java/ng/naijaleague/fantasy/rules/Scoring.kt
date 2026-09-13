@@ -138,7 +138,14 @@ object Scoring {
         val base = lines.sumOf { it.points }
 
         val tier = DifferentialTier.forOwnership(player.ownershipPct)
-        val groundMan = activeChip == Chip.GROUND_MAN && perf.venue == Venue.HOME
+        // Ground Man pays for playing at home, so it must not pay a club that is
+        // only nominally at home. Rangers spend all of 2026/27 in Abeokuta and
+        // Doma United in Gombe; paying a 1.5x home multiplier on those fixtures
+        // would reward the one thing the chip is supposed to be about, in the two
+        // cases where it is not true.
+        val groundMan = activeChip == Chip.GROUND_MAN &&
+            perf.venue == Venue.HOME &&
+            !perf.atNeutralGround
         val captainMultiplier = when {
             !isCaptain -> 1
             activeChip == Chip.JARA -> 3

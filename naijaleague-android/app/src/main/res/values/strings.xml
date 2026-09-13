@@ -104,4 +104,20 @@
     <string name="three_pick_free">Free to enter. Always. Prizes are put up by our sponsor, not by other players — nobody loses money in this game.</string>
     <string name="three_pick_eligibility">Cash prizes are for entrants aged 18 and over. Under 18s who win take airtime, data or a match ticket instead.</string>
     <string name="three_pick_cta">Lock in my three</string>
+
+    <!-- ===== Substitutions (§05) =====
+         The NPFL-specific rule. Postponements are common enough here that
+         treating one as "played, nil points" would routinely leave a manager
+         with nine men on a weekend they could not have planned for. -->
+    <string name="subs_title">If your player does not play</string>
+    <string name="subs_body">Your bench comes on automatically, in the order you set it, once every match in the round has finished. Only your reserve keeper can replace your keeper, and a substitution is only made if your XI is still a legal shape afterwards.</string>
+    <string name="subs_postponed_title">A postponed match counts the same as not playing.</string>
+    <string name="subs_postponed_body">Three fixtures were postponed in the first two rounds of this season. Other games leave you with nine men on a weekend you could not have planned for. Here your bench comes on, and your points screen says “Match postponed” rather than leaving you to work it out.</string>
+
+    <!-- ===== Squad data honesty =====
+         Two of twenty clubs publish a squad anybody can source. Saying so is
+         the whole reason a manager who knows the NPFL would trust this app. -->
+    <string name="squad_data_label">What we know about squads</string>
+    <string name="choose_real_only">Real names only</string>
+    <string name="stand_in">STAND-IN</string>
 </resources>

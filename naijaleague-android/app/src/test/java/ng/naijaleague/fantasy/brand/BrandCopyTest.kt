@@ -1,5 +1,6 @@
 package ng.naijaleague.fantasy.brand
 
+import ng.naijaleague.fantasy.rules.Eligibility
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -79,6 +80,27 @@ class BrandCopyTest {
                 name in heldForTests
         }
         assertTrue("strings.xml defines copy nothing uses: $orphans", orphans.isEmpty())
+    }
+
+    @Test
+    fun `the age rule the engine enforces is the one the copy promises`() {
+        // This nearly shipped wrong. The engine gated EVERY prize at 18 while
+        // this string told a winning 16-year-old they would get airtime — so the
+        // app would have promised a prize and then refused it. The board settled
+        // the rule in copy; the engine has to read the same rule.
+        val promise = strings()["three_pick_eligibility"]
+        assertTrue("three_pick_eligibility is missing", promise != null)
+        assertTrue(
+            "the copy promises a different cash age than Eligibility enforces: $promise",
+            promise!!.contains("${Eligibility.MINIMUM_CASH_AGE} and over")
+        )
+        assertTrue(
+            "the copy must still promise under-18 winners a non-cash prize: $promise",
+            promise.contains("Under 18s who win")
+        )
+        // And the playing age is the brand system's core user, not the cash age.
+        assertEquals(16, Eligibility.MINIMUM_PLAYING_AGE)
+        assertTrue(Eligibility.MINIMUM_CASH_AGE > Eligibility.MINIMUM_PLAYING_AGE)
     }
 
     @Test

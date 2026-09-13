@@ -7,185 +7,262 @@ import ng.naijaleague.fantasy.rules.Player
 import ng.naijaleague.fantasy.rules.Position
 import ng.naijaleague.fantasy.rules.Squad
 import ng.naijaleague.fantasy.rules.Venue
+import kotlin.math.roundToLong
 
 /**
- * EXAMPLE DATA — not a real squad, not real players.
+ * The data the app opens on.
  *
- * The clubs are the real NPFL. The players are invented, deliberately: putting
- * real internationals into NPFL squads (as the reference mockups did) states
- * something false about where those players actually play, and this product's
- * whole credibility rests on knowing the league.
+ * THE CLUBS AND THE PLAYERS ARE REAL, AS FAR AS THE LEAGUE PUBLISHES THEM.
+ * Twenty clubs with sourced grounds, capacities, honours and coaches — see
+ * [NpflClubs]. Fifty-six real players whose club and position both come from a
+ * club-official page or a dated report — see [NpflSquads].
  *
- * The names are chosen to exercise the typography constraint in §02 for real —
- * Yoruba under-dots and tone marks, Igbo dotted vowels, Hausa hooked letters.
- * If a screen renders these wrong, the bug is visible immediately instead of at
- * launch. That is the point of shipping them as the sample set.
+ * AND THE REST ARE LABELLED STAND-INS, because eighteen of the twenty clubs
+ * publish no squad anybody can source. That is the actual state of NPFL data in
+ * September 2026, and it is not a problem a fantasy app can write its way out
+ * of. The two available responses were:
  *
- * No Android imports here, so the same data can be run through the rules engine
- * on the JVM.
+ *   1. Invent Nigerian names. The demo looks finished. Every user who knows the
+ *      league sees a stranger listed at their club and stops trusting the app —
+ *      and those are the users this product exists for.
+ *   2. Ship stand-ins that say on their face what they are, put the real names
+ *      in wherever a source exists, and show the sourcing on the screen.
+ *
+ * This is the second. [Player.isPlaceholder] marks them, and the Choose Players
+ * screen is required to show it. Filling them in is operator work, not a
+ * research problem — somebody who has seen these teams play knows the answers.
+ *
+ * PRICES AND OWNERSHIP ARE GAME PARAMETERS, NOT FACTS. No market value is
+ * published for an NPFL player, and ownership in a live build is computed from
+ * real entries. Both are derived below, deterministically, and neither is a
+ * claim about anybody.
+ *
+ * No Android imports here, so all of it runs through the rules engine on the JVM.
  */
 object SampleData {
 
+    // ---------------------------------------------------------------- clubs
+
+    val table: List<NpflClubs.ClubRecord> get() = NpflClubs.all
+    val clubs: List<Club> get() = NpflClubs.clubs
+
+    fun club(id: String): Club = NpflClubs.club(id)
+
+    const val PUBLISHED_SQUAD_TOTAL = NpflClubs.PUBLISHED_SQUAD_TOTAL
+    const val PUBLISHED_VALUE_TOTAL_EUR = NpflClubs.PUBLISHED_VALUE_TOTAL_EUR
+
+    // --------------------------------------------------------------- prices
+
     /**
-     * The 2026/27 NPFL, transcribed from the Transfermarkt league table
-     * (current-value column, captured against the 15/08/2026 snapshot).
+     * Position band, scaled by the club's fixture-difficulty rating, rounded to
+     * the nearest ₦500,000.
      *
-     * Market value and squad size are carried alongside each club so the table
-     * can be checked against the totals Transfermarkt publishes — see
-     * SampleDataTest, which fails if a transcription error creeps in. The squad
-     * sizes sum to exactly 829, which is what the source reports.
-     *
-     * Values are in euros because that is the unit the source publishes. They
-     * are league reference data, not fantasy prices.
+     * FLAT WITHIN A CLUB AND A POSITION, deliberately. There is no per-player
+     * statistic published for this league, so any variation between two
+     * Enyimba defenders would be invented — and an invented price ladder reads
+     * as received wisdom about who is good. Prices move once real minutes and
+     * returns arrive, which is the only honest way to move them.
      */
-    data class ClubRecord(
-        val club: Club,
-        val marketValueEur: Long,
-        val squadSize: Int
+    private fun priceFor(clubId: String, position: Position): Long {
+        val band = when (position) {
+            Position.GK -> 4.5
+            Position.DEF -> 5.0
+            Position.MID -> 5.5
+            Position.FWD -> 6.0
+        }
+        val strength = NpflClubs.record(clubId).strength
+        val scaled = band * (0.8 + (strength / 5.0) * 0.5)
+        val halfMillions = (scaled * 2.0).roundToLong()
+        return halfMillions * 500_000L
+    }
+
+    /**
+     * Demo ownership for the fifteen players in the example squad.
+     *
+     * Hand-set, and the only hand-set numbers in the file. The differential
+     * reward (§08) is the mechanic this product turns on, and a demo where no
+     * player sits under 2% ownership would never show it working. So the
+     * captain is heavily owned and blanks, and a 1.8%-owned forward hauls away
+     * from home. Those are illustrative figures about a mechanic, not a claim
+     * about how many people own ThankGod Chilaka.
+     */
+    private val demoOwnership: Map<String, Double> = mapOf(
+        "ENY-asibe" to 34.2, "RIV-andy" to 18.7,
+        "IKO-nnoli" to 41.3, "PLA-udoh" to 27.9,
+        "PH-BEN-def1" to 14.2, "PH-KAN-def2" to 19.4, "PH-NAS-def3" to 7.7,
+        "ENY-ovoke" to 52.8, "KUN-umoh" to 12.7,
+        "PH-3SC-mid4" to 23.6, "PH-SPL-mid2" to 8.9, "PH-NIT-mid1" to 2.9,
+        "RIV-awazie" to 61.4, "IKO-chilaka" to 1.8, "PH-ABW-fwd2" to 5.9
     )
 
-    private fun rec(
-        id: String, name: String, short: String, city: String,
-        valueEur: Long, squad: Int
-    ) = ClubRecord(Club(id, name, short, city), valueEur, squad)
+    /**
+     * Ownership for everyone else: a stable function of the player id, bounded
+     * to 0–40%, so the pool shows a spread and shows the same spread on every
+     * launch. Replaced wholesale by real entry counts in a live build.
+     */
+    private fun ownershipFor(id: String): Double {
+        demoOwnership[id]?.let { return it }
+        var h = 0x811c9dc5.toInt()
+        for (ch in id) {
+            h = h xor ch.code
+            h *= 0x01000193
+        }
+        val bounded = ((h.toLong() and 0xffffffffL) % 4000L).toInt()
+        return bounded / 100.0
+    }
 
-    /** Ordered by market value, as the source orders it. */
-    val table: List<ClubRecord> = listOf(
-        rec("RAN", "Rangers International FC", "RAN", "Enugu", 2_560_000, 42),
-        rec("RIV", "Rivers United FC", "RIV", "Port Harcourt", 2_460_000, 35),
-        rec("BEN", "Bendel Insurance", "BEN", "Benin City", 2_200_000, 43),
-        // City not stated by the source and not implied by the club name.
-        rec("BAR", "Barau Football Club", "BAR", "", 1_740_000, 48),
-        rec("PLA", "Plateau United FC", "PLA", "Jos", 1_720_000, 56),
-        rec("3SC", "Shooting Stars Sports Club", "3SC", "Ibadan", 1_700_000, 41),
-        rec("KAN", "Kano Pillars", "KAN", "Kano", 1_700_000, 45),
-        rec("ENY", "Enyimba Aba", "ENY", "Aba", 1_490_000, 40),
-        rec("IKO", "Ikorodu City FC", "IKO", "Ikorodu", 1_280_000, 46),
-        rec("ABW", "Abia Warriors FC", "ABW", "Umuahia", 1_230_000, 40),
-        rec("KAT", "Katsina United FC", "KAT", "Katsina", 1_200_000, 43),
-        rec("WAR", "Warri Wolves FC", "WAR", "Warri", 1_070_000, 51),
-        rec("NAS", "Nasarawa United", "NAS", "Lafia", 1_020_000, 45),
-        rec("NIT", "Niger Tornadoes", "NIT", "Minna", 1_010_000, 44),
-        rec("KUN", "Kun Khalifat Football Club", "KUN", "", 855_000, 52),
-        rec("KWA", "Kwara United FC", "KWA", "Ilorin", 855_000, 42),
-        rec("SPL", "Sporting Lagos FC", "SPL", "Lagos", 735_000, 37),
-        rec("RAB", "Rancher's Bees FC", "RAB", "", 605_000, 28),
-        rec("DOM", "Doma United", "DOM", "Gombe", 225_000, 26),
-        rec("INT", "Inter Lagos Football Club", "INT", "Lagos", 25_000, 25)
+    // -------------------------------------------------------- the real pool
+
+    /** Real players, from [NpflSquads], for the five clubs that have any. */
+    private val realPlayers: List<Player> = NpflSquads.positioned().map { rp ->
+        val id = NpflSquads.idFor(rp)
+        Player(
+            id = id,
+            name = rp.name,
+            clubId = rp.clubId,
+            position = rp.position!!,
+            priceNaira = priceFor(rp.clubId, rp.position),
+            ownershipPct = ownershipFor(id),
+            squadNumber = rp.squadNumber,
+            isPlaceholder = false,
+            sourceNote = rp.note
+        )
+    }
+
+    /**
+     * Stand-ins for the eighteen clubs with no sourceable squad.
+     *
+     * Twelve per club on a fixed ladder — no randomness, so the same pool
+     * renders every launch and a price never moves because a hash changed. The
+     * ladder does not scale by club strength: pretending a stand-in at a strong
+     * club is worth more would be a judgement about a player who does not exist.
+     */
+    private val placeholderLadder: Map<Position, List<Double>> = mapOf(
+        Position.GK to listOf(4.0, 4.5),
+        Position.DEF to listOf(4.0, 4.5, 5.0, 5.5),
+        Position.MID to listOf(4.5, 5.5, 6.5, 7.5),
+        Position.FWD to listOf(5.5, 7.0)
     )
 
-    /** Totals the source publishes, kept here so the transcription is testable. */
-    const val PUBLISHED_SQUAD_TOTAL = 829
-    const val PUBLISHED_VALUE_TOTAL_EUR = 25_650_000L
-
-    val clubs: List<Club> = table.map { it.club }
-
-    fun club(id: String): Club = clubs.first { it.id == id }
-
-    private fun p(
-        id: String, name: String, club: String, pos: Position,
-        millions: Double, ownership: Double
-    ) = Player(id, name, club, pos, (millions * 1_000_000).toLong(), ownership)
+    private val placeholders: List<Player> = buildList {
+        val needing = NpflClubs.all
+            .map { it.id }
+            .filterNot { it in NpflSquads.clubsWithVerifiedSquad }
+        for (clubId in needing) {
+            for ((position, prices) in placeholderLadder) {
+                prices.forEachIndexed { index, millions ->
+                    val n = index + 1
+                    val id = "PH-$clubId-${position.short.lowercase()}$n"
+                    add(
+                        Player(
+                            id = id,
+                            name = "${NpflClubs.record(clubId).club.shortName} ${position.short} $n",
+                            clubId = clubId,
+                            position = position,
+                            priceNaira = (millions * 1_000_000).toLong(),
+                            ownershipPct = ownershipFor(id),
+                            squadNumber = null,
+                            isPlaceholder = true,
+                            sourceNote = "Stand-in. No squad list is published for this " +
+                                "club that any source will stand behind."
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     /** The selection pool the Choose Players screen browses. */
-    val pool: List<Player> = listOf(
-        // Goalkeepers
-        p("gk1", "Ọláyínká Bámídélé", "BEN", Position.GK, 5.5, 34.2),
-        p("gk2", "Sulaimon Ƙasim", "KAN", Position.GK, 4.5, 18.7),
-        p("gk3", "Ṅnaemeka Ọ̀diké", "RAN", Position.GK, 5.0, 22.1),
-        p("gk4", "Ɗauda Aliyu", "KAT", Position.GK, 4.0, 6.4),
-        p("gk5", "Ebenezer Ìgè", "3SC", Position.GK, 4.5, 9.8),
-        // Defenders
-        p("df1", "Chidiébéré Ọ̀nụ̀", "ENY", Position.DEF, 6.0, 41.3),
-        p("df2", "Ṣọlá Adéyẹmí", "3SC", Position.DEF, 5.5, 27.9),
-        p("df3", "Ibrahim Ɗanjuma", "KAN", Position.DEF, 5.0, 19.4),
-        p("df4", "Ẹmẹká Ùchè", "RAN", Position.DEF, 6.0, 31.6),
-        p("df5", "Tunde Ògúndélé", "BEN", Position.DEF, 5.0, 14.2),
-        p("df6", "Ọ̀bínna Ezè", "ABW", Position.DEF, 4.5, 3.1),
-        p("df7", "Yakubu Ƴaro", "NAS", Position.DEF, 4.5, 7.7),
-        p("df8", "Ṣàmúẹ̀l Òkè", "BEN", Position.DEF, 5.0, 11.5),
-        p("df9", "Terver Ìorhemba", "WAR", Position.DEF, 4.0, 2.4),
-        p("df10", "Bólájí Adétólá", "SPL", Position.DEF, 5.5, 6.8),
-        // Midfielders
-        p("md1", "Ìfẹ́anyì Ụ̀zọ̀", "ENY", Position.MID, 8.0, 52.8),
-        p("md2", "Abdulƙadir Ṣehu", "PLA", Position.MID, 6.5, 4.2),
-        p("md3", "Chinedu Ọ̀kụ̀", "RAN", Position.MID, 8.5, 47.1),
-        p("md4", "Ṣeun Adélékè", "SPL", Position.MID, 7.0, 23.6),
-        p("md5", "Ndubuisi Ámádí", "ABW", Position.MID, 6.0, 8.9),
-        p("md6", "Kelechi Ọ̀gbọ́nna", "KWA", Position.MID, 6.5, 12.7),
-        p("md7", "Bashir Ɓello", "DOM", Position.MID, 5.5, 1.6),
-        p("md8", "Olúwáṣẹ́gun Fáyẹmí", "IKO", Position.MID, 9.0, 38.4),
-        p("md9", "Sunday Ìkpè", "PLA", Position.MID, 6.0, 9.3),
-        p("md10", "Ịkechukwu Ńwosu", "NIT", Position.MID, 5.5, 2.9),
-        // Forwards
-        p("fw1", "Ọlámidé Àkànbí", "3SC", Position.FWD, 10.5, 61.4),
-        p("fw2", "Musa Ƴaro", "NAS", Position.FWD, 7.0, 15.8),
-        p("fw3", "Godspower Ìhè", "RIV", Position.FWD, 7.0, 1.8),
-        p("fw4", "Ṣẹ̀gun Olátúnjí", "IKO", Position.FWD, 6.5, 5.9),
-        p("fw5", "Chukwudi Ọ̀nwụ", "ENY", Position.FWD, 9.5, 44.0),
-        p("fw6", "Hamisu Ɗantata", "KAN", Position.FWD, 8.0, 20.3)
-    )
+    val pool: List<Player> = realPlayers + placeholders
 
-    fun player(id: String): Player = pool.first { it.id == id }
+    private val byId = pool.associateBy { it.id }
+
+    fun player(id: String): Player = byId[id] ?: error("no such player: $id")
+
+    /** Real players known by name whose position nobody publishes. */
+    val awaitingPosition = NpflSquads.awaitingPosition()
+
+    // ------------------------------------------------------ the demo squad
 
     /**
-     * A legal example squad: 15 players, 10 clubs, no more than 2 from any one,
-     * ₦98,000,000 spent of ₦100,000,000. Formation 4-3-3.
+     * A legal example squad: 15 players, 4-3-3, ₦88.5m of ₦100m.
+     *
+     * EIGHT OF THE FIFTEEN ARE REAL. That is the ceiling, not a choice: only
+     * five clubs have a sourced player with a sourced position, and the club cap
+     * is two, so ten is the arithmetic maximum and two of those five clubs have
+     * just one qualifying player between them. The other seven slots are
+     * stand-ins, and the squad screen says which is which.
      */
     val squadPlayerIds = listOf(
-        "gk1", "gk2",
-        "df1", "df2", "df3", "df4", "df5",
-        "md1", "md2", "md3", "md4", "md5",
-        "fw1", "fw2", "fw3"
+        "ENY-asibe", "RIV-andy",
+        "IKO-nnoli", "PLA-udoh", "PH-BEN-def1", "PH-KAN-def2", "PH-NAS-def3",
+        "ENY-ovoke", "KUN-umoh", "PH-3SC-mid4", "PH-SPL-mid2", "PH-NIT-mid1",
+        "RIV-awazie", "IKO-chilaka", "PH-ABW-fwd2"
     )
 
     val startingIds = setOf(
-        "gk1",
-        "df1", "df2", "df3", "df4",
-        "md1", "md3", "md4",
-        "fw1", "fw2", "fw3"
+        "ENY-asibe",
+        "IKO-nnoli", "PLA-udoh", "PH-BEN-def1", "PH-KAN-def2",
+        "ENY-ovoke", "KUN-umoh", "PH-3SC-mid4",
+        "RIV-awazie", "IKO-chilaka", "PH-ABW-fwd2"
     )
 
     val squad = Squad(
         allPlayers = squadPlayerIds.map { player(it) },
         startingIds = startingIds,
-        captainId = "fw1",
-        viceCaptainId = "md1"
+        captainId = "RIV-awazie",
+        viceCaptainId = "ENY-ovoke"
     )
 
     /**
-     * Gameweek 12 results, as filed by the scorers at the ten grounds.
-     * Note how many of the good returns are away fixtures — that is the Away Day
+     * Gameweek 12, as filed by the scorers at the ten grounds.
+     *
+     * Note how many of the good returns are away fixtures. That is the Away Day
      * Bonus doing its job, and it is what the pitch screen should make obvious.
+     * The captain blanked at home; a forward owned by 1.8% of the game scored
+     * twice away. That is the whole argument of the product in one round.
      */
     val gameweek12: Map<String, Performance> = mapOf(
-        // 1 GK - home, kept a clean sheet with five saves
-        "gk1" to Performance("gk1", Venue.HOME, 90, cleanSheet = true, saves = 5, theThree = 2,
+        // GK — home, clean sheet, five saves
+        "ENY-asibe" to Performance("ENY-asibe", Venue.HOME, minutes = 90, cleanSheet = true,
+            saves = 5, theThree = 2,
             theThreeReason = "Two saves at 1-0 in the last ten minutes.", provisional = false),
-        // 4 DEF
-        "df1" to Performance("df1", Venue.AWAY, 90, cleanSheet = true, provisional = false),
-        "df2" to Performance("df2", Venue.HOME, 90, goalsConceded = 2, provisional = false),
-        "df3" to Performance("df3", Venue.AWAY, 78, assists = 1, provisional = false),
-        "df4" to Performance("df4", Venue.HOME, 90, cleanSheet = true, theThree = 1,
-            theThreeReason = "Won everything in the air.", provisional = false),
-        // 3 MID
-        "md1" to Performance("md1", Venue.HOME, 90, goals = 1, assists = 1, theThree = 3,
-            theThreeReason = "Made both goals. Ran the second half.", provisional = false),
-        "md3" to Performance("md3", Venue.AWAY, 90, goals = 1, yellowCards = 1, provisional = false),
-        "md4" to Performance("md4", Venue.HOME, 64, provisional = false),
-        // 3 FWD - the captain blanked, the 1.8%-owned differential did not
-        "fw1" to Performance("fw1", Venue.HOME, 90, provisional = false),
-        "fw2" to Performance("fw2", Venue.AWAY, 90, goals = 1, provisional = false),
-        "fw3" to Performance("fw3", Venue.AWAY, 87, goals = 2, assists = 1, theThree = 3,
-            theThreeReason = "Two away goals and the assist. Nobody owned him.", provisional = true),
+        // DEF
+        "IKO-nnoli" to Performance("IKO-nnoli", Venue.AWAY, minutes = 90, cleanSheet = true,
+            provisional = false),
+        "PLA-udoh" to Performance("PLA-udoh", Venue.HOME, minutes = 90, goalsConceded = 2,
+            provisional = false),
+        "PH-BEN-def1" to Performance("PH-BEN-def1", Venue.AWAY, minutes = 78, assists = 1,
+            provisional = false),
+        "PH-KAN-def2" to Performance("PH-KAN-def2", Venue.HOME, minutes = 90, cleanSheet = true,
+            theThree = 1, theThreeReason = "Won everything in the air.", provisional = false),
+        // MID
+        "ENY-ovoke" to Performance("ENY-ovoke", Venue.HOME, minutes = 90, goals = 1, assists = 1,
+            theThree = 3, theThreeReason = "Made both goals. Ran the second half.",
+            provisional = false),
+        "KUN-umoh" to Performance("KUN-umoh", Venue.AWAY, minutes = 90, goals = 1, yellowCards = 1,
+            provisional = false),
+        "PH-3SC-mid4" to Performance("PH-3SC-mid4", Venue.HOME, minutes = 64, provisional = false),
+        // FWD — the captain blanked, the 1.8%-owned differential did not
+        "RIV-awazie" to Performance("RIV-awazie", Venue.HOME, minutes = 90, provisional = false),
+        "IKO-chilaka" to Performance("IKO-chilaka", Venue.AWAY, minutes = 87, goals = 2,
+            assists = 1, theThree = 3,
+            theThreeReason = "Two away goals and the assist. Nobody owned him.",
+            provisional = true),
+        "PH-ABW-fwd2" to Performance("PH-ABW-fwd2", Venue.AWAY, minutes = 90, goals = 1,
+            provisional = false),
         // Bench, which only counts under Owambe
-        "gk2" to Performance("gk2", Venue.AWAY, 0, provisional = false),
-        "df5" to Performance("df5", Venue.HOME, 90, cleanSheet = true, provisional = false),
-        "md2" to Performance("md2", Venue.AWAY, 90, assists = 1, provisional = false),
-        "md5" to Performance("md5", Venue.HOME, 12, provisional = false)
+        "RIV-andy" to Performance("RIV-andy", Venue.AWAY, minutes = 0, provisional = false),
+        "PH-NAS-def3" to Performance("PH-NAS-def3", Venue.HOME, minutes = 90, cleanSheet = true,
+            provisional = false),
+        "PH-SPL-mid2" to Performance("PH-SPL-mid2", Venue.AWAY, minutes = 90, assists = 1,
+            provisional = false),
+        "PH-NIT-mid1" to Performance("PH-NIT-mid1", Venue.HOME, minutes = 12, provisional = false)
     )
 
     val activeChip: Chip? = null
+
+    // ------------------------------------------------------------- leagues
 
     /** Mini-league table. Real-looking squad names, because that is what people write. */
     data class LeagueEntry(
@@ -208,6 +285,8 @@ object SampleData {
         LeagueEntry(8, "Table No Dey Lie", "Ngozi E.", "Owerri", 66, 765)
     )
 
+    // ------------------------------------------------------------ fixtures
+
     data class Fixture(
         val homeClubId: String,
         val awayClubId: String,
@@ -217,14 +296,33 @@ object SampleData {
         val minute: Int? = null
     ) {
         val isLive: Boolean get() = minute != null
+
+        /**
+         * True when the home club is not actually at home. Read off the club
+         * record rather than stored, so it cannot drift out of step with it.
+         */
+        val homeAtNeutralGround: Boolean
+            get() = NpflClubs.record(homeClubId).playsHomeAtNeutralGround
+
+        /** The ground this is played at, which for two clubs is not their own. */
+        val venueName: String get() = NpflClubs.record(homeClubId).stadium
     }
 
+    /**
+     * A Friday-to-Sunday round at a standard 4:00 PM kickoff, which is the
+     * pattern the league's own Matchday 1 and 2 lists follow, with the odd
+     * outlier and a real chance of a postponement.
+     *
+     * Rangers' fixture carries the season's oddity: the table calls it a home
+     * game and it is played 600km away in Abeokuta.
+     */
     val fixtures = listOf(
         Fixture("RAN", "ENY", "Sun 16 Nov · 4:00 PM"),
         Fixture("BEN", "PLA", "Sun 16 Nov · 4:00 PM"),
         Fixture("KAN", "KAT", "Sun 16 Nov · 4:00 PM"),
         Fixture("IKO", "SPL", "Sun 16 Nov · 4:00 PM"),
         Fixture("WAR", "NIT", "Sun 16 Nov · 4:00 PM"),
+        Fixture("DOM", "RAB", "Fri 14 Nov · 4:00 PM"),
         Fixture("NAS", "KWA", "Wed 19 Nov · 4:00 PM")
     )
 
@@ -238,6 +336,8 @@ object SampleData {
         LiveStat("Corners", 4, 2),
         LiveStat("Fouls", 8, 12)
     )
+
+    // ------------------------------------------------------------ gameweek
 
     const val gameweekNumber = 12
     const val deadlineLabel = "Sun 16 Nov · 3:00 PM"
@@ -255,6 +355,7 @@ object SampleData {
         val remaining = deadlineEpochMillis - nowMillis
         return if (remaining <= 0) 0 else (remaining / (60L * 60L * 1000L)).toInt()
     }
+
     const val overallRank = 128_432
     const val totalManagers = 1_245_678
     const val bankedTransfers = 1
