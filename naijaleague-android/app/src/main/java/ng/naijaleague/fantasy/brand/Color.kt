@@ -49,6 +49,19 @@ object BrandColor {
     /** Ivie Coral, lit for dark grounds. Ivie Coral itself only reaches 3.23:1 on Night Pitch. */
     val IvieCoralLit = Color(0xFFE8604F)
 
+    /**
+     * Ivie Coral, lifted again for the Adire Indigo ground.
+     *
+     * Indigo is lighter than Night Pitch, so the same coral loses contrast
+     * against it: IvieCoralLit measures 4.93:1 on Night Pitch but only 3.99:1
+     * on Indigo, under the 4.5:1 body floor. §01 already defines two coral
+     * steps for two ground luminances; Indigo is a third ground and needs its
+     * own. 4.93:1 on Indigo.
+     *
+     * Found by BrandGuardrailsTest the first time it was able to run.
+     */
+    val IvieCoralOnIndigo = Color(0xFFF07A66)
+
     /** Uli Clay. Form and heat data, where red would read as failure. */
     val UliClay = Color(0xFFA8552F)
 
@@ -77,6 +90,7 @@ object BrandColor {
      *  EagleDark   on LiveGreen    2.39:1  BANNED — the most tempting pairing we have
      *  IfeBrass    on EagleDark    3.78:1  large only; on NightPitch it is 7.37:1, put brass there
      *  IvieCoral   on NightPitch   3.23:1  use IvieCoralLit (4.93:1) for deduction text
+     *  IvieCoralLit on AdireIndigo  3.99:1  under the floor — use IvieCoralOnIndigo (4.93:1)
      *  EagleDark   on NzuChalk     7.45:1  the reading pairing
      *  JaraLime    on NzuChalk     ~1.3:1  NEVER. Lime does not exist on chalk.
      */

@@ -70,7 +70,8 @@ val AdireIndigoPalette = BrandPalette(
     accent = BrandColor.JaraLime,
     accentInk = BrandColor.AdireIndigo,
     honours = BrandColor.IfeBrass,
-    negative = BrandColor.IvieCoralLit,
+    // Not IvieCoralLit: it measures 3.99:1 on this ground, under the floor.
+    negative = BrandColor.IvieCoralOnIndigo,
     isDark = true
 )
 

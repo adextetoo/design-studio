@@ -149,6 +149,12 @@ they carry no brand risk, and moving them would add indirection without adding
 safety. Copy for screens that do not exist yet is deliberately **not** parked in
 the file — that is how it went dead and drifted the first time.
 
+The first time these ran, they caught a contrast bug nothing else had: Ivie
+Coral Lit measures 4.93:1 on Night Pitch but only **3.99:1 on Adire Indigo**,
+because Indigo is the lighter ground. §01 already defines two coral steps for
+two ground luminances; Indigo needed a third, `IvieCoralOnIndigo`. Neither I nor
+the audit caught it by reading — it took executing the assertion.
+
 These exist because an independent audit of this code found the guard rails were
 declared and enforcing nothing: a 13sp money label, a 12sp player name, brass on
 a sync dot, and `NigerianText` silently resolving to the OEM system font. All
