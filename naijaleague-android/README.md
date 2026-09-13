@@ -182,9 +182,20 @@ render. Long club names use `NigerianTextCondensed`, narrowed on Noto's own
 `wdth` axis rather than switched to the display face, so "Bendel Insurance" fits
 beside "3SC" with the marks intact.
 
-## Example data
+## League data and example data
 
-`data/SampleData.kt` is example data, not real. Running it through the engine
+The **clubs are real**: the twenty-club 2026/27 NPFL field, transcribed from the
+Transfermarkt league table with each club's market value and squad size. The
+transcription is testable rather than trusted — `SampleDataTest` sums the squad
+sizes and fails unless they come to 829, which is the total the source publishes,
+and checks the market values against the published €25.65m within the rounding
+the source itself applies.
+
+Three clubs — Barau FC, Kun Khalifat FC and Rancher's Bees FC — carry no city,
+because the source table does not state one and the club name does not imply it.
+The UI omits the line rather than rendering it blank. Fill them in when known.
+
+The **players are still invented** and marked as such. Running it through the engine
 gives Gameweek 12 = **93 points**, where the 1.8%-owned away forward scores
 **29** and the 61.4%-owned captain scores **4** — the product's argument,
 demonstrated by its own rules.

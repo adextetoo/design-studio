@@ -224,13 +224,17 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
             color = palette.ink,
             textAlign = TextAlign.Center
         )
-        Text(
-            club.city,
-            style = BrandType.InterfaceAndGuidance.label,
-            color = palette.inkDim,
-            textAlign = TextAlign.Center,
-            maxLines = 1
-        )
+        // Three clubs in the 2026/27 field have no city on the source table, so
+        // the line is omitted rather than rendered blank.
+        if (club.city.isNotBlank()) {
+            Text(
+                club.city,
+                style = BrandType.InterfaceAndGuidance.label,
+                color = palette.inkDim,
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
     }
 }
 

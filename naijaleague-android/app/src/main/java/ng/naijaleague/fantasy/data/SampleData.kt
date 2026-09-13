@@ -26,24 +26,59 @@ import ng.naijaleague.fantasy.rules.Venue
  */
 object SampleData {
 
-    val clubs = listOf(
-        Club("ENY", "Enyimba", "ENY", "Aba"),
-        Club("RAN", "Rangers International", "RAN", "Enugu"),
-        Club("REM", "Remo Stars", "REM", "Ikenne"),
-        Club("KAN", "Kano Pillars", "KAN", "Kano"),
-        Club("3SC", "Shooting Stars", "3SC", "Ibadan"),
-        Club("RIV", "Rivers United", "RIV", "Port Harcourt"),
-        Club("PLA", "Plateau United", "PLA", "Jos"),
-        Club("LOB", "Lobi Stars", "LOB", "Makurdi"),
-        Club("BEN", "Bendel Insurance", "BEN", "Benin City"),
-        Club("NAS", "Nasarawa United", "NAS", "Lafia"),
-        Club("ABW", "Abia Warriors", "ABW", "Umuahia"),
-        Club("SPL", "Sporting Lagos", "SPL", "Lagos"),
-        Club("WIK", "Wikki Tourists", "WIK", "Bauchi"),
-        Club("IKO", "Ikorodu City", "IKO", "Ikorodu"),
-        Club("DOM", "Doma United", "DOM", "Gombe"),
-        Club("HRT", "Heartland", "HRT", "Owerri")
+    /**
+     * The 2026/27 NPFL, transcribed from the Transfermarkt league table
+     * (current-value column, captured against the 15/08/2026 snapshot).
+     *
+     * Market value and squad size are carried alongside each club so the table
+     * can be checked against the totals Transfermarkt publishes — see
+     * SampleDataTest, which fails if a transcription error creeps in. The squad
+     * sizes sum to exactly 829, which is what the source reports.
+     *
+     * Values are in euros because that is the unit the source publishes. They
+     * are league reference data, not fantasy prices.
+     */
+    data class ClubRecord(
+        val club: Club,
+        val marketValueEur: Long,
+        val squadSize: Int
     )
+
+    private fun rec(
+        id: String, name: String, short: String, city: String,
+        valueEur: Long, squad: Int
+    ) = ClubRecord(Club(id, name, short, city), valueEur, squad)
+
+    /** Ordered by market value, as the source orders it. */
+    val table: List<ClubRecord> = listOf(
+        rec("RAN", "Rangers International FC", "RAN", "Enugu", 2_560_000, 42),
+        rec("RIV", "Rivers United FC", "RIV", "Port Harcourt", 2_460_000, 35),
+        rec("BEN", "Bendel Insurance", "BEN", "Benin City", 2_200_000, 43),
+        // City not stated by the source and not implied by the club name.
+        rec("BAR", "Barau Football Club", "BAR", "", 1_740_000, 48),
+        rec("PLA", "Plateau United FC", "PLA", "Jos", 1_720_000, 56),
+        rec("3SC", "Shooting Stars Sports Club", "3SC", "Ibadan", 1_700_000, 41),
+        rec("KAN", "Kano Pillars", "KAN", "Kano", 1_700_000, 45),
+        rec("ENY", "Enyimba Aba", "ENY", "Aba", 1_490_000, 40),
+        rec("IKO", "Ikorodu City FC", "IKO", "Ikorodu", 1_280_000, 46),
+        rec("ABW", "Abia Warriors FC", "ABW", "Umuahia", 1_230_000, 40),
+        rec("KAT", "Katsina United FC", "KAT", "Katsina", 1_200_000, 43),
+        rec("WAR", "Warri Wolves FC", "WAR", "Warri", 1_070_000, 51),
+        rec("NAS", "Nasarawa United", "NAS", "Lafia", 1_020_000, 45),
+        rec("NIT", "Niger Tornadoes", "NIT", "Minna", 1_010_000, 44),
+        rec("KUN", "Kun Khalifat Football Club", "KUN", "", 855_000, 52),
+        rec("KWA", "Kwara United FC", "KWA", "Ilorin", 855_000, 42),
+        rec("SPL", "Sporting Lagos FC", "SPL", "Lagos", 735_000, 37),
+        rec("RAB", "Rancher's Bees FC", "RAB", "", 605_000, 28),
+        rec("DOM", "Doma United", "DOM", "Gombe", 225_000, 26),
+        rec("INT", "Inter Lagos Football Club", "INT", "Lagos", 25_000, 25)
+    )
+
+    /** Totals the source publishes, kept here so the transcription is testable. */
+    const val PUBLISHED_SQUAD_TOTAL = 829
+    const val PUBLISHED_VALUE_TOTAL_EUR = 25_650_000L
+
+    val clubs: List<Club> = table.map { it.club }
 
     fun club(id: String): Club = clubs.first { it.id == id }
 
@@ -55,33 +90,33 @@ object SampleData {
     /** The selection pool the Choose Players screen browses. */
     val pool: List<Player> = listOf(
         // Goalkeepers
-        p("gk1", "Ọláyínká Bámídélé", "REM", Position.GK, 5.5, 34.2),
+        p("gk1", "Ọláyínká Bámídélé", "BEN", Position.GK, 5.5, 34.2),
         p("gk2", "Sulaimon Ƙasim", "KAN", Position.GK, 4.5, 18.7),
         p("gk3", "Ṅnaemeka Ọ̀diké", "RAN", Position.GK, 5.0, 22.1),
-        p("gk4", "Ɗauda Aliyu", "WIK", Position.GK, 4.0, 6.4),
+        p("gk4", "Ɗauda Aliyu", "KAT", Position.GK, 4.0, 6.4),
         p("gk5", "Ebenezer Ìgè", "3SC", Position.GK, 4.5, 9.8),
         // Defenders
         p("df1", "Chidiébéré Ọ̀nụ̀", "ENY", Position.DEF, 6.0, 41.3),
         p("df2", "Ṣọlá Adéyẹmí", "3SC", Position.DEF, 5.5, 27.9),
         p("df3", "Ibrahim Ɗanjuma", "KAN", Position.DEF, 5.0, 19.4),
         p("df4", "Ẹmẹká Ùchè", "RAN", Position.DEF, 6.0, 31.6),
-        p("df5", "Tunde Ògúndélé", "REM", Position.DEF, 5.0, 14.2),
+        p("df5", "Tunde Ògúndélé", "BEN", Position.DEF, 5.0, 14.2),
         p("df6", "Ọ̀bínna Ezè", "ABW", Position.DEF, 4.5, 3.1),
         p("df7", "Yakubu Ƴaro", "NAS", Position.DEF, 4.5, 7.7),
         p("df8", "Ṣàmúẹ̀l Òkè", "BEN", Position.DEF, 5.0, 11.5),
-        p("df9", "Terver Ìorhemba", "LOB", Position.DEF, 4.0, 2.4),
+        p("df9", "Terver Ìorhemba", "WAR", Position.DEF, 4.0, 2.4),
         p("df10", "Bólájí Adétólá", "SPL", Position.DEF, 5.5, 6.8),
         // Midfielders
         p("md1", "Ìfẹ́anyì Ụ̀zọ̀", "ENY", Position.MID, 8.0, 52.8),
-        p("md2", "Abdulƙadir Ṣehu", "WIK", Position.MID, 6.5, 4.2),
+        p("md2", "Abdulƙadir Ṣehu", "PLA", Position.MID, 6.5, 4.2),
         p("md3", "Chinedu Ọ̀kụ̀", "RAN", Position.MID, 8.5, 47.1),
         p("md4", "Ṣeun Adélékè", "SPL", Position.MID, 7.0, 23.6),
         p("md5", "Ndubuisi Ámádí", "ABW", Position.MID, 6.0, 8.9),
-        p("md6", "Kelechi Ọ̀gbọ́nna", "HRT", Position.MID, 6.5, 12.7),
+        p("md6", "Kelechi Ọ̀gbọ́nna", "KWA", Position.MID, 6.5, 12.7),
         p("md7", "Bashir Ɓello", "DOM", Position.MID, 5.5, 1.6),
-        p("md8", "Olúwáṣẹ́gun Fáyẹmí", "REM", Position.MID, 9.0, 38.4),
+        p("md8", "Olúwáṣẹ́gun Fáyẹmí", "IKO", Position.MID, 9.0, 38.4),
         p("md9", "Sunday Ìkpè", "PLA", Position.MID, 6.0, 9.3),
-        p("md10", "Ịkechukwu Ńwosu", "HRT", Position.MID, 5.5, 2.9),
+        p("md10", "Ịkechukwu Ńwosu", "NIT", Position.MID, 5.5, 2.9),
         // Forwards
         p("fw1", "Ọlámidé Àkànbí", "3SC", Position.FWD, 10.5, 61.4),
         p("fw2", "Musa Ƴaro", "NAS", Position.FWD, 7.0, 15.8),
@@ -186,11 +221,11 @@ object SampleData {
 
     val fixtures = listOf(
         Fixture("RAN", "ENY", "Sun 16 Nov · 4:00 PM"),
-        Fixture("REM", "PLA", "Sun 16 Nov · 4:00 PM"),
-        Fixture("KAN", "HRT", "Sun 16 Nov · 4:00 PM"),
-        Fixture("RIV", "3SC", "Sun 16 Nov · 4:00 PM"),
-        Fixture("BEN", "LOB", "Sun 16 Nov · 4:00 PM"),
-        Fixture("NAS", "WIK", "Wed 19 Nov · 4:00 PM")
+        Fixture("BEN", "PLA", "Sun 16 Nov · 4:00 PM"),
+        Fixture("KAN", "KAT", "Sun 16 Nov · 4:00 PM"),
+        Fixture("IKO", "SPL", "Sun 16 Nov · 4:00 PM"),
+        Fixture("WAR", "NIT", "Sun 16 Nov · 4:00 PM"),
+        Fixture("NAS", "KWA", "Wed 19 Nov · 4:00 PM")
     )
 
     val liveFixture = Fixture("RIV", "KAN", "Live", homeScore = 1, awayScore = 0, minute = 67)

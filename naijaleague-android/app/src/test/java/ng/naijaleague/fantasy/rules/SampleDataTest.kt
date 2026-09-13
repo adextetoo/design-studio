@@ -34,6 +34,41 @@ class SampleDataTest {
     }
 
     @Test
+    fun `the club table matches the totals the source publishes`() {
+        // The league table is transcribed by hand from Transfermarkt, so the
+        // cheapest guard against a slipped digit is the source's own totals.
+        assertEquals(20, SampleData.table.size)
+        assertEquals(
+            SampleData.PUBLISHED_SQUAD_TOTAL,
+            SampleData.table.sumOf { it.squadSize }
+        )
+        assertEquals(
+            20,
+            SampleData.table.map { it.club.id }.distinct().size,
+            "club ids must be unique — the UI keys badges and fixtures off them"
+        )
+        val value = SampleData.table.sumOf { it.marketValueEur }
+        val drift = kotlin.math.abs(value - SampleData.PUBLISHED_VALUE_TOTAL_EUR)
+        assertTrue(
+            drift <= 100_000L,
+            "market values sum to $value against a published $" +
+                "${SampleData.PUBLISHED_VALUE_TOTAL_EUR}; the source rounds each " +
+                "club for display, but $drift is more than that explains"
+        )
+    }
+
+    @Test
+    fun `no example player is attached to a club that left the league`() {
+        val live = SampleData.clubs.map { it.id }.toSet()
+        val stale = SampleData.pool.filterNot { it.clubId in live }
+        assertTrue(stale.isEmpty(), "players on departed clubs: ${stale.map { it.name }}")
+        SampleData.fixtures.forEach {
+            assertTrue(it.homeClubId in live, "fixture home ${it.homeClubId}")
+            assertTrue(it.awayClubId in live, "fixture away ${it.awayClubId}")
+        }
+    }
+
+    @Test
     fun `every club id in the pool resolves to a real club`() {
         val ids = SampleData.clubs.map { it.id }.toSet()
         SampleData.pool.forEach { assertTrue(it.clubId in ids, "${it.name} -> ${it.clubId}") }
