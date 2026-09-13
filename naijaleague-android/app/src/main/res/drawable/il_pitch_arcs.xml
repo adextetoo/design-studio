@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pitch markings (§13).
+
+  The centre circle and the D, drawn as chalk on a ground. Not a motif — it is
+  the one piece of furniture every screen in this product is ultimately about,
+  and it earns its place on the hero surfaces where a photograph would otherwise
+  go.
+
+  Deliberately off-centre and oversized: cropped pitch markings read as a pitch,
+  where a complete centred circle reads as a logo.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="360dp"
+    android:viewportWidth="360"
+    android:viewportHeight="360"
+    android:tint="@color/jara_lime"
+    android:alpha="0.08">
+
+    <!-- Centre circle, cropped by the viewport. -->
+    <path
+        android:pathData="M250,140 m-130,0 a130,130 0 1,0 260,0 a130,130 0 1,0 -260,0"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+    <!-- Halfway line. -->
+    <path
+        android:pathData="M0,140 H360"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+    <!-- Penalty area, bottom left, running off the edge. -->
+    <path
+        android:pathData="M-40,258 H132 V360 H-40"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+    <!-- The D. -->
+    <path
+        android:pathData="M132,296 a34,34 0 0,1 0,44"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+    <!-- Centre spot. -->
+    <path
+        android:pathData="M250,140 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillColor="@android:color/white" />
+</vector>

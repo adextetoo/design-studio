@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Uli (§01).
+
+  Igbo body and wall painting: unbroken curvilinear line, drawn freehand, thin
+  and confident. The opposite discipline to Adire's grid, which is why the two
+  are never used on the same surface.
+
+  Uli Clay is the sourced colour, but the tint is applied at the vector level so
+  a caller can override it for a surface that needs a different one.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160"
+    android:tint="@color/uli_clay"
+    android:alpha="0.14">
+
+    <!-- The long sweeping stroke. -->
+    <path
+        android:pathData="M8,120 C36,60 76,148 104,72 C118,34 142,44 152,24"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent" />
+    <!-- A second, answering it. -->
+    <path
+        android:pathData="M14,150 C48,104 68,132 96,96 C112,76 132,86 150,60"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent" />
+    <!-- The spiral Uli returns to constantly. -->
+    <path
+        android:pathData="M48,40 C58,28 74,34 72,48 C70,60 54,62 52,50 C51,42 60,40 62,46"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent" />
+    <!-- Seed marks, which Uli scatters between the lines. -->
+    <path
+        android:pathData="M118,128 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"
+        android:fillColor="@android:color/white" />
+    <path
+        android:pathData="M34,86 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+        android:fillColor="@android:color/white" />
+</vector>

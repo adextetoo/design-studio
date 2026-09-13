@@ -54,6 +54,12 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
  * compression, and assume it is read in a thumbnail. So: enormous type, hard
  * contrast, no thin lines, no long sentences, and a fixed aspect ratio (4:5,
  * which is what X and Instagram will not crop).
+ *
+ * THE ONE SCREEN WITH NO MOTIF BEHIND IT, and "no thin lines" is exactly why.
+ * Every motif in the illustration system is built from thin lines — that is
+ * what makes Uli read as Uli and Adire as Adire — and thin lines are the first
+ * thing a WhatsApp re-compression destroys. A background that turns to mush at
+ * the third share would cost the card the only job it has. It stays flat.
  */
 @Composable
 fun ReceiptScreen(onClose: () -> Unit) {

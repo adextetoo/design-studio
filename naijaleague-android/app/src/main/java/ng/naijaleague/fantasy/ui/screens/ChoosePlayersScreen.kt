@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
+import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.NpflSquads
@@ -57,6 +58,8 @@ import ng.naijaleague.fantasy.ui.components.SourceNote
 import ng.naijaleague.fantasy.ui.components.StandInTag
 import ng.naijaleague.fantasy.ui.components.squadDataSummary
 import ng.naijaleague.fantasy.ui.components.squadSourceLine
+import ng.naijaleague.fantasy.ui.components.motifField
+import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Choose players.
@@ -98,6 +101,7 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
+            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
     ) {
         // ---- Header: budget is the number that matters here, so it is the hero ----

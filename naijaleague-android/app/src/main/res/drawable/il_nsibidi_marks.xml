@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Nsibidi (§01, §13).
+
+  The Igbo ideographic system: one blunt stroke, one meaning, no outline and no
+  gradient. It is the grammar the app's own icons follow, so the background
+  field and the bottom bar are speaking the same language.
+
+  These are abstracted marks in that grammar, not transcriptions. Nsibidi
+  characters carry specific meanings, several of them restricted to particular
+  societies, and decorating a fantasy football background with real ones would
+  be using somebody's script as texture.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="140dp"
+    android:height="140dp"
+    android:viewportWidth="140"
+    android:viewportHeight="140"
+    android:tint="@color/harmattan_haze"
+    android:alpha="0.12">
+
+    <!-- Crossed strokes. -->
+    <path
+        android:pathData="M20,24 L52,56 M52,24 L20,56"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:strokeLineCap="square"
+        android:fillColor="@android:color/transparent" />
+    <!-- Stroke through a bar. -->
+    <path
+        android:pathData="M84,20 V60 M70,34 H98"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:strokeLineCap="square"
+        android:fillColor="@android:color/transparent" />
+    <!-- Three parallels, the counting mark. -->
+    <path
+        android:pathData="M18,86 H54 M18,98 H54 M18,110 H54"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:strokeLineCap="square"
+        android:fillColor="@android:color/transparent" />
+    <!-- Enclosure with a stroke inside. -->
+    <path
+        android:pathData="M74,82 H112 V120 H74 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:fillColor="@android:color/transparent" />
+    <path
+        android:pathData="M74,101 H112"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="3"
+        android:strokeLineCap="square"
+        android:fillColor="@android:color/transparent" />
+</vector>

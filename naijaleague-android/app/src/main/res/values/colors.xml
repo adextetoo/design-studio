@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Mirrors brand/Color.kt. Needed in XML only for the window background and
-         the launcher icon; every in-app colour comes from the Compose tokens. -->
-    <color name="night_pitch">#FF04231A</color>
+    <!--
+      Mirrors brand/Color.kt. XML needs these for two reasons: the window
+      background and launcher icon, and the illustration vectors in res/drawable,
+      which reference colours by name rather than carrying hex of their own.
+
+      That indirection is the point. A motif tile hard-coding #04231A would be
+      correct on Night Pitch and invisible on Nzu Chalk, and nobody would notice
+      until the Rules tab. Naming the colour lets one drawable serve all three
+      surfaces, and lets the palette change in exactly one file.
+
+      BrandGuardrailsTest checks these against the Compose tokens, so the two
+      copies cannot drift.
+    -->
+
+    <!-- Core, from the Super Eagles palette (§01) -->
     <color name="eagle_dark">#FF00583C</color>
+    <color name="live_green">#FF009B68</color>
     <color name="jara_lime">#FF9FE773</color>
+    <color name="chalk_white">#FFFFFFFF</color>
+
+    <!-- Grounds -->
+    <color name="night_pitch">#FF04231A</color>
+    <color name="night_pitch_raised">#FF0A3226</color>
+    <color name="adire_indigo">#FF1F2A60</color>
+    <color name="adire_indigo_raised">#FF2A3675</color>
+    <color name="nzu_chalk">#FFF4EFE6</color>
+    <color name="nzu_chalk_raised">#FFEAE3D6</color>
+
+    <!-- Extended, from Nigerian motifs (§01) -->
+    <color name="ife_brass">#FFD8A43C</color>
+    <color name="ivie_coral">#FFC9372C</color>
+    <color name="ivie_coral_lit">#FFE8604F</color>
+    <color name="ivie_coral_on_indigo">#FFF07A66</color>
+    <color name="uli_clay">#FFA8552F</color>
+    <color name="harmattan_haze">#FFBFC9C2</color>
+    <color name="haze_dim">#FFA9BDB2</color>
+    <color name="chalk_ink_dim">#FF5A6B62</color>
 </resources>

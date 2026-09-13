@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
+import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.NpflClubs
@@ -53,6 +54,8 @@ import ng.naijaleague.fantasy.ui.components.BrandMark
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
+import ng.naijaleague.fantasy.ui.components.motifField
+import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Onboarding — the five screens from §03, in order.
@@ -81,6 +84,7 @@ fun OnboardingScreen(onFinished: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
+            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
     ) {
         StepIndicator(step = step, total = 5, modifier = Modifier.padding(BrandDimens.Gutter))

@@ -43,6 +43,8 @@ import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.SectionLabel
+import ng.naijaleague.fantasy.ui.components.motifField
+import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Gaffer Pass — the premium tier (§06).
@@ -112,6 +114,7 @@ fun GafferPassScreen(onClose: () -> Unit) {
             Modifier
                 .fillMaxSize()
                 .background(palette.ground)
+                .motifField(motifFor(BrandSurface.NIGHT_PITCH))
                 .statusBarsPadding()
         ) {
             Row(

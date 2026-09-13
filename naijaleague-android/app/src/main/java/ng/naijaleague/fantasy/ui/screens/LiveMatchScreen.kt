@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
+import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.SampleData
@@ -36,6 +37,8 @@ import ng.naijaleague.fantasy.ui.components.ClubBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 import ng.naijaleague.fantasy.ui.components.NeutralGroundNote
 import ng.naijaleague.fantasy.ui.components.StatBar
+import ng.naijaleague.fantasy.ui.components.motifField
+import ng.naijaleague.fantasy.ui.components.motifFor
 
 /**
  * Live match.
@@ -54,6 +57,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
         Modifier
             .fillMaxSize()
             .background(palette.ground)
+            .motifField(motifFor(BrandSurface.NIGHT_PITCH))
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
     ) {

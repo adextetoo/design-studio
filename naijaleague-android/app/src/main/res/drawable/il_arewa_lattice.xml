@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Arewa lattice (§01).
+
+  The northern geometric tradition: interlace built from a strict diagonal grid,
+  where the pattern comes from repetition rather than from any one element. Used
+  where a surface needs structure without drawing attention, which is most of
+  them.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100"
+    android:tint="@color/ife_brass"
+    android:alpha="0.10">
+
+    <!-- The diagonal grid, both directions, so the tile meets itself at the edge. -->
+    <path
+        android:pathData="M0,50 L50,0 L100,50 L50,100 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent" />
+    <path
+        android:pathData="M0,0 L50,50 L100,0 M0,100 L50,50 L100,100"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent" />
+    <!-- The knot at the crossing. -->
+    <path
+        android:pathData="M38,50 L50,38 L62,50 L50,62 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+</vector>

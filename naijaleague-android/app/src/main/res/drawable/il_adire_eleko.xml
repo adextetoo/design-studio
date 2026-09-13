@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adire eleko (§01).
+
+  The Yoruba resist-dye grid: a square repeated inside itself, with dots filling
+  the channels the cassava paste left behind. Drawn as a 120dp tile so it can be
+  repeated across a surface without the eye finding the seam.
+
+  Stroked, not filled, and the colour is a reference rather than a value — this
+  same tile has to sit on Night Pitch, Adire Indigo and Nzu Chalk, and a baked
+  hex would be right on one of them.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120"
+    android:tint="@color/jara_lime"
+    android:alpha="0.10">
+
+    <!-- Three squares inside one another. -->
+    <path
+        android:pathData="M10,10 H110 V110 H10 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent" />
+    <path
+        android:pathData="M26,26 H94 V94 H26 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:fillColor="@android:color/transparent" />
+    <path
+        android:pathData="M42,42 H78 V78 H42 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1"
+        android:fillColor="@android:color/transparent" />
+
+    <!-- The dots the paste leaves in the channels. -->
+    <path
+        android:pathData="M60,55 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
+        android:fillColor="@android:color/white" />
+    <path
+        android:pathData="M18,18 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
+        android:fillColor="@android:color/white" />
+    <path
+        android:pathData="M102,18 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
+        android:fillColor="@android:color/white" />
+    <path
+        android:pathData="M18,102 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
+        android:fillColor="@android:color/white" />
+    <path
+        android:pathData="M102,102 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
+        android:fillColor="@android:color/white" />
+</vector>

@@ -120,4 +120,27 @@
     <string name="squad_data_label">What we know about squads</string>
     <string name="choose_real_only">Real names only</string>
     <string name="stand_in">STAND-IN</string>
+
+    <!-- ===== Splash (§03) =====
+         The first screen's job is to cover the gap between the tap and the app
+         being usable, not to show a logo to somebody who just tapped the logo.
+         Both doors are on it, so a returning manager waits for nothing. -->
+    <string name="splash_start">Start building</string>
+    <string name="splash_signin">I already have a squad</string>
+    <string name="splash_no_account">No account needed yet. Build your fifteen first.</string>
+
+    <!-- ===== Saving the squad (§03) =====
+         The account step sits at the END of onboarding, not the start. By here
+         the manager has built something, so the question is how to keep it. -->
+    <string name="signup_head">Save your squad</string>
+    <string name="signup_body">%1$s is built. Save it now and it is yours — your points, your leagues, your transfers, on any phone you sign in from.</string>
+    <string name="signup_google">Continue with Google</string>
+    <string name="signup_or">or</string>
+    <string name="signup_manager_name">Your name</string>
+    <string name="signup_phone">Phone number</string>
+    <string name="signup_phone_why">We send a code, not a password. Nothing to forget twenty minutes before a deadline.</string>
+    <string name="signup_age_label">Your age</string>
+    <string name="signup_age_body">You have to be %1$d or over to play. Cash prizes are for %2$d and over — under 18s who win take airtime, data or a match ticket instead.</string>
+    <string name="signup_cta">Save my squad</string>
+    <string name="signup_have_account">Already have a squad? Sign in</string>
 </resources>
