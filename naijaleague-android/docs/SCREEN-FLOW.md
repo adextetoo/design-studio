@@ -15,7 +15,7 @@ app needs*, not as branding, copy, palette or data.
 | --- | --- | --- | --- |
 | 1 | Splash | **built** | `SplashScreen.kt` |
 | 2 | Sign Up | **built**, repositioned | `SignUpScreen.kt` |
-| 3 | Onboarding | existed | `OnboardingScreen.kt` |
+| 3 | Onboarding | existed, now 4 steps | `OnboardingScreen.kt` |
 | 4 | Home Dashboard | existed | `HomeScreen.kt` |
 | 5 | Player Selection | existed | `ChoosePlayersScreen.kt` |
 | 6 | Manage Squad | existed | `TeamScreen.kt` |
@@ -38,6 +38,12 @@ The launch sequence is a phase, not a boolean:
 
     SPLASH ──start──► ONBOARDING ──► SIGN UP ──► END CARD ──► APP
        └────sign in─────────────────────────────────────────►┘
+
+Onboarding is four steps, not five. It used to open on a hook screen — mark,
+headline, "Start building" or "I already have a squad" — which is what the
+Splash already is. Two screens asking the same question is one screen too many
+between a tap and a squad (§03), so the hook lives on the Splash and onboarding
+starts where it should: on the club you support.
 
 A returning manager skips the middle entirely. The end card closes the **first**
 session only: showing it every visit would make leaving the app an event, and it

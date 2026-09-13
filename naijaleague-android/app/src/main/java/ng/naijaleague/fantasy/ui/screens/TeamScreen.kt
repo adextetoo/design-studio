@@ -5,10 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -26,6 +29,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
@@ -108,9 +112,40 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
 }
 
 /**
- * The pitch. Drawn, not an image: an image would be another megabyte to
- * download and would not recolour with the palette.
+ * The pitch.
+ *
+ * TWO THINGS MAKE IT READ AS A PITCH RATHER THAN AS FOUR ROWS OF BUTTONS, and
+ * it previously had neither.
+ *
+ * ONE: A FIXED PROPORTION. The box used to take its height from whatever the
+ * rows happened to need, so the markings — all drawn as fractions of the box —
+ * stretched with the content. A centre circle on a box of the wrong proportion
+ * is an ellipse, and the halfway line lands wherever. A real pitch is 68m by
+ * 105m, which is 0.65; that is too tall to fill a phone with four rows of
+ * tokens, so this uses [PITCH_RATIO] — the shape a broadcast graphic uses for
+ * the same reason, and close enough that the markings below can be set from the
+ * actual laws of the game.
+ *
+ * TWO: ONE TOKEN SIZE. Every row used to stretch its players to fill the width,
+ * so a back four drew wider tokens than a front three and the squad looked
+ * assembled from different kits. Here the widest line sets the token width and
+ * every other line uses it, centred. Five defenders and one keeper are the same
+ * object, in the same size, in different numbers — which is what a formation is.
  */
+private const val PITCH_RATIO = 0.74f
+
+/** Token width is capped so a front two does not draw two slabs. */
+private val MaxTokenWidth = 78.dp
+
+/**
+ * Every token is the same height as well as the same width.
+ *
+ * A surname that wraps to two lines would otherwise make one token taller than
+ * its neighbours and the line would sit crooked. Reserving the space costs a
+ * few dp of pitch and buys a row that lines up.
+ */
+private val TokenHeight = 58.dp
+
 @Composable
 private fun PitchView(
     startingXi: List<Player>,
@@ -118,53 +153,88 @@ private fun PitchView(
     captainId: String?
 ) {
     val palette = LocalBrandPalette.current
-    Box(
+    val lines = listOf(Position.GK, Position.DEF, Position.MID, Position.FWD)
+        .map { position -> startingXi.filter { it.position == position } }
+        .filter { it.isNotEmpty() }
+    if (lines.isEmpty()) return
+
+    BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = BrandDimens.SpaceSm)
+            .aspectRatio(PITCH_RATIO)
             .clip(RoundedCornerShape(BrandDimens.CardRadius))
             .background(BrandColor.EagleDark)
     ) {
+        // The widest line decides the token, so the token never overflows and
+        // never changes between rows.
+        val widest = lines.maxOf { it.size }
+        val gap = BrandDimens.SpaceXs
+        val available = maxWidth - BrandDimens.SpaceMd * 2
+        val tokenWidth = ((available - gap * (widest - 1)) / widest).coerceAtMost(MaxTokenWidth)
+
         Canvas(Modifier.matchParentSize()) {
-            val line = palette.accent.copy(alpha = 0.18f)
+            val paint = palette.accent.copy(alpha = 0.20f)
             val w = size.width
             val h = size.height
             val stroke = 2f
+
+            // Set from the laws of the game as fractions of a 68m x 105m pitch,
+            // so the proportions are the ones an eye already knows.
+            val touchInset = w * 0.035f
+            val goalInset = h * 0.018f
+            val pitchW = w - touchInset * 2
+            val pitchH = h - goalInset * 2
+
             drawRect(
-                color = line, style = Stroke(width = stroke),
-                topLeft = Offset(w * 0.04f, h * 0.02f),
-                size = Size(w * 0.92f, h * 0.96f)
+                color = paint, style = Stroke(stroke),
+                topLeft = Offset(touchInset, goalInset), size = Size(pitchW, pitchH)
             )
-            drawLine(line, Offset(w * 0.04f, h * 0.5f), Offset(w * 0.96f, h * 0.5f), stroke)
-            drawCircle(line, radius = w * 0.15f, center = Offset(w * 0.5f, h * 0.5f), style = Stroke(stroke))
-            // Penalty boxes
-            drawRect(
-                color = line, style = Stroke(stroke),
-                topLeft = Offset(w * 0.28f, h * 0.02f), size = Size(w * 0.44f, h * 0.12f)
+            drawLine(
+                paint,
+                Offset(touchInset, h / 2f), Offset(w - touchInset, h / 2f), stroke
             )
-            drawRect(
-                color = line, style = Stroke(stroke),
-                topLeft = Offset(w * 0.28f, h * 0.86f), size = Size(w * 0.44f, h * 0.12f)
+            // Centre circle: 9.15m radius of a 68m width.
+            drawCircle(
+                paint, radius = pitchW * (9.15f / 68f),
+                center = Offset(w / 2f, h / 2f), style = Stroke(stroke)
             )
+            drawCircle(paint, radius = stroke * 1.6f, center = Offset(w / 2f, h / 2f))
+
+            // Penalty area 40.32m x 16.5m; goal area 18.32m x 5.5m.
+            val penW = pitchW * (40.32f / 68f)
+            val penH = pitchH * (16.5f / 105f)
+            val goalW = pitchW * (18.32f / 68f)
+            val goalH = pitchH * (5.5f / 105f)
+            listOf(true, false).forEach { atTop ->
+                val penTop = if (atTop) goalInset else h - goalInset - penH
+                drawRect(
+                    color = paint, style = Stroke(stroke),
+                    topLeft = Offset((w - penW) / 2f, penTop), size = Size(penW, penH)
+                )
+                val goalTop = if (atTop) goalInset else h - goalInset - goalH
+                drawRect(
+                    color = paint, style = Stroke(stroke),
+                    topLeft = Offset((w - goalW) / 2f, goalTop), size = Size(goalW, goalH)
+                )
+            }
         }
+
         Column(
-            Modifier.fillMaxWidth().padding(vertical = BrandDimens.SpaceLg),
-            verticalArrangement = Arrangement.spacedBy(BrandDimens.SpaceLg)
+            Modifier
+                .matchParentSize()
+                .padding(horizontal = BrandDimens.SpaceMd, vertical = BrandDimens.SpaceMd),
+            // Spread up the pitch rather than stacked at the top with a gap
+            // underneath. A formation is about the distance between the lines.
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            listOf(Position.GK, Position.DEF, Position.MID, Position.FWD).forEach { position ->
-                val line = startingXi.filter { it.position == position }
-                if (line.isEmpty()) return@forEach
+            lines.forEach { line ->
                 Row(
-                    Modifier.fillMaxWidth().padding(horizontal = BrandDimens.SpaceSm),
-                    horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceXs)
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(gap, Alignment.CenterHorizontally)
                 ) {
-                    // A line of one or two players centres instead of stretching:
-                    // a lone goalkeeper spread across the full width reads as a
-                    // layout bug, not as a formation.
-                    val sideWeight = (3 - line.size).coerceAtLeast(0) / 2f
-                    if (sideWeight > 0f) Spacer(Modifier.weight(sideWeight))
                     line.forEach { player ->
-                        Box(Modifier.weight(1f)) {
+                        Box(Modifier.width(tokenWidth)) {
                             PlayerPill(
                                 player = player,
                                 score = scores[player.id],
@@ -173,7 +243,6 @@ private fun PitchView(
                             )
                         }
                     }
-                    if (sideWeight > 0f) Spacer(Modifier.weight(sideWeight))
                 }
             }
         }
@@ -198,23 +267,36 @@ private fun PlayerPill(
     val awayReturn = score?.lines?.any { it.label.startsWith("Away Day Bonus") } == true
     Column(
         Modifier
+            .heightIn(min = if (benched) Dp.Unspecified else TokenHeight)
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(if (benched) palette.raised else BrandColor.NightPitch.copy(alpha = 0.82f))
             .padding(horizontal = 5.dp, vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         if (isCaptain) {
             HonourBadge("C")
             Spacer(Modifier.height(3.dp))
         }
         Text(
-            player.name.split(" ").last(),
+            // A real player goes by his surname here; there is no room for more
+            // and no ambiguity on a pitch of eleven. A stand-in drops its club
+            // prefix and keeps "DEF 1", which is the whole of what it is — so
+            // the pitch needs no separate STAND-IN tag, and every token stays
+            // one line tall. The tag still appears on Choose Players, where a
+            // row is wide enough to carry it.
+            if (player.isPlaceholder) {
+                player.name.substringAfter(' ')
+            } else {
+                player.name.split(" ").last()
+            },
             // nameCondensed, not a shrunk `name`. 15sp was a hand-typed size on
             // no step of the §02 scale, and narrowing the face is what that
             // style exists for — a long surname on a tight pitch pill keeps its
             // marks and its weight instead of losing half a point of size.
             style = BrandType.IdentityAndEditorial.nameCondensed,
-            color = palette.ink,
+            // Dimmed, because a stand-in is not somebody.
+            color = if (player.isPlaceholder) palette.inkDim else palette.ink,
             maxLines = 2,
             textAlign = TextAlign.Center
         )

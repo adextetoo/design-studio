@@ -43,12 +43,14 @@ import ng.naijaleague.fantasy.ui.components.HeroBackdrop
  * makes an app feel broken. So this screen exists to be honest about a wait,
  * not to show a logo to somebody who just tapped the logo.
  *
- * WHICH IS WHY IT HAS BUTTONS. The reference design has a splash that waits,
- * then a separate screen to choose between getting started and logging in.
- * That is two screens to answer one question. This is one: the mark and the
- * tagline settle while the app loads, and the two doors are there the moment
+ * WHICH IS WHY IT HAS BUTTONS, AND THE HOOK. The reference design has a splash
+ * that waits, then a separate screen to choose between getting started and
+ * logging in, and onboarding then opened with a third screen carrying the
+ * headline. Three screens to say one thing. This is the one: the mark and the
+ * headline settle while the app loads, and the two doors are there the moment
  * it is ready. A returning manager taps "I already have a squad" without
- * waiting for an animation to finish.
+ * waiting for an animation to finish, and onboarding starts where it should —
+ * on the club you support.
  *
  * NO PHOTOGRAPH. The reference puts a player mid-celebration behind this. The
  * players available to photograph for an NPFL app are not the ones in those
@@ -92,21 +94,24 @@ fun SplashScreen(
             horizontalAlignment = Alignment.Start
         ) {
             BrandMark(sizeDp = 64)
-            Spacer(Modifier.height(BrandDimens.SpaceLg))
+            Spacer(Modifier.height(BrandDimens.SpaceXl))
             Text(
-                stringResource(R.string.app_name),
-                style = BrandType.IdentityAndEditorial.display2,
+                // Display 1 is ALL CAPS per §02; the transform lives here so the
+                // resource stays readable and translatable.
+                stringResource(R.string.splash_head).uppercase(),
+                style = BrandType.IdentityAndEditorial.display1,
                 color = palette.ink
             )
+            Spacer(Modifier.height(BrandDimens.SpaceLg))
             Text(
-                // The tagline, not the endline. "Real fans" is an invitation and
-                // never a bouncer on the front door (§12).
-                stringResource(R.string.tagline),
+                // The body line, not the endline. "Real fans" is an invitation
+                // and never a bouncer on the front door (§12).
+                stringResource(R.string.splash_body),
                 style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim,
                 modifier = Modifier.alpha(reveal)
             )
-            Spacer(Modifier.height(BrandDimens.SpaceXxl))
+            Spacer(Modifier.height(BrandDimens.SpaceXl))
             BrandButton(label = stringResource(R.string.splash_start), onClick = onStart)
             Spacer(Modifier.height(BrandDimens.SpaceMd))
             BrandButtonSecondary(label = stringResource(R.string.splash_signin), onClick = onSignIn)

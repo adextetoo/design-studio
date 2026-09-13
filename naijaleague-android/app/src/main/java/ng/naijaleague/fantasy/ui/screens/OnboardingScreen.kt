@@ -84,14 +84,17 @@ fun OnboardingScreen(onFinished: () -> Unit) {
             .background(palette.ground)
             .statusBarsPadding()
     ) {
-        StepIndicator(step = step, total = 5, modifier = Modifier.padding(BrandDimens.Gutter))
+        StepIndicator(step = step, total = 4, modifier = Modifier.padding(BrandDimens.Gutter))
 
         Box(Modifier.weight(1f)) {
             when (step) {
-                0 -> StepHook(onNext = { step = 1 })
-                1 -> StepClub(selected = club, onSelect = { club = it; step = 2 })
-                2 -> StepBuildSquad(onNext = { step = 3 })
-                3 -> StepName(value = squadName, onValue = { squadName = it }, onNext = { step = 4 })
+                // The hook used to be step one here. It is the Splash now, and
+                // two screens asking the same question — mark, headline, "start
+                // building" or "I already have a squad" — was one screen too
+                // many between a tap and a squad (§03).
+                0 -> StepClub(selected = club, onSelect = { club = it; step = 1 })
+                1 -> StepBuildSquad(onNext = { step = 2 })
+                2 -> StepName(value = squadName, onValue = { squadName = it }, onNext = { step = 3 })
                 else -> StepSave(
                     phone = phone,
                     onPhone = { phone = it },
@@ -117,47 +120,10 @@ private fun StepIndicator(step: Int, total: Int, modifier: Modifier = Modifier) 
     }
 }
 
-/** Step 1 — the hook. Tagline first, endline locked underneath. */
-@Composable
-private fun StepHook(onNext: () -> Unit) {
-    val palette = LocalBrandPalette.current
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = BrandDimens.Gutter)
-            .navigationBarsPadding(),
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        BrandMark(sizeDp = 52)
-        Spacer(Modifier.height(BrandDimens.SpaceXl))
-        Text(
-            // Display 1 is ALL CAPS per §02; the transform lives here so the
-            // resource stays readable and translatable.
-            stringResource(R.string.onb1_head).uppercase(),
-            style = BrandType.IdentityAndEditorial.display1,
-            color = palette.ink
-        )
-        Spacer(Modifier.height(BrandDimens.SpaceLg))
-        Text(
-            stringResource(R.string.onb1_body),
-            style = BrandType.InterfaceAndGuidance.body,
-            color = palette.inkDim
-        )
-        Spacer(Modifier.height(BrandDimens.SpaceXl))
-        BrandButton(label = stringResource(R.string.onb1_cta), onClick = onNext)
-        Spacer(Modifier.height(BrandDimens.SpaceMd))
-        BrandButtonSecondary(label = stringResource(R.string.onb1_alt), onClick = onNext)
-        // No endline here. §12: "real fans" is an invitation, never a test, and
-        // never in onboarding — screen one of a signup flow is the door with a
-        // bouncer on it that the rule exists to prevent.
-        Spacer(Modifier.height(BrandDimens.SpaceXl))
-    }
-}
-
 /**
- * Step 2 — pick your club.
+ * Step 1 — pick your club.
  *
- * Asked second, before any friction: it is the cheapest and most valuable data
+ * Asked first, before any friction: it is the cheapest and most valuable data
  * we will ever collect, it makes every screen afterwards feel addressed to one
  * person, and it is the asset we eventually sell back to clubs (§06).
  */

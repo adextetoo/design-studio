@@ -21,13 +21,11 @@
     <string name="endline">Fantasy football for real NPFL fans</string>
     <string name="campaign_line">Table no dey lie.</string>
 
-    <!-- ===== Onboarding (§03) ===== -->
-    <!-- Display 1 treatment is ALL CAPS per §02; the transform is applied at
+    <!-- ===== The hook, on the Splash (§03) =====
+         Display 1 treatment is ALL CAPS per §02; the transform is applied at
          the call site so the resource stays readable and translatable. -->
-    <string name="onb1_head">Build your dream team.\nNPFL Fantasy.</string>
-    <string name="onb1_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
-    <string name="onb1_cta">Start building</string>
-    <string name="onb1_alt">I already have a squad</string>
+    <string name="splash_head">Build your dream team.\nNPFL Fantasy.</string>
+    <string name="splash_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
 
     <string name="onb2_head">Who do you support?</string>
     <string name="onb2_body">Pick one. We\'ll never ask you to switch.</string>
