@@ -71,12 +71,13 @@ private enum class PointsTab(val label: String) {
 private const val AWAY_LINE_PREFIX = "Away Day Bonus"
 
 /**
- * The gameweek that has just been played, as opposed to the one being picked.
+ * The squad as it stood at the deadline.
  *
- * The rest of the app reads [SampleData.gameweekNumber] as "the round you are
- * choosing for". This screen looks backwards at the same round after the final
- * whistle, which is why every figure on it comes out of the engine rather than
- * out of a stored total.
+ * Held once at file scope because four of the composables below need it and
+ * threading it through each of them would only obscure that they are all
+ * describing the same fifteen players. In the live build it arrives from the
+ * squad view-model; here it is the demo squad, and every figure taken from it
+ * is computed by the engine rather than stored (§05).
  */
 private val squad = SampleData.squad
 
@@ -433,7 +434,7 @@ private fun BreakdownLine(label: String, points: Int?, strong: Boolean = false) 
     ) {
         Text(
             label,
-            style = BrandType.InterfaceAndGuidance.micro,
+            style = BrandType.InterfaceAndGuidance.bodySmall,
             color = tint,
             modifier = Modifier.weight(1f)
         )
@@ -502,9 +503,11 @@ private fun SubstitutionsBlock(
         }
 
         Spacer(Modifier.height(BrandDimens.SpaceMd))
+        // 16sp, not 14. §02 v1.1 put the body floor at 15sp and reserved 14
+        // for secondary information — never a rule. This is a rule.
         Text(
             stringResource(R.string.subs_postponed_title),
-            style = BrandType.InterfaceAndGuidance.bodySmall,
+            style = BrandType.InterfaceAndGuidance.body,
             color = palette.inkDim
         )
     }
@@ -585,7 +588,7 @@ private fun AwayBonusNote(awayBonus: Int) {
                 }
                 Text(
                     stringResource(R.string.away_bonus_detail),
-                    style = BrandType.InterfaceAndGuidance.bodySmall,
+                    style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
             }
@@ -608,7 +611,7 @@ private fun TransfersTab(returned: Int?) {
     val banked = Transfers.bankAfter(SampleData.bankedTransfers, TRANSFERS_MADE)
 
     Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-        SectionLabel("Made before the deadline")
+        SectionLabel("Gameweek ${SampleData.gameweekNumber} transfer")
         Spacer(Modifier.height(BrandDimens.SpaceMd))
 
         TransferSide(label = "Out", player = transferOut)

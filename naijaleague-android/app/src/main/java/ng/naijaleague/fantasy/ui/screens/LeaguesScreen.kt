@@ -53,14 +53,34 @@ private enum class LeagueTab(val label: String) {
  * allowed brass, because brass means something was won (§01).
  */
 @Composable
-fun LeaguesScreen(onOpenGafferPass: () -> Unit) {
+fun LeaguesScreen(onOpenGafferPass: () -> Unit, onJoinLeagues: () -> Unit) {
     val palette = LocalBrandPalette.current
     var tab by remember { mutableStateOf(LeagueTab.MINI) }
 
     Column(Modifier.fillMaxWidth()) {
         ScreenHeader(
             title = "Leagues",
-            subtitle = "Gameweek ${SampleData.gameweekNumber} · 8 managers"
+            subtitle = "Gameweek ${SampleData.gameweekNumber} · 8 managers",
+            // Joining is the action on this screen that is not reading a table,
+            // so it sits in the header where it is reachable without scrolling
+            // past eight rows first.
+            trailing = {
+                Box(
+                    Modifier
+                        .heightIn(min = BrandDimens.MinTapTarget)
+                        .clip(RoundedCornerShape(BrandDimens.ChipRadius))
+                        .background(palette.raised)
+                        .clickable(onClick = onJoinLeagues)
+                        .padding(horizontal = BrandDimens.SpaceLg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(R.string.leagues_join_cta),
+                        style = BrandType.InterfaceAndGuidance.label,
+                        color = palette.accent
+                    )
+                }
+            }
         )
 
         Row(

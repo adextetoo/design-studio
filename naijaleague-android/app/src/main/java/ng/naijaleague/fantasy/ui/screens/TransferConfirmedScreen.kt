@@ -147,9 +147,11 @@ fun TransferConfirmedScreen(onViewTeam: () -> Unit, onAnother: () -> Unit) {
                     color = if (hit > 0) palette.negative else palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
+                // The promise itself, at 16sp. §02 v1.1 forbids 14sp for a rule
+                // or for anything involving money, and this is both.
                 Text(
                     stringResource(R.string.transfer_cost_note),
-                    style = BrandType.InterfaceAndGuidance.bodySmall,
+                    style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
 

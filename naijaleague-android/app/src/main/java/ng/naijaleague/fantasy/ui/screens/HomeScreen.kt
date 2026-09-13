@@ -1,6 +1,7 @@
 package ng.naijaleague.fantasy.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -17,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
@@ -52,7 +58,9 @@ fun HomeScreen(
     onViewTeam: () -> Unit,
     onOpenLive: () -> Unit,
     onOpenReceipt: () -> Unit,
-    onOpenThreePick: () -> Unit
+    onOpenThreePick: () -> Unit,
+    onOpenProfile: () -> Unit,
+    onOpenNotifications: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
 
@@ -73,7 +81,26 @@ fun HomeScreen(
             item {
                 ScreenHeader(
                     title = "Gameweek ${SampleData.gameweekNumber}",
-                    subtitle = "Your squad is locked in. 6 fixtures to come."
+                    subtitle = "Your squad is locked in. 6 fixtures to come.",
+                    // Notifications and profile live in the header rather than
+                    // the bottom bar: the bar has four tabs and §13 says thumb
+                    // gravity belongs to the things you do every visit. Reading
+                    // your alerts is not that; picking your team is.
+                    trailing = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            HeaderAction(
+                                glyph = "!",
+                                description = "Notifications",
+                                onClick = onOpenNotifications
+                            )
+                            Spacer(Modifier.width(BrandDimens.SpaceSm))
+                            HeaderAction(
+                                glyph = "\u25CF",
+                                description = "Profile and settings",
+                                onClick = onOpenProfile
+                            )
+                        }
+                    }
                 )
             }
 
@@ -362,3 +389,36 @@ private fun FixtureRow(
 /** Thousands separators, because a rank of 128432 is unreadable at a glance. */
 internal fun formatThousands(value: Int): String =
     value.toString().reversed().chunked(3).joinToString(",").reversed()
+
+
+/**
+ * A round header action.
+ *
+ * Drawn as a glyph on a raised disc rather than imported as an icon, for the
+ * same reason the bottom bar draws its own (§13): one blunt stroke, one
+ * meaning, no outlines and no gradients. The tap target is the full
+ * [BrandDimens.MinTapTarget] even though the disc is smaller — a 32dp circle is
+ * a 32dp circle to look at and a miss to a thumb.
+ */
+@Composable
+private fun HeaderAction(glyph: String, description: String, onClick: () -> Unit) {
+    val palette = LocalBrandPalette.current
+    Box(
+        Modifier
+            .size(BrandDimens.MinTapTarget)
+            .clip(CircleShape)
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(palette.raised),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(glyph, style = BrandType.InterfaceAndGuidance.label, color = palette.ink)
+        }
+    }
+}

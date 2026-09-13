@@ -29,6 +29,14 @@ import ng.naijaleague.fantasy.ui.screens.OnboardingScreen
 import ng.naijaleague.fantasy.ui.screens.ReceiptScreen
 import ng.naijaleague.fantasy.ui.screens.RulesScreen
 import ng.naijaleague.fantasy.ui.screens.ThreePickScreen
+import ng.naijaleague.fantasy.ui.screens.EndCardScreen
+import ng.naijaleague.fantasy.ui.screens.JoinLeaguesScreen
+import ng.naijaleague.fantasy.ui.screens.NotificationsScreen
+import ng.naijaleague.fantasy.ui.screens.PointsScreen
+import ng.naijaleague.fantasy.ui.screens.ProfileScreen
+import ng.naijaleague.fantasy.ui.screens.SignUpScreen
+import ng.naijaleague.fantasy.ui.screens.SplashScreen
+import ng.naijaleague.fantasy.ui.screens.TransferConfirmedScreen
 import ng.naijaleague.fantasy.ui.screens.TeamScreen
 
 /**
@@ -38,22 +46,62 @@ import ng.naijaleague.fantasy.ui.screens.TeamScreen
  * does not need a nav host, and the fewer moving parts between a thumb and a
  * squad the better on a slow handset.
  */
-private enum class Overlay { NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS, THREE_PICK }
+/**
+ * The launch sequence, which is the adopted flow's stages 1-3 and 14 in order.
+ *
+ * A returning manager skips all of it: signing in from the splash goes straight
+ * to [Phase.APP]. The end card closes the FIRST session only — showing it after
+ * every visit would make leaving the app an event, and it is not one.
+ */
+private enum class Phase { SPLASH, ONBOARDING, SIGN_UP, END_CARD, APP }
+
+private enum class Overlay {
+    NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS, THREE_PICK,
+    POINTS, PROFILE, NOTIFICATIONS, JOIN_LEAGUES, TRANSFER_CONFIRMED
+}
 
 @Composable
 fun NaijaLeagueRoot() {
-    var onboarded by rememberSaveable { mutableStateOf(false) }
+    var phase by rememberSaveable { mutableStateOf(Phase.SPLASH) }
     var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     var overlay by rememberSaveable { mutableStateOf(Overlay.NONE) }
 
-    if (!onboarded) {
-        OnboardingScreen(onFinished = { onboarded = true })
-        return
+    // The squad the account step is asked to save. Named here rather than inside
+    // the screen so the heading can say what is actually at stake.
+    val squadName = SampleData.miniLeague[4].squadName
+
+    when (phase) {
+        Phase.SPLASH -> {
+            SplashScreen(
+                onStart = { phase = Phase.ONBOARDING },
+                // A returning manager has a squad already and waits for nothing.
+                onSignIn = { phase = Phase.APP }
+            )
+            return
+        }
+        Phase.ONBOARDING -> {
+            OnboardingScreen(onFinished = { phase = Phase.SIGN_UP })
+            return
+        }
+        Phase.SIGN_UP -> {
+            SignUpScreen(
+                squadName = squadName,
+                onSaved = { phase = Phase.END_CARD },
+                onSignIn = { phase = Phase.APP },
+                onBack = { phase = Phase.ONBOARDING }
+            )
+            return
+        }
+        Phase.END_CARD -> {
+            EndCardScreen(onHome = { phase = Phase.APP })
+            return
+        }
+        Phase.APP -> Unit
     }
 
     when (overlay) {
         Overlay.CHOOSE_PLAYERS -> {
-            ChoosePlayersScreen(onClose = { overlay = Overlay.NONE })
+            ChoosePlayersScreen(onClose = { overlay = Overlay.TRANSFER_CONFIRMED })
             return
         }
         Overlay.LIVE_MATCH -> {
@@ -70,6 +118,35 @@ fun NaijaLeagueRoot() {
         }
         Overlay.THREE_PICK -> {
             ThreePickScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.POINTS -> {
+            PointsScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.PROFILE -> {
+            ProfileScreen(
+                onClose = { overlay = Overlay.NONE },
+                onOpenGafferPass = { overlay = Overlay.GAFFER_PASS }
+            )
+            return
+        }
+        Overlay.NOTIFICATIONS -> {
+            NotificationsScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.JOIN_LEAGUES -> {
+            JoinLeaguesScreen(onClose = { overlay = Overlay.NONE })
+            return
+        }
+        Overlay.TRANSFER_CONFIRMED -> {
+            TransferConfirmedScreen(
+                onViewTeam = {
+                    overlay = Overlay.NONE
+                    tab = Tab.TEAM
+                },
+                onAnother = { overlay = Overlay.CHOOSE_PLAYERS }
+            )
             return
         }
         Overlay.NONE -> Unit
@@ -103,14 +180,17 @@ fun NaijaLeagueRoot() {
                 Box(Modifier.weight(1f)) {
                     when (tab) {
                         Tab.HOME -> HomeScreen(
-                            onViewTeam = { tab = Tab.TEAM },
+                            onViewTeam = { overlay = Overlay.POINTS },
+                            onOpenProfile = { overlay = Overlay.PROFILE },
+                            onOpenNotifications = { overlay = Overlay.NOTIFICATIONS },
                             onOpenLive = { overlay = Overlay.LIVE_MATCH },
                             onOpenReceipt = { overlay = Overlay.RECEIPT },
                             onOpenThreePick = { overlay = Overlay.THREE_PICK }
                         )
                         Tab.TEAM -> TeamScreen(onChoosePlayers = { overlay = Overlay.CHOOSE_PLAYERS })
                         Tab.LEAGUES -> LeaguesScreen(
-                            onOpenGafferPass = { overlay = Overlay.GAFFER_PASS }
+                            onOpenGafferPass = { overlay = Overlay.GAFFER_PASS },
+                            onJoinLeagues = { overlay = Overlay.JOIN_LEAGUES }
                         )
                         Tab.RULES -> RulesScreen()
                     }
