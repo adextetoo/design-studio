@@ -1,6 +1,7 @@
 package ng.naijaleague.fantasy.ui.screens
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +51,8 @@ import ng.naijaleague.fantasy.rules.PlayerScore
 import ng.naijaleague.fantasy.rules.Position
 import ng.naijaleague.fantasy.rules.Scoring
 import ng.naijaleague.fantasy.ui.components.BrandButton
+import ng.naijaleague.fantasy.ui.components.ClubJersey
+import ng.naijaleague.fantasy.ui.components.PlayerCardSheet
 import ng.naijaleague.fantasy.ui.components.HonourBadge
 import ng.naijaleague.fantasy.ui.components.ScreenHeader
 import ng.naijaleague.fantasy.ui.components.SectionLabel
@@ -65,6 +72,22 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
     }
     val scoreById = remember(gameweek) { gameweek.playerScores.associateBy { it.playerId } }
 
+    // Tapping a token opens that player's card. Held here rather than in a
+    // navigation graph for the same reason the root has no nav host: the card
+    // is a detail of this screen, not a destination of its own.
+    var opened by rememberSaveable { mutableStateOf<String?>(null) }
+    val openedPlayer = opened?.let { id -> squad.allPlayers.firstOrNull { it.id == id } }
+    if (openedPlayer != null) {
+        PlayerCardSheet(
+            player = openedPlayer,
+            score = scoreById[openedPlayer.id],
+            performance = SampleData.gameweek12[openedPlayer.id],
+            isCaptain = openedPlayer.id == squad.captainId,
+            onClose = { opened = null }
+        )
+        return
+    }
+
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
         ScreenHeader(
             title = "My team",
@@ -72,7 +95,7 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
                 "${Money.format(squad.budgetRemaining)} in the bank"
         )
 
-        PitchView(squad.startingXi, scoreById, squad.captainId)
+        PitchView(squad.startingXi, scoreById, squad.captainId) { opened = it.id }
 
         // ---- Bench. Only scores under Owambe, and the screen says so. ----
         Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
@@ -82,7 +105,13 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
             Row(horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceSm)) {
                 squad.bench.forEach { player ->
                     Box(Modifier.weight(1f)) {
-                        PlayerPill(player, scoreById[player.id], isCaptain = false, benched = true)
+                        PlayerPill(
+                            player = player,
+                            score = scoreById[player.id],
+                            isCaptain = false,
+                            benched = true,
+                            onClick = { opened = player.id }
+                        )
                     }
                 }
             }
@@ -132,10 +161,18 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
  * every other line uses it, centred. Five defenders and one keeper are the same
  * object, in the same size, in different numbers — which is what a formation is.
  */
-private const val PITCH_RATIO = 0.74f
+private const val PITCH_RATIO = 0.70f
 
-/** Token width is capped so a front two does not draw two slabs. */
-private val MaxTokenWidth = 78.dp
+/**
+ * The token is portrait and small, not a square slab.
+ *
+ * It was as wide as the row could make it and near enough square, which read as
+ * a grid of buttons rather than a team sheet. A player on a pitch is a shirt
+ * with a name under it — taller than it is wide, and small enough that eleven
+ * of them look like a formation instead of a menu. The gap between them went up
+ * with the size coming down: crowding was half of why it looked wrong.
+ */
+private val MaxTokenWidth = 62.dp
 
 /**
  * Every token is the same height as well as the same width.
@@ -144,13 +181,17 @@ private val MaxTokenWidth = 78.dp
  * its neighbours and the line would sit crooked. Reserving the space costs a
  * few dp of pitch and buys a row that lines up.
  */
-private val TokenHeight = 58.dp
+private val TokenHeight = 74.dp
+
+/** Air between tokens. A team sheet needs the space between the lines. */
+private val TokenGap = BrandDimens.SpaceSm
 
 @Composable
 private fun PitchView(
     startingXi: List<Player>,
     scores: Map<String, PlayerScore>,
-    captainId: String?
+    captainId: String?,
+    onOpenPlayer: (Player) -> Unit
 ) {
     val palette = LocalBrandPalette.current
     val lines = listOf(Position.GK, Position.DEF, Position.MID, Position.FWD)
@@ -169,7 +210,7 @@ private fun PitchView(
         // The widest line decides the token, so the token never overflows and
         // never changes between rows.
         val widest = lines.maxOf { it.size }
-        val gap = BrandDimens.SpaceXs
+        val gap = TokenGap
         val available = maxWidth - BrandDimens.SpaceMd * 2
         val tokenWidth = ((available - gap * (widest - 1)) / widest).coerceAtMost(MaxTokenWidth)
 
@@ -239,7 +280,8 @@ private fun PitchView(
                                 player = player,
                                 score = scores[player.id],
                                 isCaptain = player.id == captainId,
-                                benched = false
+                                benched = false,
+                                onClick = { onOpenPlayer(player) }
                             )
                         }
                     }
@@ -261,7 +303,8 @@ private fun PlayerPill(
     player: Player,
     score: PlayerScore?,
     isCaptain: Boolean,
-    benched: Boolean
+    benched: Boolean,
+    onClick: (() -> Unit)? = null
 ) {
     val palette = LocalBrandPalette.current
     val awayReturn = score?.lines?.any { it.label.startsWith("Away Day Bonus") } == true
@@ -270,10 +313,17 @@ private fun PlayerPill(
             .heightIn(min = if (benched) Dp.Unspecified else TokenHeight)
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(if (benched) palette.raised else BrandColor.NightPitch.copy(alpha = 0.82f))
-            .padding(horizontal = 5.dp, vertical = 6.dp),
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 4.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // The shirt, not a badge. A supporter reads the kit before the name, and
+        // on a token this size the kit is most of what there is room for.
+        if (!benched) {
+            ClubJersey(clubId = player.clubId, sizeDp = 30.dp)
+            Spacer(Modifier.height(3.dp))
+        }
         if (isCaptain) {
             HonourBadge("C")
             Spacer(Modifier.height(3.dp))
