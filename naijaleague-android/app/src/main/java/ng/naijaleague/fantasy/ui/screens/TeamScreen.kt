@@ -1,5 +1,7 @@
 package ng.naijaleague.fantasy.ui.screens
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
@@ -28,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -37,14 +40,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.LocalAnimationsEnabled
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
+import ng.naijaleague.fantasy.brand.BrandMotion
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.SampleData
 import ng.naijaleague.fantasy.rules.Chip
 import ng.naijaleague.fantasy.rules.DifferentialTier
+import ng.naijaleague.fantasy.rules.Formations
 import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.rules.Player
 import ng.naijaleague.fantasy.rules.PlayerScore
@@ -53,6 +59,7 @@ import ng.naijaleague.fantasy.rules.Scoring
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.ClubJersey
 import ng.naijaleague.fantasy.ui.components.PlayerCardSheet
+import ng.naijaleague.fantasy.ui.components.FormationPicker
 import ng.naijaleague.fantasy.ui.components.HonourBadge
 import ng.naijaleague.fantasy.ui.components.ScreenHeader
 import ng.naijaleague.fantasy.ui.components.SectionLabel
@@ -66,17 +73,25 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
 @Composable
 fun TeamScreen(onChoosePlayers: () -> Unit) {
     val palette = LocalBrandPalette.current
-    val squad = SampleData.squad
-    val gameweek = remember {
-        Scoring.scoreSquad(squad, SampleData.gameweek12, SampleData.activeChip)
-    }
-    val scoreById = remember(gameweek) { gameweek.playerScores.associateBy { it.playerId } }
 
     // Tapping a token opens that player's card. Held here rather than in a
     // navigation graph for the same reason the root has no nav host: the card
     // is a detail of this screen, not a destination of its own.
     var opened by rememberSaveable { mutableStateOf<String?>(null) }
     var claiming by rememberSaveable { mutableStateOf(false) }
+    var pickingShape by rememberSaveable { mutableStateOf(false) }
+    // The XI is state, because the picker rearranges it. The fifteen never
+    // change — a formation is a way of arranging the squad you already own,
+    // not a transfer, and the panel says so.
+    var startingIds by rememberSaveable { mutableStateOf(SampleData.startingIds) }
+
+    val base = SampleData.squad
+    val squad = remember(startingIds) { base.copy(startingIds = startingIds) }
+    val gameweek = remember(squad) {
+        Scoring.scoreSquad(squad, SampleData.gameweek12, SampleData.activeChip)
+    }
+    val scoreById = remember(gameweek) { gameweek.playerScores.associateBy { it.playerId } }
+
     val openedPlayer = opened?.let { id -> squad.allPlayers.firstOrNull { it.id == id } }
     if (openedPlayer != null) {
         if (claiming) {
@@ -94,54 +109,114 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
         return
     }
 
-    Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
-        ScreenHeader(
-            title = "My team",
-            subtitle = "Gameweek ${SampleData.gameweekNumber} · ${squad.formation} · " +
-                "${Money.format(squad.budgetRemaining)} in the bank"
-        )
+    // The pitch goes soft behind the picker. This is the backdrop half of the
+    // glass: the panel is translucent, so what shows through it has to be out of
+    // focus or it competes with the shapes on the dial. It eases rather than
+    // snaps because the panel is arriving, not cutting.
+    //
+    // Modifier.blur is a no-op below Android 12. The scrim in FormationPicker is
+    // weighted to carry the separation on its own there, which is why it is as
+    // heavy as it is.
+    val animate = LocalAnimationsEnabled.current
+    val backdropBlur by animateDpAsState(
+        targetValue = if (pickingShape) PitchBlur else 0.dp,
+        animationSpec = if (animate) BrandMotion.enter() else snap(),
+        label = "pitchBlur"
+    )
 
-        PitchView(squad.startingXi, scoreById, squad.captainId) { opened = it.id }
-
-        // ---- Bench. Only scores under Owambe, and the screen says so. ----
-        Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-            Spacer(Modifier.height(BrandDimens.SpaceLg))
-            SectionLabel("Bench · scores only with Owambe")
-            Spacer(Modifier.height(BrandDimens.SpaceSm))
-            Row(horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceSm)) {
-                squad.bench.forEach { player ->
-                    Box(Modifier.weight(1f)) {
-                        PlayerPill(
-                            player = player,
-                            score = scoreById[player.id],
-                            isCaptain = false,
-                            benched = true,
-                            onClick = { opened = player.id }
+    Box(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .blur(backdropBlur)
+                .verticalScroll(rememberScrollState())
+        ) {
+            ScreenHeader(
+                title = "My team",
+                subtitle = "Gameweek ${SampleData.gameweekNumber} · " +
+                    Money.format(squad.budgetRemaining) + " in the bank",
+                trailing = {
+                    // The shape is the control, not a caption. It sits in the header
+                    // because that is where it already was — a manager looking for
+                    // "4-3-3" looks where 4-3-3 used to be written.
+                    Row(
+                        Modifier
+                            .heightIn(min = BrandDimens.MinTapTarget)
+                            .clip(RoundedCornerShape(BrandDimens.ChipRadius))
+                            .background(palette.raised)
+                            .clickable { pickingShape = true }
+                            .padding(horizontal = BrandDimens.SpaceMd),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceXs)
+                    ) {
+                        Text(
+                            squad.formation,
+                            style = BrandType.ScoreAndData.data,
+                            color = palette.accent
+                        )
+                        Text(
+                            "▾",
+                            style = BrandType.InterfaceAndGuidance.label,
+                            color = palette.accent
                         )
                     }
                 }
-            }
-            Spacer(Modifier.height(BrandDimens.SpaceXl))
-
-            // ---- Chips ----
-            SectionLabel("Chips · five a season, one per gameweek")
-            Spacer(Modifier.height(BrandDimens.SpaceSm))
-            Row(
-                Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceSm)
-            ) {
-                Chip.entries.forEach { chip -> ChipCard(chip) }
-            }
-            Spacer(Modifier.height(BrandDimens.SpaceXl))
-
-            BrandButton(label = "Choose players", onClick = onChoosePlayers)
-            Spacer(Modifier.height(BrandDimens.SpaceMd))
-            Text(
-                stringResource(R.string.no_buying_points_short),
-                style = BrandType.InterfaceAndGuidance.body,
-                color = palette.inkDim
             )
-            Spacer(Modifier.height(BrandDimens.SpaceXxl))
+
+            PitchView(squad.startingXi, scoreById, squad.captainId) { opened = it.id }
+
+            // ---- Bench. Only scores under Owambe, and the screen says so. ----
+            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                Spacer(Modifier.height(BrandDimens.SpaceLg))
+                SectionLabel("Bench · scores only with Owambe")
+                Spacer(Modifier.height(BrandDimens.SpaceSm))
+                Row(horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceSm)) {
+                    squad.bench.forEach { player ->
+                        Box(Modifier.weight(1f)) {
+                            PlayerPill(
+                                player = player,
+                                score = scoreById[player.id],
+                                isCaptain = false,
+                                benched = true,
+                                onClick = { opened = player.id }
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(BrandDimens.SpaceXl))
+
+                // ---- Chips ----
+                SectionLabel("Chips · five a season, one per gameweek")
+                Spacer(Modifier.height(BrandDimens.SpaceSm))
+                Row(
+                    Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceSm)
+                ) {
+                    Chip.entries.forEach { chip -> ChipCard(chip) }
+                }
+                Spacer(Modifier.height(BrandDimens.SpaceXl))
+
+                BrandButton(label = "Choose players", onClick = onChoosePlayers)
+                Spacer(Modifier.height(BrandDimens.SpaceMd))
+                Text(
+                    stringResource(R.string.no_buying_points_short),
+                    style = BrandType.InterfaceAndGuidance.body,
+                    color = palette.inkDim
+                )
+                Spacer(Modifier.height(BrandDimens.SpaceXxl))
+            }
+        }
+
+        if (pickingShape) {
+            FormationPicker(
+                squad = squad,
+                current = squad.formation,
+                onPick = { shape ->
+                    Formations.selectXi(squad, shape)?.let { startingIds = it }
+                    pickingShape = false
+                },
+                onDismiss = { pickingShape = false }
+            )
         }
     }
 }
@@ -191,6 +266,16 @@ private val TokenHeight = 74.dp
 
 /** Air between tokens. A team sheet needs the space between the lines. */
 private val TokenGap = BrandDimens.SpaceSm
+
+/**
+ * How far out of focus the pitch goes behind the formation picker.
+ *
+ * Enough that the tokens stop being readable — otherwise the eye keeps trying
+ * to read them through the panel — and not so far that the green stops being
+ * recognisably a pitch. Losing the pitch entirely would defeat the point of
+ * overlaying rather than pushing a new screen.
+ */
+private val PitchBlur = 14.dp
 
 @Composable
 private fun PitchView(

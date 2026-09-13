@@ -85,4 +85,53 @@ object Formations {
             squad.countBy(Position.FWD) >= formation.forwards
 
     fun reachableFrom(squad: Squad): List<Formation> = legal.filter { reachable(squad, it) }
+
+    /**
+     * The XI this squad would field in that shape.
+     *
+     * Returns null when the fifteen cannot make it — the picker greys those out
+     * rather than offering a shape it would then refuse.
+     *
+     * WHO GETS PICKED, in order, and each rule is there for a reason a manager
+     * would recognise:
+     *
+     *   1. THE CAPTAIN, ALWAYS. Changing shape must never bench the armband. A
+     *      captain on the bench scores nothing and the validator rejects it, so
+     *      a picker that could produce one is a picker that produces an error.
+     *   2. WHOEVER IS ALREADY PLAYING. Moving from 4-3-3 to 4-4-2 should change
+     *      one player, not eleven. Continuity is the difference between adjusting
+     *      a team and being handed a new one.
+     *   3. THEN THE MOST EXPENSIVE ON THE BENCH. Price is this game's only
+     *      standing estimate of who is better — there are no form ratings for
+     *      this league — so it is the honest tie-break, and the manager can
+     *      still swap anyone afterwards.
+     *
+     * Deterministic: the same squad and shape always give the same eleven.
+     */
+    fun selectXi(squad: Squad, formation: Formation): Set<String>? {
+        if (!reachable(squad, formation)) return null
+        val wanted = mapOf(
+            Position.GK to (SquadRules.XI_MINIMUM[Position.GK] ?: 1),
+            Position.DEF to formation.defenders,
+            Position.MID to formation.midfielders,
+            Position.FWD to formation.forwards
+        )
+        val order = compareByDescending<Player> { it.id == squad.captainId }
+            .thenByDescending { it.id in squad.startingIds }
+            .thenByDescending { it.priceNaira }
+            // Last resort so the result cannot depend on list order.
+            .thenBy { it.id }
+
+        return buildSet {
+            wanted.forEach { (position, count) ->
+                addAll(
+                    squad.allPlayers
+                        .filter { it.position == position }
+                        .sortedWith(order)
+                        .take(count)
+                        .map { it.id }
+                )
+            }
+        }
+    }
 }
