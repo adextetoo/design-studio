@@ -24,8 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
@@ -70,7 +72,8 @@ fun PlayerCardSheet(
     score: PlayerScore?,
     performance: Performance?,
     isCaptain: Boolean,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onClaim: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
     val record = NpflClubs.record(player.clubId)
@@ -232,6 +235,24 @@ fun PlayerCardSheet(
                         "a shirt than a stranger's face."
                 }
             )
+
+            // The route for the one person who knows this card is wrong.
+            Spacer(Modifier.height(BrandDimens.SpaceLg))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = BrandDimens.MinTapTarget)
+                    .clip(RoundedCornerShape(BrandDimens.ChipRadius))
+                    .border(1.dp, palette.rule, RoundedCornerShape(BrandDimens.ChipRadius))
+                    .clickable(onClick = onClaim),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    stringResource(R.string.claim_link),
+                    style = BrandType.InterfaceAndGuidance.body,
+                    color = palette.accent
+                )
+            }
 
             registered?.note?.let { note ->
                 Spacer(Modifier.height(BrandDimens.SpaceMd))

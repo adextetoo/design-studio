@@ -76,15 +76,21 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
     // navigation graph for the same reason the root has no nav host: the card
     // is a detail of this screen, not a destination of its own.
     var opened by rememberSaveable { mutableStateOf<String?>(null) }
+    var claiming by rememberSaveable { mutableStateOf(false) }
     val openedPlayer = opened?.let { id -> squad.allPlayers.firstOrNull { it.id == id } }
     if (openedPlayer != null) {
-        PlayerCardSheet(
-            player = openedPlayer,
-            score = scoreById[openedPlayer.id],
-            performance = SampleData.gameweek12[openedPlayer.id],
-            isCaptain = openedPlayer.id == squad.captainId,
-            onClose = { opened = null }
-        )
+        if (claiming) {
+            ClaimCardScreen(player = openedPlayer, onClose = { claiming = false })
+        } else {
+            PlayerCardSheet(
+                player = openedPlayer,
+                score = scoreById[openedPlayer.id],
+                performance = SampleData.gameweek12[openedPlayer.id],
+                isCaptain = openedPlayer.id == squad.captainId,
+                onClose = { opened = null },
+                onClaim = { claiming = true }
+            )
+        }
         return
     }
 
@@ -318,63 +324,90 @@ private fun PlayerPill(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // The shirt, not a badge. A supporter reads the kit before the name, and
-        // on a token this size the kit is most of what there is room for.
+        // The shirt, with the score pinned to its top-right corner.
+        //
+        // The points used to sit on their own line under the name, which pushed
+        // the name and the shirt number apart and made the token three stacked
+        // things. Hanging the score off the jersey leaves the line below to read
+        // as one object — "Asibe 1", the way a team sheet writes it — and puts
+        // the number where the eye already goes on a football graphic.
         if (!benched) {
-            ClubJersey(clubId = player.clubId, sizeDp = 30.dp)
-            Spacer(Modifier.height(3.dp))
-        }
-        if (isCaptain) {
-            HonourBadge("C")
-            Spacer(Modifier.height(3.dp))
-        }
-        Text(
-            // A real player goes by his surname here; there is no room for more
-            // and no ambiguity on a pitch of eleven. A stand-in drops its club
-            // prefix and keeps "DEF 1", which is the whole of what it is — so
-            // the pitch needs no separate STAND-IN tag, and every token stays
-            // one line tall. The tag still appears on Choose Players, where a
-            // row is wide enough to carry it.
-            if (player.isPlaceholder) {
-                player.name.substringAfter(' ')
-            } else {
-                player.name.split(" ").last()
-            },
-            // nameCondensed, not a shrunk `name`. 15sp was a hand-typed size on
-            // no step of the §02 scale, and narrowing the face is what that
-            // style exists for — a long surname on a tight pitch pill keeps its
-            // marks and its weight instead of losing half a point of size.
-            style = BrandType.IdentityAndEditorial.nameCondensed,
-            // Dimmed, because a stand-in is not somebody.
-            color = if (player.isPlaceholder) palette.inkDim else palette.ink,
-            maxLines = 2,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.height(2.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "${score?.finalPoints ?: 0}",
-                style = BrandType.ScoreAndData.dataSmall,
-                color = if ((score?.finalPoints ?: 0) < 0) palette.negative else palette.accent
-            )
-            if (awayReturn) {
-                Spacer(Modifier.width(3.dp))
-                Text(
-                    "A",
-                    style = BrandType.InterfaceAndGuidance.label,
-                    color = palette.accent
+            Box(contentAlignment = Alignment.TopEnd) {
+                ClubJersey(
+                    clubId = player.clubId,
+                    modifier = Modifier.padding(end = 7.dp, top = 5.dp),
+                    sizeDp = 30.dp
                 )
+                ScoreTick(score = score, captain = isCaptain)
+            }
+            Spacer(Modifier.height(2.dp))
+        }
+        if (benched) {
+            // The bench has room for a line of its own, and no jersey to hang
+            // the score off.
+            Spacer(Modifier.height(2.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "${score?.finalPoints ?: 0}",
+                    style = BrandType.ScoreAndData.dataSmall,
+                    color = if ((score?.finalPoints ?: 0) < 0) palette.negative else palette.accent
+                )
+                if (awayReturn) {
+                    Spacer(Modifier.width(3.dp))
+                    Text("A", style = BrandType.InterfaceAndGuidance.label, color = palette.accent)
+                }
+            }
+        } else if (awayReturn || score?.differentialTier != DifferentialTier.NONE) {
+            // The two things the score alone cannot say: it came from an away
+            // ground, and it was multiplied for being a brave pick (§08).
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                if (awayReturn) {
+                    Text("A", style = BrandType.InterfaceAndGuidance.label, color = palette.accent)
+                }
+                score?.differentialTier
+                    ?.takeIf { it != DifferentialTier.NONE }
+                    ?.let {
+                        Text(
+                            "x${it.multiplier}",
+                            style = BrandType.InterfaceAndGuidance.label,
+                            color = palette.accent
+                        )
+                    }
             }
         }
-        if (score?.differentialTier != null &&
-            score.differentialTier != DifferentialTier.NONE
-        ) {
-            Text(
-                score.differentialTier.multiplier.let { "x$it" },
-                style = BrandType.InterfaceAndGuidance.label,
-                color = palette.accent
-            )
-        }
+    }
+}
+
+/**
+ * The score, pinned to the corner of the shirt.
+ *
+ * Small, tabular and hard-edged against the jersey behind it, so it reads as a
+ * number attached to a player rather than a caption underneath one. The captain
+ * takes brass, because the doubling is an honour the armband earned (§01).
+ */
+@Composable
+private fun ScoreTick(score: PlayerScore?, captain: Boolean) {
+    val palette = LocalBrandPalette.current
+    val points = score?.finalPoints ?: 0
+    val fill = when {
+        captain -> BrandColor.IfeBrass
+        points < 0 -> palette.negative
+        else -> palette.accent
+    }
+    Box(
+        Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(fill)
+            .padding(horizontal = 4.dp, vertical = 1.dp)
+    ) {
+        Text(
+            "$points",
+            style = BrandType.ScoreAndData.dataSmall,
+            color = BrandColor.legibleInkOn(fill)
+        )
     }
 }
 

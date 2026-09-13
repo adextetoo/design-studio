@@ -24,7 +24,7 @@
     <!-- ===== The hook, on the Splash (§03) =====
          Display 1 treatment is ALL CAPS per §02; the transform is applied at
          the call site so the resource stays readable and translatable. -->
-    <string name="splash_head">Build your dream team.\nNPFL Fantasy.</string>
+    <string name="splash_head">Build your dream NPFL fantasy team</string>
     <string name="splash_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
 
     <string name="onb2_head">Who do you support?</string>
@@ -172,4 +172,27 @@
          it is the thing they have already done. -->
     <string name="end_card_line">There is more football than any of us can watch. Now there is a reason to watch all of it.</string>
     <string name="leagues_join_cta">Join a league</string>
+
+    <!-- ===== Claiming a card (§05, §12) =====
+         Eighteen of twenty clubs publish no squad this app will stand behind,
+         so most gaps have exactly one person who knows the answer for certain:
+         the player. This is the route for him to say so. It asks for the least
+         that verifies and says who reads it. -->
+    <string name="claim_link">Is this you? Claim your card</string>
+    <string name="claim_head">Claim this card</string>
+    <string name="claim_body">If this is you, tell us and a person here will check it. Your word beats a club website that has not been updated since 2023 — but somebody has to confirm it is your word first.</string>
+    <string name="claim_about_you">About you</string>
+    <string name="claim_name">Your full name, spelt how you spell it</string>
+    <string name="claim_phone">Phone number</string>
+    <string name="claim_shirt">Shirt number</string>
+    <string name="claim_proof_label">One thing that proves it</string>
+    <string name="claim_proof_help">Anything your club can vouch for: an email address on the club's domain, your registration number, or the name of an official who will confirm you.</string>
+    <string name="claim_proof">Club email, registration number, or an official who will confirm</string>
+    <string name="claim_privacy_label">What happens to this</string>
+    <string name="claim_privacy">It goes to one reviewer here and nowhere else. We do not ask for your date of birth, an ID number, a BVN or a bank account, and we will not start — none of them prove anything this does not. If the claim is refused we delete what you sent.</string>
+    <string name="claim_cta">Send my claim</string>
+    <string name="claim_incomplete">Fill in your name, your phone number and one proof, and the button turns on.</string>
+    <string name="claim_sent_head">Claim sent</string>
+    <string name="claim_sent_body">A reviewer looks at it within two working days and texts you either way. If it checks out, your name and shirt number go on this card and the stand-in comes off.</string>
+    <string name="claim_done">Back to the card</string>
 </resources>
