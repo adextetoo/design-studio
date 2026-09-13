@@ -12,8 +12,18 @@ A native Android app built to the NaijaLeague Fantasy brand system v1.1
 
 ```
 ./gradlew assembleDebug          # APK at app/build/outputs/apk/debug/
-./gradlew testDebugUnitTest      # the rules engine: 49 tests
+./gradlew testDebugUnitTest      # 49 engine tests + the brand guard rails
 ```
+
+**Or let CI build it.** `.github/workflows/android.yml` runs the unit tests,
+lints, assembles the debug APK and uploads it as a workflow artifact on every
+push that touches this directory. That workflow is also the first place the
+Compose layer is compiled against real AndroidX rather than against stubs, and
+the first place `BrandGuardrailsTest` and `BrandCopyTest` actually execute —
+both need AndroidX, which the authoring environment could not reach.
+
+Download the APK from the run's **Artifacts** section, or trigger a build by
+hand from the Actions tab (`workflow_dispatch`).
 
 Requires JDK 17+ and the Android SDK (compileSdk 35). Gradle 8.9 via the
 wrapper, AGP 8.7.3, Kotlin 2.0.21, Compose BOM 2024.10.01. `minSdk 26`.

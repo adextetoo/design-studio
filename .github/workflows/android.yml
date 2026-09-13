@@ -1,0 +1,77 @@
+name: NaijaLeague Fantasy (Android)
+
+# The app cannot be assembled inside the Claude Code session that wrote it:
+# maven.google.com and dl.google.com are blocked by egress policy there, and
+# AndroidX is published to Google Maven only (it is not on Maven Central).
+# GitHub's runners have the Android SDK and can reach Google Maven, so the APK
+# is produced here instead — and this is also the first place the Compose layer
+# is compiled against the real library rather than against stubs.
+
+on:
+  push:
+    paths:
+      - 'naijaleague-android/**'
+      - '.github/workflows/android.yml'
+  pull_request:
+    paths:
+      - 'naijaleague-android/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test and assemble
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: naijaleague-android
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests
+        # 49 rules-engine tests, plus BrandGuardrailsTest and BrandCopyTest,
+        # which need AndroidX and so have never been executed until now.
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Lint
+        run: ./gradlew lintDebug --no-daemon
+        continue-on-error: true
+
+      - name: Assemble debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Report APK size
+        run: |
+          set -eu
+          apk=$(find app/build/outputs/apk/debug -name '*.apk' | head -1)
+          printf '### APK built\n\n- `%s`\n- %s\n' \
+            "$(basename "$apk")" "$(du -h "$apk" | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: naijaleague-fantasy-debug
+          path: naijaleague-android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload test and lint reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports
+          path: |
+            naijaleague-android/app/build/reports/
+          if-no-files-found: warn
