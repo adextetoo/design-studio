@@ -37,6 +37,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
@@ -127,20 +129,22 @@ private fun StepHook(onNext: () -> Unit) {
         BrandMark(sizeDp = 52)
         Spacer(Modifier.height(BrandDimens.SpaceXl))
         Text(
-            "BUILD YOUR NPFL DREAM TEAM.\nTHEN PROVE AM.",
+            // Display 1 is ALL CAPS per §02; the transform lives here so the
+            // resource stays readable and translatable.
+            stringResource(R.string.onb1_head).uppercase(),
             style = BrandType.IdentityAndEditorial.display1,
             color = palette.ink
         )
         Spacer(Modifier.height(BrandDimens.SpaceLg))
         Text(
-            "Choose 15 NPFL players. Score every matchday. Settle it with your people.",
+            stringResource(R.string.onb1_body),
             style = BrandType.InterfaceAndGuidance.body,
             color = palette.inkDim
         )
         Spacer(Modifier.height(BrandDimens.SpaceXl))
-        BrandButton(label = "Start building", onClick = onNext)
+        BrandButton(label = stringResource(R.string.onb1_cta), onClick = onNext)
         Spacer(Modifier.height(BrandDimens.SpaceMd))
-        BrandButtonSecondary(label = "I already have a squad", onClick = onNext)
+        BrandButtonSecondary(label = stringResource(R.string.onb1_alt), onClick = onNext)
         // No endline here. §12: "real fans" is an invitation, never a test, and
         // never in onboarding — screen one of a signup flow is the door with a
         // bouncer on it that the rule exists to prevent.
@@ -161,13 +165,13 @@ private fun StepClub(selected: String?, onSelect: (String) -> Unit) {
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
             Text(
-                "Who do you support?",
+                stringResource(R.string.onb2_head),
                 style = BrandType.IdentityAndEditorial.display2,
                 color = palette.ink
             )
             Spacer(Modifier.height(BrandDimens.SpaceSm))
             Text(
-                "Pick one. We'll never ask you to switch.",
+                stringResource(R.string.onb2_body),
                 style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim
             )
@@ -189,7 +193,7 @@ private fun StepClub(selected: String?, onSelect: (String) -> Unit) {
                 .navigationBarsPadding()
         ) {
             BrandButtonSecondary(
-                label = "I follow the whole league",
+                label = stringResource(R.string.onb2_alt),
                 onClick = { onSelect("ALL") }
             )
         }
@@ -248,7 +252,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
         )
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         Text(
-            "Tap a position to fill it. Nothing is final until Sunday 3pm, so guess freely.",
+            stringResource(R.string.onb3_body),
             style = BrandType.InterfaceAndGuidance.body,
             color = palette.inkDim
         )
@@ -256,7 +260,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
 
         // A blank 15-slot pitch is paralysing. A squad that is 20% wrong is an
         // invitation to correct it — and correcting it is the game (§03).
-        SectionLabel("Suggested — change anything")
+        SectionLabel(stringResource(R.string.onb3_suggested))
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         SampleData.squad.allPlayers.take(6).forEach { player ->
             Row(
@@ -297,7 +301,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                "Budget left",
+                stringResource(R.string.onb3_budget_left),
                 style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim
             )
@@ -308,7 +312,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
             )
         }
         Spacer(Modifier.height(BrandDimens.SpaceXl))
-        BrandButton(label = "Looks good — continue", onClick = onNext)
+        BrandButton(label = stringResource(R.string.onb3_cta), onClick = onNext)
         Spacer(Modifier.height(BrandDimens.SpaceXxl))
     }
 }
@@ -325,7 +329,7 @@ private fun StepName(value: String, onValue: (String) -> Unit, onNext: () -> Uni
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            "Your squad needs a name your group chat will remember.",
+            stringResource(R.string.onb4_head),
             style = BrandType.IdentityAndEditorial.display2,
             color = palette.ink
         )
@@ -342,7 +346,7 @@ private fun StepName(value: String, onValue: (String) -> Unit, onNext: () -> Uni
         ) {
             if (value.isEmpty()) {
                 Text(
-                    "Squad name",
+                    stringResource(R.string.onb4_hint),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
@@ -361,12 +365,16 @@ private fun StepName(value: String, onValue: (String) -> Unit, onNext: () -> Uni
         }
         Spacer(Modifier.height(BrandDimens.SpaceMd))
         Text(
-            "e.g. Aba Boys Academy · Oga At The Top United · Jagaban FC · Harmattan Rangers",
+            stringResource(R.string.onb4_examples),
             style = BrandType.InterfaceAndGuidance.bodySmall,
             color = palette.inkDim
         )
         Spacer(Modifier.height(BrandDimens.SpaceXl))
-        BrandButton(label = "Continue", onClick = onNext, enabled = value.isNotBlank())
+        BrandButton(
+            label = stringResource(R.string.onb4_cta),
+            onClick = onNext,
+            enabled = value.isNotBlank()
+        )
     }
 }
 
@@ -387,13 +395,13 @@ private fun StepSave(phone: String, onPhone: (String) -> Unit, onFinish: () -> U
     ) {
         Spacer(Modifier.height(BrandDimens.SpaceXl))
         Text(
-            "Save your squad",
+            stringResource(R.string.onb5_head),
             style = BrandType.IdentityAndEditorial.display2,
             color = palette.ink
         )
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         Text(
-            "Continue with your phone number. One code, no password to forget.",
+            stringResource(R.string.onb5_body),
             style = BrandType.InterfaceAndGuidance.body,
             color = palette.inkDim
         )
@@ -430,7 +438,7 @@ private fun StepSave(phone: String, onPhone: (String) -> Unit, onFinish: () -> U
         }
         Spacer(Modifier.height(BrandDimens.SpaceXl))
         BrandButton(
-            label = "Save squad",
+            label = stringResource(R.string.onb5_cta),
             onClick = { saved = true },
             enabled = phone.length >= 10 && !saved
         )
@@ -443,19 +451,22 @@ private fun StepSave(phone: String, onPhone: (String) -> Unit, onFinish: () -> U
             // Class 4, earned. §03 names this exact moment in the first-session
             // table: "OTP, saved. Confirmation in Class 4 type."
             Text(
-                "SQUAD LOCKED.\nNOW GO AND TALK.",
+                stringResource(R.string.squad_locked),
                 style = BrandType.CelebrationAndMotion.celebration,
                 color = palette.accent,
                 modifier = Modifier.rotate(-1f)
             )
             Spacer(Modifier.height(BrandDimens.SpaceMd))
             Text(
-                "A league with one person inside is just a spreadsheet. Add your people.",
+                stringResource(R.string.empty_leagues),
                 style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim
             )
             Spacer(Modifier.height(BrandDimens.SpaceMd))
-            BrandButtonSecondary(label = "Share invite to WhatsApp", onClick = onFinish)
+            BrandButtonSecondary(
+                label = stringResource(R.string.onb5_share),
+                onClick = onFinish
+            )
         }
         Spacer(Modifier.height(BrandDimens.SpaceXxl))
     }

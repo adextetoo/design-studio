@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandSurface
@@ -133,17 +135,16 @@ fun GafferPassScreen(onClose: () -> Unit) {
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = BrandDimens.Gutter)
             ) {
-                SectionLabel("Gaffer Pass", color = BrandColor.IfeBrass)
+                SectionLabel(stringResource(R.string.gaffer_pass), color = BrandColor.IfeBrass)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Better information.\nNot better odds.",
+                    stringResource(R.string.gaffer_head),
                     style = BrandType.IdentityAndEditorial.display1,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceMd))
                 Text(
-                    "Everything in Gaffer Pass is information, convenience or vanity. " +
-                        "None of it is points.",
+                    stringResource(R.string.gaffer_body),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
@@ -182,14 +183,13 @@ fun GafferPassScreen(onClose: () -> Unit) {
 
                 Spacer(Modifier.height(BrandDimens.SpaceLg))
                 Text(
-                    "You cannot buy points. Not a chip, not a transfer, not a multiplier, " +
-                        "not a boost. Gaffer Pass gets you nothing your rival cannot get for free.",
+                    stringResource(R.string.no_buying_points),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "The day money buys points, the table starts lying.",
+                    stringResource(R.string.table_starts_lying),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.accent
                 )
@@ -209,8 +209,7 @@ fun GafferPassScreen(onClose: () -> Unit) {
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Cancel any time in Settings. No auto-upgrade, no price change without a " +
-                        "message first.",
+                    stringResource(R.string.gaffer_cancel),
                     style = BrandType.InterfaceAndGuidance.bodySmall,
                     color = palette.inkDim,
                     textAlign = TextAlign.Center,

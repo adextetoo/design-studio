@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import androidx.compose.ui.unit.sp
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
@@ -97,7 +99,7 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
             BrandButton(label = "Choose players", onClick = onChoosePlayers)
             Spacer(Modifier.height(BrandDimens.SpaceMd))
             Text(
-                "You cannot buy points. Not a chip, not a transfer, not a multiplier.",
+                stringResource(R.string.no_buying_points_short),
                 style = BrandType.InterfaceAndGuidance.body,
                 color = palette.inkDim
             )

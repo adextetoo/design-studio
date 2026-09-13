@@ -27,6 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -120,17 +122,16 @@ fun LeaguesScreen(onOpenGafferPass: () -> Unit) {
                     // as a modal over a squad someone is in the middle of.
                     BrandCard(onClick = onOpenGafferPass) {
                         Column {
-                            SectionLabel("Gaffer Pass", color = BrandColor.IfeBrass)
+                            SectionLabel(stringResource(R.string.gaffer_pass), color = BrandColor.IfeBrass)
                             Spacer(Modifier.height(BrandDimens.SpaceSm))
                             Text(
-                                "Better information. Not better odds.",
+                                stringResource(R.string.gaffer_head).replace("\n", " "),
                                 style = BrandType.InterfaceAndGuidance.title,
                                 color = palette.ink
                             )
                             Spacer(Modifier.height(BrandDimens.SpaceXs))
                             Text(
-                                "The Differential Board, team news by SMS, and the Monday " +
-                                    "voice note. From ₦400 a week.",
+                                stringResource(R.string.gaffer_promo),
                                 style = BrandType.InterfaceAndGuidance.body,
                                 color = palette.inkDim
                             )
@@ -142,13 +143,13 @@ fun LeaguesScreen(onOpenGafferPass: () -> Unit) {
                             SectionLabel("Add your people")
                             Spacer(Modifier.height(BrandDimens.SpaceSm))
                             Text(
-                                "A league with one person inside is just a spreadsheet.",
+                                stringResource(R.string.empty_leagues),
                                 style = BrandType.InterfaceAndGuidance.body,
                                 color = palette.ink
                             )
                             Spacer(Modifier.height(BrandDimens.SpaceMd))
                             BrandButtonSecondary(
-                                label = "Share invite to WhatsApp",
+                                label = stringResource(R.string.onb5_share),
                                 onClick = {}
                             )
                         }

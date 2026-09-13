@@ -34,7 +34,7 @@ Honesty matters more here than a clean-looking claim.
 | Area | Status |
 |---|---|
 | Rules engine + example data (`rules/`, `data/`) | **Compiled and tested — 49 tests, 0 failures.** Pure Kotlin, no Android dependencies, runs on the JVM. |
-| Brand guard rails (`app/src/test/.../BrandGuardrailsTest.kt`) | **Written, not executed here** — it needs AndroidX. The contrast maths in it was verified independently against the hex values in `Color.kt`. Run it with `./gradlew testDebugUnitTest`. |
+| Brand guard rails (`BrandGuardrailsTest`, `BrandCopyTest`) | **Written, not executed here** — they need AndroidX. Their logic was verified independently: the contrast maths against the hex values in `Color.kt`, and the copy-drift checks against the real `strings.xml` and sources. Run with `./gradlew testDebugUnitTest`. |
 | All Kotlin sources parse | **Verified — 0 syntax errors** via the Kotlin 2.1 compiler over every file. |
 | Compose UI type-checks | **Verified against a hand-written stub of the AndroidX API** using the Kotlin 2.0.21 compiler — 0 errors. The stub is not the real library, so gaps are possible, but every call signature, scope receiver (`RowScope.weight`, `BoxScope.matchParentSize`), `R.font.*` reference and import path was checked. |
 | Compose UI compiles against real AndroidX and renders | **Not verified in this environment.** `dl.google.com` and `maven.google.com` are blocked by egress policy here, so no APK could be produced. Open in Android Studio and run `./gradlew assembleDebug`. |
@@ -124,6 +124,18 @@ catches, rather than prose nobody re-reads:
 - anything that can carry a name uses the Noto-backed family, and `NigerianText`
   is never `FontFamily.Default`
 - no interaction animation exceeds the 240ms ceiling
+
+`BrandCopyTest` guards the copy the same way. `strings.xml` is now the single
+source of truth for the board-locked lines, the voice-critical copy and anything
+stating a rule — 51 strings, all referenced, none duplicated as a literal. The
+tests fail if a locked line changes, if a composable hardcodes copy the file
+already owns, if a string goes unused, if "Draft" reappears, or if the endline
+turns up in onboarding.
+
+Incidental interface labels ("Bench", "Match stats") stay inline on purpose:
+they carry no brand risk, and moving them would add indirection without adding
+safety. Copy for screens that do not exist yet is deliberately **not** parked in
+the file — that is how it went dead and drifted the first time.
 
 These exist because an independent audit of this code found the guard rails were
 declared and enforcing nothing: a 13sp money label, a 12sp player name, brass on

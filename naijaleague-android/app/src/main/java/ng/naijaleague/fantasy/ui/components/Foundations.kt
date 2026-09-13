@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.LocalAnimationsEnabled
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
@@ -202,7 +204,7 @@ fun OfflineBadge(modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.width(6.dp))
         Text(
-            "Saved on your phone · will sync",
+            stringResource(R.string.offline_badge),
             style = BrandType.InterfaceAndGuidance.micro,
             color = palette.inkDim
         )
@@ -253,14 +255,14 @@ fun EndlineLockup(modifier: Modifier = Modifier) {
     val palette = LocalBrandPalette.current
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "NaijaLeague Fantasy",
+            stringResource(R.string.app_name),
             style = BrandType.IdentityAndEditorial.display2.copy(fontWeight = FontWeight.ExtraBold),
             color = palette.ink,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(BrandDimens.SpaceXs))
         Text(
-            "Fantasy football for real NPFL fans",
+            stringResource(R.string.endline),
             style = BrandType.InterfaceAndGuidance.label,
             color = palette.accent,
             textAlign = TextAlign.Center

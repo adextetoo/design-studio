@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -169,7 +171,7 @@ fun ReceiptCard(
             )
             Spacer(Modifier.height(BrandDimens.SpaceMd))
             Text(
-                "NaijaLeague Fantasy",
+                stringResource(R.string.app_name),
                 style = BrandType.InterfaceAndGuidance.label,
                 color = BrandColor.HarmattanHaze
             )

@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -94,7 +96,7 @@ fun HomeScreen(
                     if (provisional) {
                         Spacer(Modifier.height(BrandDimens.SpaceSm))
                         Text(
-                            "Provisional until Monday 12:00. Flag anything wrong.",
+                            stringResource(R.string.provisional),
                             style = BrandType.InterfaceAndGuidance.micro,
                             color = palette.inkDim
                         )
@@ -229,16 +231,16 @@ fun HomeScreen(
                 ) {
                     BrandCard {
                         Column {
-                            SectionLabel("Away Day Bonus")
+                            SectionLabel(stringResource(R.string.away_bonus_title))
                             Spacer(Modifier.height(BrandDimens.SpaceSm))
                             Text(
-                                "3 of your players are away on Sunday. Goals away from home pay more.",
+                                stringResource(R.string.away_bonus_home_hint),
                                 style = BrandType.InterfaceAndGuidance.body,
                                 color = palette.ink
                             )
                             Spacer(Modifier.height(BrandDimens.SpaceSm))
                             Text(
-                                "No other fantasy game has this, because no other league needs it.",
+                                stringResource(R.string.away_bonus_home_note),
                                 style = BrandType.InterfaceAndGuidance.bodySmall,
                                 color = palette.inkDim
                             )

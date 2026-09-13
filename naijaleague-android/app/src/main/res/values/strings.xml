@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand system v1.1. The name, tagline and endline are board-approved and
-         locked: do not edit these three without a board decision. -->
+    <!--
+      Copy that must not drift.
+
+      This file is the source of truth for three kinds of string: the lines the
+      board locked, the copy quoted verbatim from the brand system's voice
+      section, and anything stating a rule. Everything here is referenced from
+      code via stringResource; a string in this file that nothing references is
+      a bug, and a hardcoded literal in a composable that duplicates one of
+      these is the same bug from the other side.
+
+      Incidental interface labels ("Bench", "Match stats") stay inline. They
+      carry no brand risk and moving them here would only add indirection.
+    -->
+
+    <!-- ===== Board-locked. Do not edit without a board decision. ===== -->
     <string name="app_name">NaijaLeague Fantasy</string>
     <string name="app_name_short">NaijaLeague</string>
     <string name="tagline">Build Your NPFL Dream Team</string>
     <string name="endline">Fantasy football for real NPFL fans</string>
     <string name="campaign_line">Table no dey lie.</string>
 
-    <!-- Onboarding, five screens (§03) -->
+    <!-- ===== Onboarding (§03) ===== -->
+    <!-- Display 1 treatment is ALL CAPS per §02; the transform is applied at
+         the call site so the resource stays readable and translatable. -->
     <string name="onb1_head">Build your NPFL dream team.\nThen prove am.</string>
     <string name="onb1_body">Choose 15 NPFL players. Score every matchday. Settle it with your people.</string>
     <string name="onb1_cta">Start building</string>
@@ -18,34 +33,61 @@
     <string name="onb2_body">Pick one. We\'ll never ask you to switch.</string>
     <string name="onb2_alt">I follow the whole league</string>
 
-    <string name="onb3_head">₦100,000,000. 15 players. Max 2 from any club.</string>
     <string name="onb3_body">Tap a position to fill it. Nothing is final until Sunday 3pm, so guess freely.</string>
+    <string name="onb3_suggested">Suggested — change anything</string>
+    <string name="onb3_cta">Looks good — continue</string>
+    <string name="onb3_budget_left">Budget left</string>
 
     <string name="onb4_head">Your squad needs a name your group chat will remember.</string>
     <string name="onb4_hint">Squad name</string>
     <string name="onb4_examples">e.g. Aba Boys Academy · Oga At The Top United · Jagaban FC · Harmattan Rangers</string>
+    <string name="onb4_cta">Continue</string>
 
     <string name="onb5_head">Save your squad</string>
     <string name="onb5_body">Continue with your phone number. One code, no password to forget.</string>
-    <string name="onb5_league">A league with one person inside is just a spreadsheet. Add your people.</string>
+    <string name="onb5_cta">Save squad</string>
     <string name="onb5_share">Share invite to WhatsApp</string>
-    <string name="onb5_later">Do it later</string>
 
-    <!-- Confirmation, Class 4 type. One of only four moments it is allowed (§02). -->
-    <string name="squad_locked">Squad locked. Now go and talk.</string>
+    <!-- Class 4 celebration. One of only four permitted moments (§02, §03). -->
+    <string name="squad_locked">SQUAD LOCKED.\nNOW GO AND TALK.</string>
 
-    <!-- Interface and guidance. Class 3 is never funny (§12). -->
-    <string name="err_no_network">That didn\'t save — your network dropped. We kept your squad. Try once more.</string>
+    <!-- ===== Voice: errors and empty states (§12) =====
+         Class 3 is never funny. Say what went wrong and what to do about it. -->
+    <!-- When the error state and the Saturday notification prompt get built,
+         their approved copy is in the brand system at §12 and §03. It is not
+         parked here: copy for a screen that does not exist is how this file
+         went dead and drifted the first time. -->
     <string name="offline_badge">Saved on your phone · will sync</string>
     <string name="empty_leagues">A league with one person inside is just a spreadsheet. Add your people.</string>
-    <string name="deadline_prefix">Deadline</string>
-    <string name="provisional">Provisional until Monday 12:00</string>
-    <string name="notif_permission">Want us to shout before the 3pm deadline?</string>
+    <string name="provisional">Provisional until Monday 12:00. Flag anything wrong.</string>
+    <string name="deadline_label">Deadline</string>
 
-    <!-- Away Day Bonus, the rule no other fantasy game has (§05) -->
+    <!-- ===== Rules. Every one of these states a rule and must match the engine. ===== -->
     <string name="away_bonus_title">Away Day Bonus</string>
     <string name="away_bonus_body">In the NPFL, home teams win. Everybody knows it — the pitches, the travel, the nine hours on a bus, the crowd. So backing an away player is the bravest thing you can do in this game, and we pay you for it.</string>
+    <string name="away_bonus_detail">Goal or assist away from home: one extra point. Clean sheet away: two extra. No other fantasy game in the world has this, because no other league needs it.</string>
+    <string name="away_bonus_home_hint">3 of your players are away on Sunday. Goals away from home pay more.</string>
+    <string name="away_bonus_home_note">No other fantasy game has this, because no other league needs it.</string>
+
     <string name="the_three_title">The Three — and why it\'s not a secret</string>
-    <string name="the_three_body">Three points to the best player in each match, two to the next, one to the next. The difference between us and everybody else is that we publish the reason.</string>
-    <string name="no_buying_points">You cannot buy points. Not a chip, not a transfer, not a multiplier. The day money buys points, the table starts lying.</string>
+    <string name="the_three_body">Three points to the best player in each match, two to the next, one to the next.</string>
+    <string name="the_three_reason">The difference between us and everybody else is that we publish the reason. Every award comes with a line from the match scorer who was at the ground. If you think we got it wrong, you have two hours to flag it with the clip. Points are provisional until Monday, 12:00.</string>
+    <string name="the_three_corrected">We would rather be corrected in public than pretend a number came from nowhere.</string>
+    <string name="the_three_live">Filed by the scorer at the ground. Every award comes with the reason, and you have two hours after full time to flag it with the clip.</string>
+
+    <string name="club_cap_note">Two per club, not three. The NPFL is more even than England, and we are not letting you stack one squad — which also means you end up caring about at least eight clubs.</string>
+    <string name="transfer_cost_note">The app tells you the cost before you confirm, every single time. Nobody should ever lose four points by accident.</string>
+    <string name="transfer_offline_note">Your changes save on your phone first, then sync. If your data finishes mid-transfer, the move is not lost — it goes through when you reconnect, as long as that happens before Sunday 3pm.</string>
+
+    <string name="no_buying_points_title">One thing we will never do</string>
+    <string name="no_buying_points">You cannot buy points. Not a chip, not a transfer, not a multiplier, not a boost. Gaffer Pass gets you better information and nicer things to look at. It gets you nothing your rival cannot get for free.</string>
+    <string name="no_buying_points_short">You cannot buy points. Not a chip, not a transfer, not a multiplier.</string>
+    <string name="table_starts_lying">The day money buys points, the table starts lying.</string>
+
+    <!-- ===== Gaffer Pass (§06) ===== -->
+    <string name="gaffer_pass">Gaffer Pass</string>
+    <string name="gaffer_head">Better information.\nNot better odds.</string>
+    <string name="gaffer_body">Everything in Gaffer Pass is information, convenience or vanity. None of it is points.</string>
+    <string name="gaffer_promo">The Differential Board, team news by SMS, and the Monday voice note. From ₦400 a week.</string>
+    <string name="gaffer_cancel">Cancel any time in Settings. No auto-upgrade, no price change without a message first.</string>
 </resources>

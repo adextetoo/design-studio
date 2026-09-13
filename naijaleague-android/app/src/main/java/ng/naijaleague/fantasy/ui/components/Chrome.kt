@@ -22,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -58,7 +60,7 @@ fun DeadlineStrip(
             Canvas(Modifier.size(7.dp)) { drawCircle(color = ink) }
             Spacer(Modifier.width(8.dp))
             Text(
-                "DEADLINE",
+                stringResource(R.string.deadline_label).uppercase(),
                 style = BrandType.InterfaceAndGuidance.label,
                 color = ink
             )

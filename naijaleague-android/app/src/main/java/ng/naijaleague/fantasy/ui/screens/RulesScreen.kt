@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
@@ -100,19 +102,16 @@ fun RulesScreen() {
         // ---- The Away Day Bonus, first, because it is the difference ----
         item {
             Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel("The Away Day Bonus")
+                SectionLabel(stringResource(R.string.away_bonus_title))
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "In the NPFL, home teams win. Everybody knows it — the pitches, the travel, " +
-                        "the nine hours on a bus, the crowd. So backing an away player is the " +
-                        "bravest thing you can do in this game, and we pay you for it.",
+                    stringResource(R.string.away_bonus_body),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Goal or assist away from home: one extra point. Clean sheet away: two extra. " +
-                        "No other fantasy game in the world has this, because no other league needs it.",
+                    stringResource(R.string.away_bonus_detail),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
@@ -176,25 +175,22 @@ fun RulesScreen() {
                     .padding(horizontal = BrandDimens.Gutter)
                     .padding(top = BrandDimens.SpaceXl)
             ) {
-                SectionLabel("The Three — and why it's not a secret")
+                SectionLabel(stringResource(R.string.the_three_title))
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Three points to the best player in each match, two to the next, one to the next.",
+                    stringResource(R.string.the_three_body),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "The difference between us and everybody else is that we publish the reason. " +
-                        "Every award comes with a line from the match scorer who was at the ground. " +
-                        "If you think we got it wrong, you have two hours to flag it with the clip. " +
-                        "Points are provisional until Monday, 12:00.",
+                    stringResource(R.string.the_three_reason),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "We would rather be corrected in public than pretend a number came from nowhere.",
+                    stringResource(R.string.the_three_corrected),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
@@ -218,9 +214,7 @@ fun RulesScreen() {
                 RuleLine("Maximum from one club", "${SquadRules.MAX_PER_CLUB} players")
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Two per club, not three. The NPFL is more even than England, and we are not " +
-                        "letting you stack one squad — which also means you end up caring about at " +
-                        "least eight clubs.",
+                    stringResource(R.string.club_cap_note),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
@@ -238,16 +232,13 @@ fun RulesScreen() {
                 RuleLine("Each extra transfer costs", "${Transfers.HIT_PER_EXTRA} points")
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "The app tells you the cost before you confirm, every single time. Nobody " +
-                        "should ever lose four points by accident.",
+                    stringResource(R.string.transfer_cost_note),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "Your changes save on your phone first, then sync. If your data finishes " +
-                        "mid-transfer, the move is not lost — it goes through when you reconnect, " +
-                        "as long as that happens before Sunday 3pm.",
+                    stringResource(R.string.transfer_offline_note),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.inkDim
                 )
@@ -286,21 +277,19 @@ fun RulesScreen() {
                 BrandRule()
                 Spacer(Modifier.height(BrandDimens.SpaceLg))
                 Text(
-                    "One thing we will never do",
+                    stringResource(R.string.no_buying_points_title),
                     style = BrandType.InterfaceAndGuidance.title,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "You cannot buy points. Not a chip, not a transfer, not a multiplier, not a " +
-                        "boost. Gaffer Pass gets you better information and nicer things to look " +
-                        "at. It gets you nothing your rival cannot get for free.",
+                    stringResource(R.string.no_buying_points),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.ink
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
-                    "The day money buys points, the table starts lying.",
+                    stringResource(R.string.table_starts_lying),
                     style = BrandType.InterfaceAndGuidance.body,
                     color = palette.accent
                 )

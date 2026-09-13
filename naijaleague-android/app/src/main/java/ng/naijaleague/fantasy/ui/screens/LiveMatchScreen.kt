@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -149,8 +151,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                     SectionLabel("The Three · provisional")
                     Spacer(Modifier.height(BrandDimens.SpaceSm))
                     Text(
-                        "Filed by the scorer at the ground. Every award comes with the reason, " +
-                            "and you have two hours after full time to flag it with the clip.",
+                        stringResource(R.string.the_three_live),
                         style = BrandType.InterfaceAndGuidance.body,
                         color = palette.inkDim
                     )
