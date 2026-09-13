@@ -177,11 +177,17 @@ fun TransferConfirmedScreen(onViewTeam: () -> Unit, onAnother: () -> Unit) {
                         Column {
                             SectionLabel("Your armband is empty", color = palette.accent)
                             Spacer(Modifier.height(BrandDimens.SpaceSm))
+                            // A sentence that opens with a player's name is a
+                            // sentence that has to render in the Noto family, or
+                            // the marks in it are dropped by a face that has no
+                            // glyphs for them (§02). Class 3 size, Class 2 family.
                             Text(
                                 "${outgoing.name} was your captain. Pick a new one on the " +
                                     "team screen before ${SampleData.deadlineLabel}, or you " +
                                     "will start the gameweek without one.",
-                                style = BrandType.InterfaceAndGuidance.body,
+                                style = BrandType.InterfaceAndGuidance.body.copy(
+                                    fontFamily = BrandType.NigerianText
+                                ),
                                 color = palette.ink
                             )
                         }

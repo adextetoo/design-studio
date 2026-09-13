@@ -28,7 +28,31 @@ app needs*, not as branding, copy, palette or data.
 | 13 | Notifications | **built** | `NotificationsScreen.kt` |
 | 14 | End / Return Home | **built** | `EndCardScreen.kt` |
 
-Seven of fourteen were missing. All seven are built.
+Seven of fourteen were missing. All seven are built, and all fourteen are
+reachable — `NaijaLeagueRoot` names every screen in the package, which is
+checked rather than assumed.
+
+## The order they run in
+
+The launch sequence is a phase, not a boolean:
+
+    SPLASH ──start──► ONBOARDING ──► SIGN UP ──► END CARD ──► APP
+       └────sign in─────────────────────────────────────────►┘
+
+A returning manager skips the middle entirely. The end card closes the **first**
+session only: showing it every visit would make leaving the app an event, and it
+is not one.
+
+Inside the app, four tabs (Home / Team / Leagues / Rules) and eleven overlays.
+Notifications and profile sit in the Home header rather than the bottom bar —
+the bar has four slots and thumb gravity belongs to what you do every visit
+(§13). Picking your team is that; reading your alerts is not. Joining a league
+sits in the Leagues header for the same reason: it is the one action on that
+screen that is not reading a table.
+
+Choosing players now ends at the transfer confirmation rather than returning
+silently to the pitch. The rules page promises the app states the cost before
+you confirm; stage 7 is where it also states it after.
 
 ### Four screens the draft does not have, which stay
 
