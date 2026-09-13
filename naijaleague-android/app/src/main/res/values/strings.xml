@@ -79,6 +79,11 @@
     <string name="transfer_cost_note">The app tells you the cost before you confirm, every single time. Nobody should ever lose four points by accident.</string>
     <string name="transfer_offline_note">Your changes save on your phone first, then sync. If your data finishes mid-transfer, the move is not lost — it goes through when you reconnect, as long as that happens before Sunday 3pm.</string>
 
+    <!-- The same §05 promise as transfer_offline_note, said in one sentence for
+         the Data and offline settings row. The rules page explains the promise;
+         a settings row has to state it and get out of the way. -->
+    <string name="settings_offline_note">Everything you change saves on this phone first and syncs when you next have data, so a dead connection costs you nothing as long as you reconnect before the deadline.</string>
+
     <string name="no_buying_points_title">One thing we will never do</string>
     <string name="no_buying_points">You cannot buy points. Not a chip, not a transfer, not a multiplier, not a boost. Gaffer Pass gets you better information and nicer things to look at. It gets you nothing your rival cannot get for free.</string>
     <string name="no_buying_points_short">You cannot buy points. Not a chip, not a transfer, not a multiplier.</string>
@@ -143,4 +148,29 @@
     <string name="signup_age_body">You have to be %1$d or over to play. Cash prizes are for %2$d and over — under 18s who win take airtime, data or a match ticket instead.</string>
     <string name="signup_cta">Save my squad</string>
     <string name="signup_have_account">Already have a squad? Sign in</string>
+
+    <!-- ===== Joining a league (§08) =====
+         §08 is the reason the invitation comes before the directory: a
+         mini-league retains people because of who is in it, and a public league
+         of thirty thousand strangers retains nobody. The browse note is not
+         self-deprecation, it is the product being straight about which of the
+         two is worth the manager's thumb. -->
+    <string name="join_head">The table you will actually check on Monday is the one with your people in it.</string>
+    <string name="join_body">Send the link to the group chat. Whoever taps it lands in your league — no code to type, and they can build their squad afterwards.</string>
+    <string name="join_code_label">Joining a private league</string>
+    <string name="join_code_hint">League code</string>
+    <string name="join_code_help">Six characters, from whoever set the league up.</string>
+    <!-- Class 3 is never funny. Say what is wrong and what to do about it (§12). -->
+    <string name="join_code_wrong">A league code is six characters. Check the one in your message and type it again.</string>
+    <string name="join_code_cta">Join with this code</string>
+    <string name="join_browse_note">Anybody can join these, which is also the problem with them. Nobody in here knows your name.</string>
+    <string name="join_counts_label">About these numbers</string>
+    <string name="join_counts_note">Manager counts on this screen are demo figures. They are not league data and they are not live entry numbers — real counts arrive with real entries.</string>
+
+    <!-- ===== The end card (§04, §12) =====
+         One of the few places the endline is allowed. §12 bans it in
+         onboarding, in empty states and anywhere it is aimed at somebody as a
+         test; said to a manager who has just built a squad it is not a test,
+         it is the thing they have already done. -->
+    <string name="end_card_line">There is more football than any of us can watch. Now there is a reason to watch all of it.</string>
 </resources>
