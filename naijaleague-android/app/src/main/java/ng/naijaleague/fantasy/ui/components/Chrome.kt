@@ -2,6 +2,7 @@ package ng.naijaleague.fantasy.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.data.NpflClubs
 
 /**
  * The deadline strip.
@@ -201,20 +203,53 @@ fun ScreenHeader(
     }
 }
 
-/** A club crest stand-in. Real crests are licensed; this holds their place. */
+/**
+ * A club crest stand-in. Real crests are licensed; this holds their place.
+ *
+ * CARRIES THE CLUB'S OWN COLOUR WHERE ONE IS SOURCED. The app used to draw every
+ * club in the same Eagle Dark, which is consistent and legible and not the
+ * clubs' colours — and a Nigerian supporter sees that immediately. So a badge
+ * given a [clubId] fills with the kit colour when [NpflClubs] has one it will
+ * stand behind, and falls back to Eagle Dark when it does not.
+ *
+ * THE FALLBACK COVERS TWO DIFFERENT CASES AND TREATS THEM THE SAME, correctly:
+ * no source found (Barau, Doma United, Inter Lagos) and two sources naming
+ * different colours (Rangers, Enyimba, Kano Pillars). Either way the honest
+ * answer is a neutral mark rather than a confident guess.
+ *
+ * THE LABEL COLOUR IS ARITHMETIC, NOT A GUESS. A kit colour is not from the
+ * brand palette, so nothing about it can be precomputed — white on Ikorodu
+ * City's white would vanish. [BrandColor.legibleInkOn] picks whichever brand ink
+ * has more contrast on the actual fill.
+ */
 @Composable
-fun ClubBadge(shortName: String, sizeDp: Int = 32, modifier: Modifier = Modifier) {
+fun ClubBadge(
+    shortName: String,
+    sizeDp: Int = 32,
+    modifier: Modifier = Modifier,
+    /** When given, the badge uses this club's sourced kit colour if there is one. */
+    clubId: String? = null
+) {
     val palette = LocalBrandPalette.current
+    val kit = clubId?.let { NpflClubs.record(it).kit }
+    val fill = if (kit?.renderable == true) Color(kit.primary!!) else BrandColor.EagleDark
+    val label = if (kit?.renderable == true) {
+        BrandColor.legibleInkOn(fill)
+    } else {
+        palette.accent
+    }
     Box(
         modifier
             .size(sizeDp.dp)
-            .background(BrandColor.EagleDark, androidx.compose.foundation.shape.CircleShape),
+            .background(fill, androidx.compose.foundation.shape.CircleShape)
+            // A white or pale kit needs an edge or it dissolves into a chalk ground.
+            .border(1.dp, palette.rule, androidx.compose.foundation.shape.CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Text(
             shortName.take(3),
             style = BrandType.InterfaceAndGuidance.label.copy(fontFamily = BrandType.NigerianText),
-            color = palette.accent
+            color = label
         )
     }
 }

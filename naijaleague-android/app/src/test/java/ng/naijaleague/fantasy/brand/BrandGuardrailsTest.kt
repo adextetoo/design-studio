@@ -5,9 +5,6 @@ import androidx.compose.ui.text.TextStyle
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
 
 /**
  * Guard rails.
@@ -23,16 +20,11 @@ class BrandGuardrailsTest {
 
     // ---------- contrast, measured the way section 01 measures it ----------
 
-    private fun channel(c: Float) =
-        if (c <= 0.04045f) c / 12.92f else ((c + 0.055f) / 1.055f).toDouble().pow(2.4).toFloat()
-
-    private fun luminance(color: Color) =
-        0.2126f * channel(color.red) + 0.7152f * channel(color.green) + 0.0722f * channel(color.blue)
-
-    private fun contrast(a: Color, b: Color): Double {
-        val la = luminance(a); val lb = luminance(b)
-        return ((max(la, lb) + 0.05f) / (min(la, lb) + 0.05f)).toDouble()
-    }
+    // Delegates to BrandColor so the renderer and these guard rails measure
+    // contrast with the same implementation. A club badge has to pick legible
+    // text on a kit colour at runtime, which means production code needs this
+    // formula — and a second copy here would be a second chance to get it wrong.
+    private fun contrast(a: Color, b: Color): Double = BrandColor.contrastRatio(a, b)
 
     private fun assertReadable(fg: Color, bg: Color, what: String, min: Double = 4.5) {
         val ratio = contrast(fg, bg)

@@ -217,7 +217,7 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
             .padding(vertical = BrandDimens.SpaceMd, horizontal = BrandDimens.SpaceSm),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ClubBadge(club.shortName, 36)
+        ClubBadge(club.shortName, 36, clubId = club.id)
         Spacer(Modifier.height(BrandDimens.SpaceSm))
         Text(
             club.name,
@@ -306,7 +306,7 @@ private fun StepBuildSquad(onNext: () -> Unit) {
                     .padding(vertical = BrandDimens.SpaceSm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ClubBadge(SampleData.club(player.clubId).shortName, 32)
+                ClubBadge(SampleData.club(player.clubId).shortName, 32, clubId = player.clubId)
                 Spacer(Modifier.width(BrandDimens.SpaceMd))
                 Column(Modifier.weight(1f)) {
                     Text(

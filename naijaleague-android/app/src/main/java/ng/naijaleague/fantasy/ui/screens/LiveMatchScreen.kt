@@ -30,9 +30,11 @@ import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.SampleData
+import ng.naijaleague.fantasy.rules.Provenance
 import ng.naijaleague.fantasy.ui.components.BrandCard
 import ng.naijaleague.fantasy.ui.components.ClubBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
+import ng.naijaleague.fantasy.ui.components.NeutralGroundNote
 import ng.naijaleague.fantasy.ui.components.StatBar
 
 /**
@@ -98,7 +100,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                ClubBadge(home.shortName, 44)
+                ClubBadge(home.shortName, 44, clubId = home.id)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     home.name,
@@ -119,7 +121,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                 modifier = Modifier.padding(horizontal = BrandDimens.SpaceMd)
             )
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                ClubBadge(away.shortName, 44)
+                ClubBadge(away.shortName, 44, clubId = away.id)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     away.name,
@@ -137,6 +139,10 @@ fun LiveMatchScreen(onClose: () -> Unit) {
             }
         }
 
+        // The ground, when the ground is the story. Renders nothing for the
+        // eighteen clubs playing at home, which is most matches most weeks.
+        NeutralGroundNote(fixture.homeClubId)
+
         Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
             SectionLabel("Match stats")
             Spacer(Modifier.height(BrandDimens.SpaceMd))
@@ -153,6 +159,20 @@ fun LiveMatchScreen(onClose: () -> Unit) {
                     Text(
                         stringResource(R.string.the_three_live),
                         style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    // Naming the source is what makes the challenge window
+                    // answerable rather than decorative: you cannot dispute a
+                    // number without knowing what it was based on.
+                    Text(
+                        "Source: ${Provenance.label(Provenance.Tier.LIVE)}" +
+                            if (Provenance.needsSecondEntry(Provenance.Tier.LIVE)) {
+                                " · entered twice, independently"
+                            } else {
+                                ""
+                            },
+                        style = BrandType.InterfaceAndGuidance.label,
                         color = palette.inkDim
                     )
                 }

@@ -1,6 +1,9 @@
 package ng.naijaleague.fantasy.brand
 
 import androidx.compose.ui.graphics.Color
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * NaijaLeague Fantasy palette — brand system v1.1, section 01.
@@ -114,4 +117,45 @@ object BrandColor {
      */
     fun primaryActionFill(onDarkSurface: Boolean) = if (onDarkSurface) JaraLime else EagleDark
     fun primaryActionLabel(onDarkSurface: Boolean) = if (onDarkSurface) NightPitch else ChalkWhite
+
+    // ---------- contrast, measured the way §01 measures it ----------
+    //
+    // This lives here rather than in the guard-rail test because production code
+    // needs it too: a club kit colour is not from the brand palette, so nothing
+    // can be precomputed about what text is legible on it. Two implementations
+    // of the same WCAG formula would be two chances to get it wrong, and the one
+    // in the test is the one that would stay right.
+
+    private fun channel(c: Float): Float =
+        if (c <= 0.04045f) c / 12.92f
+        else ((c + 0.055f) / 1.055f).toDouble().pow(2.4).toFloat()
+
+    /** WCAG 2.1 relative luminance. */
+    fun relativeLuminance(color: Color): Float =
+        0.2126f * channel(color.red) + 0.7152f * channel(color.green) + 0.0722f * channel(color.blue)
+
+    /** WCAG 2.1 contrast ratio, 1.0 to 21.0. Order does not matter. */
+    fun contrastRatio(a: Color, b: Color): Double {
+        val la = relativeLuminance(a)
+        val lb = relativeLuminance(b)
+        return ((max(la, lb) + 0.05f) / (min(la, lb) + 0.05f)).toDouble()
+    }
+
+    /**
+     * Whichever of the two brand inks is more legible on this background.
+     *
+     * For colours that are not ours — a club's kit — so a badge can carry a real
+     * colour without guessing whether to put white or black on it. Both options
+     * are brand tokens; the choice between them is arithmetic.
+     */
+    fun legibleInkOn(background: Color): Color =
+        if (contrastRatio(ChalkWhite, background) >= contrastRatio(NightPitch, background)) {
+            ChalkWhite
+        } else {
+            NightPitch
+        }
+
+    /** Does this pairing clear the §01 body-text floor? */
+    fun clearsBodyFloor(foreground: Color, background: Color): Boolean =
+        contrastRatio(foreground, background) >= 4.5
 }

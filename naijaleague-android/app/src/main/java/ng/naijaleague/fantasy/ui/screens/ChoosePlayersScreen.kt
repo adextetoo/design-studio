@@ -291,7 +291,7 @@ private fun PlayerRow(
                 .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ClubBadge(SampleData.club(player.clubId).shortName, 34)
+            ClubBadge(SampleData.club(player.clubId).shortName, 34, clubId = player.clubId)
             Spacer(Modifier.width(BrandDimens.SpaceMd))
             Column(Modifier.weight(1f)) {
                 Text(
