@@ -145,6 +145,36 @@ The colour data and its confidence stay on `NpflClubs`, and
 `BrandColor.legibleInkOn` still picks legible text for an arbitrary fill, so
 that decision is reversible in one function.
 
+## Navigation and consistency audit
+
+**Every screen has a way out.** The four tabs — Home, Team, Leagues, Rules —
+carry the bottom bar. The fourteen launch screens and overlays deliberately do
+not: a full-screen job with a bar on it invites you to abandon it half-done.
+Ten of them carry a header chevron; Transfer Confirmed and the End Card are
+terminal cards whose buttons are the way out; the Splash is the entry point. No
+screen is a dead end.
+
+Notifications, profile and join-a-league sit in headers rather than the bar.
+The bar has four slots and thumb gravity belongs to what you do every visit
+(§13) — picking your team is that; reading your alerts is not.
+
+**Type and colour.** No raw `Color(0x…)` anywhere outside `brand/`. No
+`TextStyle` built by hand. Every font family override is `NigerianText`, which
+is the one §02 requires wherever a player's name can appear.
+
+One violation found and fixed: a pitch pill set a player's surname at
+`name.copy(fontSize = 15.sp)` — a hand-typed size on no step of the scale. It
+now uses `nameCondensed`, which exists for exactly that case: a long name on a
+tight row keeps its weight and its marks and narrows the face instead.
+
+**Notes are contained, not railed.** `SourceNote` used to be a coloured bar down
+the left of loose text. Two things were wrong. A card already means "a separate
+thing" in this system (§13) and a note is one, so the rail was a second, weaker
+way to say it — and the accent stripe made every caveat look like an alert when
+most are simply context. It is now a `BrandCard` with a `SectionLabel`, the same
+object "Add your people" uses, and the tone parameter is gone: a note that needs
+to shout is a violation message, and those live on the control they block.
+
 ## A note on the tooling that was asked for
 
 shadcn/ui is a React and Tailwind component library. This app is Jetpack Compose

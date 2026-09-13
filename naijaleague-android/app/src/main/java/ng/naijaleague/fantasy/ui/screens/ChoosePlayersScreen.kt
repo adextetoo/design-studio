@@ -52,7 +52,6 @@ import ng.naijaleague.fantasy.rules.Transfers
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.ClubBadge
-import ng.naijaleague.fantasy.ui.components.NoteTone
 import ng.naijaleague.fantasy.ui.components.ShirtNumber
 import ng.naijaleague.fantasy.ui.components.SourceNote
 import ng.naijaleague.fantasy.ui.components.StandInTag
@@ -190,7 +189,7 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
         SourceNote(
             label = stringResource(R.string.squad_data_label),
             detail = squadDataSummary,
-            tone = NoteTone.CAUTION
+            modifier = Modifier.padding(horizontal = BrandDimens.Gutter)
         )
 
         // ---- The list. Dense on purpose: this audience reads tables for pleasure. ----
@@ -217,7 +216,13 @@ fun ChoosePlayersScreen(onClose: () -> Unit) {
             // page nobody opens.
             items(NpflSquads.sources, key = { it.clubId }) { source ->
                 squadSourceLine(source.clubId)?.let { (label, detail) ->
-                    SourceNote(label = label, detail = detail)
+                    SourceNote(
+                        label = label,
+                        detail = detail,
+                        modifier = Modifier
+                            .padding(horizontal = BrandDimens.Gutter)
+                            .padding(bottom = BrandDimens.SpaceMd)
+                    )
                 }
             }
         }

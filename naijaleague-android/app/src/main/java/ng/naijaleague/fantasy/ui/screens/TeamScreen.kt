@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
-import androidx.compose.ui.unit.sp
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -210,7 +209,11 @@ private fun PlayerPill(
         }
         Text(
             player.name.split(" ").last(),
-            style = BrandType.IdentityAndEditorial.name.copy(fontSize = 15.sp),
+            // nameCondensed, not a shrunk `name`. 15sp was a hand-typed size on
+            // no step of the §02 scale, and narrowing the face is what that
+            // style exists for — a long surname on a tight pitch pill keeps its
+            // marks and its weight instead of losing half a point of size.
+            style = BrandType.IdentityAndEditorial.nameCondensed,
             color = palette.ink,
             maxLines = 2,
             textAlign = TextAlign.Center

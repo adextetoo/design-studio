@@ -41,50 +41,39 @@ import ng.naijaleague.fantasy.data.NpflSquads
  * as a good match report — here is what we know, here is how we know it.
  */
 
-/** Tone of a note, which decides its colour without inventing a new one. */
-enum class NoteTone { NEUTRAL, CAUTION }
-
 /**
- * A small caveat block: a rule above, label, then the detail.
+ * A contained note: what the app knows, or does not, about what is on screen.
  *
- * Deliberately quiet. A caveat that shouts competes with the scores, and the
- * manager came here for the scores.
+ * A CARD, NOT A RAIL. This used to be a coloured bar down the left of some
+ * loose text. Two things were wrong with it. A card already means "a separate
+ * thing" in this system (§13) and a note IS one, so the rail was inventing a
+ * second, weaker way to say the same thing — and the accent stripe made every
+ * caveat look like an alert, when most of them are simply context. Cards are
+ * how the rest of the app contains a block of prose, and now this matches.
+ *
+ * No tone parameter either. A note that needed to shout would be a violation
+ * message, and those live on the control they block, not in a card.
+ *
+ * Takes a modifier rather than applying its own gutter, so it sits correctly
+ * whether the caller is already padded or not — same contract as [BrandCard].
  */
 @Composable
 fun SourceNote(
     label: String,
     detail: String,
-    modifier: Modifier = Modifier,
-    tone: NoteTone = NoteTone.NEUTRAL
+    modifier: Modifier = Modifier
 ) {
     val palette = LocalBrandPalette.current
-    val tint = if (tone == NoteTone.CAUTION) palette.accent else palette.inkDim
-    Column(modifier.fillMaxWidth()) {
-        BrandRule()
-        Spacer(Modifier.height(BrandDimens.SpaceSm))
-        Row(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-            Box(
-                Modifier
-                    .width(2.dp)
-                    .height(BrandDimens.SpaceLg)
-                    .background(tint)
+    BrandCard(modifier.fillMaxWidth()) {
+        Column {
+            SectionLabel(label)
+            Spacer(Modifier.height(BrandDimens.SpaceSm))
+            Text(
+                detail,
+                style = BrandType.InterfaceAndGuidance.body,
+                color = palette.inkDim
             )
-            Spacer(Modifier.width(BrandDimens.SpaceSm))
-            Column {
-                Text(
-                    label.uppercase(),
-                    style = BrandType.InterfaceAndGuidance.label,
-                    color = tint
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    detail,
-                    style = BrandType.InterfaceAndGuidance.micro,
-                    color = palette.inkDim
-                )
-            }
         }
-        Spacer(Modifier.height(BrandDimens.SpaceSm))
     }
 }
 
@@ -175,7 +164,6 @@ fun NeutralGroundNote(clubId: String, modifier: Modifier = Modifier) {
         detail = "${record.club.shortName} play this one at ${record.stadium}. " +
             "Their ground is ${record.homeGroundOfRecord}. Ground Man does not pay " +
             "out on it.",
-        tone = NoteTone.CAUTION,
         modifier = modifier
     )
 }

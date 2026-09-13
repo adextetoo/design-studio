@@ -142,7 +142,10 @@ fun LiveMatchScreen(onClose: () -> Unit) {
 
         // The ground, when the ground is the story. Renders nothing for the
         // eighteen clubs playing at home, which is most matches most weeks.
-        NeutralGroundNote(fixture.homeClubId)
+        NeutralGroundNote(
+            fixture.homeClubId,
+            Modifier.padding(horizontal = BrandDimens.Gutter)
+        )
 
         Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
             SectionLabel("Match stats")

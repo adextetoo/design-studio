@@ -48,7 +48,6 @@ import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandButtonSecondary
 import ng.naijaleague.fantasy.ui.components.BrandCard
 import ng.naijaleague.fantasy.ui.components.BrandRule
-import ng.naijaleague.fantasy.ui.components.NoteTone
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 import ng.naijaleague.fantasy.ui.components.SourceNote
 
@@ -323,7 +322,7 @@ fun JoinLeaguesScreen(onClose: () -> Unit) {
                     SourceNote(
                         label = stringResource(R.string.join_counts_label),
                         detail = stringResource(R.string.join_counts_note),
-                        tone = NoteTone.CAUTION
+                        modifier = Modifier.padding(horizontal = BrandDimens.Gutter)
                     )
                     Spacer(Modifier.navigationBarsPadding().height(BrandDimens.SpaceXxl))
                 }
