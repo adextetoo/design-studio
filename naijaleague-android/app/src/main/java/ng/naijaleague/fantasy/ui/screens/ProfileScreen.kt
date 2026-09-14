@@ -2,7 +2,6 @@ package ng.naijaleague.fantasy.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,19 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,6 +31,7 @@ import ng.naijaleague.fantasy.ui.components.BrandBackdrop
 import ng.naijaleague.fantasy.ui.components.BrandCard
 import ng.naijaleague.fantasy.ui.components.BrandRule
 import ng.naijaleague.fantasy.ui.components.OfflineBadge
+import ng.naijaleague.fantasy.ui.components.ScreenHeader
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 import ng.naijaleague.fantasy.ui.components.SourceNote
 import ng.naijaleague.fantasy.ui.components.squadDataSummary
@@ -68,6 +63,17 @@ import ng.naijaleague.fantasy.ui.components.squadDataSummary
  *     and is now wondering why half of it is labelled STAND-IN goes looking in
  *     settings. Answering in one place and not the other is how a product
  *     ends up looking evasive about something it is actually being honest about.
+ *
+ * THIS IS A TAB NOW, and the rules are a section on it. A four-tab bar is four
+ * things a thumb reaches without thinking, and a rules page is not one of them:
+ * it is read once, carefully, and then rarely again, while the screen a manager
+ * actually returns to — their squad name, their rank, their settings, the way
+ * out — had no seat at all and hid behind a small round button on Home.
+ *
+ * The rules did not lose anything by moving. They get a section of their own
+ * here rather than a row buried among the settings, they keep the whole page
+ * they always had, and that page still opens on Nzu Chalk, because §01 reserves
+ * that ground for reading and a settings list is not reading.
  */
 
 /**
@@ -85,46 +91,21 @@ private val myHandle: String =
     "@" + mySquad.squadName.lowercase().filter { it.isLetterOrDigit() }
 
 @Composable
-fun ProfileScreen(onClose: () -> Unit, onOpenGafferPass: () -> Unit) {
-    // Pinned to Night Pitch rather than inheriting. This screen can be opened
-    // from the Rules tab, which runs on Nzu Chalk, and settings are not reading
-    // material — the chalk surface is reserved for things you actually read
-    // (§01). Pinning also means the palette is the same whichever door was used.
+fun ProfileScreen(onOpenGafferPass: () -> Unit, onOpenRules: () -> Unit) {
+    // Pinned to Night Pitch rather than inheriting, so the palette cannot change
+    // under a manager coming back from the rules page — and because settings are
+    // not reading material, which is the whole basis on which §01 hands out the
+    // chalk ground.
     NaijaLeagueTheme(surface = BrandSurface.NIGHT_PITCH) {
         val palette = LocalBrandPalette.current
 
         BrandBackdrop(surface = BrandSurface.NIGHT_PITCH) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = BrandDimens.SpaceSm),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .size(BrandDimens.MinTapTarget)
-                            .clip(CircleShape)
-                            .clickable(onClick = onClose),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "‹",
-                            style = BrandType.InterfaceAndGuidance.title,
-                            color = palette.ink
-                        )
-                    }
-                    Text(
-                        "Profile",
-                        style = BrandType.IdentityAndEditorial.display2,
-                        color = palette.ink
-                    )
-                }
+            // No insets and no chevron: the shell holds both — the deadline strip
+            // takes the status bar, the bottom bar takes the navigation bar — and
+            // a tab has nowhere to go back to. A chevron here would promise an
+            // exit and then land the manager on Home for reasons they cannot see.
+            Column(Modifier.fillMaxSize()) {
+                ScreenHeader(title = "Profile")
 
                 Column(
                     Modifier
@@ -201,6 +182,52 @@ fun ProfileScreen(onClose: () -> Unit, onOpenGafferPass: () -> Unit) {
                         // The sync state belongs next to the identity it protects,
                         // and it is a state rather than a failure (§13).
                         OfflineBadge()
+                        Spacer(Modifier.height(BrandDimens.SpaceXl))
+
+                        // ---- Rules ----
+                        // Above Settings, not below it. A manager who used to
+                        // reach for the fourth tab to read the rules now reaches
+                        // for this one, and making them scroll past six settings
+                        // rows to find what used to be a single tap would be a
+                        // straight downgrade.
+                        //
+                        // The line stated here is the one the board will not let
+                        // the product bury, so it is on the surface rather than
+                        // one tap further in. Everything else — the scoring
+                        // table, the squad rules, the chips, the substitutions —
+                        // is a page you read, and it opens as one, on chalk.
+                        SectionLabel("Rules")
+                        Spacer(Modifier.height(BrandDimens.SpaceSm))
+                        Text(
+                            stringResource(R.string.no_buying_points_title),
+                            style = BrandType.InterfaceAndGuidance.title,
+                            color = palette.ink
+                        )
+                        Spacer(Modifier.height(BrandDimens.SpaceXs))
+                        Text(
+                            stringResource(R.string.no_buying_points),
+                            style = BrandType.InterfaceAndGuidance.bodySmall,
+                            color = palette.inkDim
+                        )
+                        Spacer(Modifier.height(BrandDimens.SpaceSm))
+                        Text(
+                            stringResource(R.string.table_starts_lying),
+                            style = BrandType.InterfaceAndGuidance.bodySmall,
+                            color = palette.accent
+                        )
+                        Spacer(Modifier.height(BrandDimens.SpaceLg))
+                    }
+
+                    BrandRule()
+
+                    SettingsRow(
+                        label = "How scoring works",
+                        detail = "Every point explained. The Away Day Bonus, The Three, " +
+                            "your squad, transfers, substitutions and the five chips.",
+                        onClick = onOpenRules
+                    )
+
+                    Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
                         Spacer(Modifier.height(BrandDimens.SpaceXl))
                         SectionLabel("Settings")
                         Spacer(Modifier.height(BrandDimens.SpaceSm))

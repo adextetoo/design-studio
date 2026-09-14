@@ -55,7 +55,7 @@ private enum class Phase { SPLASH, ONBOARDING, SIGN_UP, END_CARD, APP }
 
 private enum class Overlay {
     NONE, CHOOSE_PLAYERS, LIVE_MATCH, RECEIPT, GAFFER_PASS, THREE_PICK,
-    POINTS, PROFILE, NOTIFICATIONS, JOIN_LEAGUES, TRANSFER_CONFIRMED
+    POINTS, RULES, NOTIFICATIONS, JOIN_LEAGUES, TRANSFER_CONFIRMED
 }
 
 @Composable
@@ -122,11 +122,8 @@ fun NaijaLeagueRoot() {
             PointsScreen(onClose = { overlay = Overlay.NONE })
             return
         }
-        Overlay.PROFILE -> {
-            ProfileScreen(
-                onClose = { overlay = Overlay.NONE },
-                onOpenGafferPass = { overlay = Overlay.GAFFER_PASS }
-            )
+        Overlay.RULES -> {
+            RulesScreen(onClose = { overlay = Overlay.NONE })
             return
         }
         Overlay.NOTIFICATIONS -> {
@@ -150,11 +147,11 @@ fun NaijaLeagueRoot() {
         Overlay.NONE -> Unit
     }
 
-    // The rules page reads on Nzu Chalk — it is the reading surface, not a
-    // light mode (§01). Everything else lives on Night Pitch.
-    val surface = if (tab == Tab.RULES) BrandSurface.NZU_CHALK else BrandSurface.NIGHT_PITCH
-
-    NaijaLeagueTheme(surface = surface) {
+    // Every tab is Night Pitch. Nzu Chalk is the reading surface, not a light
+    // mode (§01), and the one thing in this app you actually read — the rules —
+    // is now opened from the Profile tab, so it pins its own ground rather than
+    // borrowing the shell's.
+    NaijaLeagueTheme(surface = BrandSurface.NIGHT_PITCH) {
         val palette = LocalBrandPalette.current
         Box(Modifier.fillMaxSize().background(palette.ground)) {
             Column(Modifier.fillMaxSize()) {
@@ -170,7 +167,8 @@ fun NaijaLeagueRoot() {
                     when (tab) {
                         Tab.HOME -> HomeScreen(
                             onViewTeam = { overlay = Overlay.POINTS },
-                            onOpenProfile = { overlay = Overlay.PROFILE },
+                            // A tab, not a sheet, since the bar now goes there.
+                            onOpenProfile = { tab = Tab.PROFILE },
                             onOpenNotifications = { overlay = Overlay.NOTIFICATIONS },
                             onOpenLive = { overlay = Overlay.LIVE_MATCH },
                             onOpenReceipt = { overlay = Overlay.RECEIPT },
@@ -181,7 +179,10 @@ fun NaijaLeagueRoot() {
                             onOpenGafferPass = { overlay = Overlay.GAFFER_PASS },
                             onJoinLeagues = { overlay = Overlay.JOIN_LEAGUES }
                         )
-                        Tab.RULES -> RulesScreen()
+                        Tab.PROFILE -> ProfileScreen(
+                            onOpenGafferPass = { overlay = Overlay.GAFFER_PASS },
+                            onOpenRules = { overlay = Overlay.RULES }
+                        )
                     }
                 }
                 BrandBottomBar(selected = tab, onSelect = { tab = it })

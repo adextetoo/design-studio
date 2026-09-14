@@ -49,12 +49,15 @@ A returning manager skips the middle entirely. The end card closes the **first**
 session only: showing it every visit would make leaving the app an event, and it
 is not one.
 
-Inside the app, four tabs (Home / Team / Leagues / Rules) and eleven overlays.
-Notifications and profile sit in the Home header rather than the bottom bar —
-the bar has four slots and thumb gravity belongs to what you do every visit
-(§13). Picking your team is that; reading your alerts is not. Joining a league
-sits in the Leagues header for the same reason: it is the one action on that
-screen that is not reading a table.
+Inside the app, four tabs (Home / Team / Leagues / Profile) and eleven overlays.
+The bar has four slots and thumb gravity belongs to what you do every visit
+(§13). Picking your team is that; a rules page is not — it is read once,
+carefully, then rarely again — so Rules gave up its slot to Profile, which a
+manager does return to and which previously had no seat at all. Rules keep the
+whole page they always had, in a section of their own on Profile, still on Nzu
+Chalk. Notifications sit in the Home header and joining a league in the Leagues
+header for the same reason: reading your alerts is not what you came to do, and
+joining is the one action on the Leagues screen that is not reading a table.
 
 Choosing players now ends at the transfer confirmation rather than returning
 silently to the pitch. The rules page promises the app states the cost before
@@ -64,7 +67,7 @@ you confirm; stage 7 is where it also states it after.
 
 | Screen | Why it stays |
 | --- | --- |
-| `RulesScreen.kt` | Every rule derives from the engine constants, so the page cannot promise something the app does not do. |
+| `RulesScreen.kt` | Every rule derives from the engine constants, so the page cannot promise something the app does not do. Opened from the Rules section on Profile. |
 | `GafferPassScreen.kt` | §06. The revenue model, and the place the app promises you cannot buy points. |
 | `ThreePickScreen.kt` | §15. The free, sponsor-funded weekly predictor for people with no squad. |
 | `ReceiptScreen.kt` | §04. The Monday share card, and the only place the campaign line appears. |
@@ -153,16 +156,18 @@ that decision is reversible in one function.
 
 ## Navigation and consistency audit
 
-**Every screen has a way out.** The four tabs — Home, Team, Leagues, Rules —
+**Every screen has a way out.** The four tabs — Home, Team, Leagues, Profile —
 carry the bottom bar. The fourteen launch screens and overlays deliberately do
 not: a full-screen job with a bar on it invites you to abandon it half-done.
 Ten of them carry a header chevron; Transfer Confirmed and the End Card are
 terminal cards whose buttons are the way out; the Splash is the entry point. No
 screen is a dead end.
 
-Notifications, profile and join-a-league sit in headers rather than the bar.
-The bar has four slots and thumb gravity belongs to what you do every visit
-(§13) — picking your team is that; reading your alerts is not.
+Notifications and join-a-league sit in headers rather than the bar. The bar has
+four slots and thumb gravity belongs to what you do every visit (§13) — picking
+your team is that; reading your alerts is not. Profile took the fourth slot from
+Rules, and the Home header's avatar now switches to that tab rather than pushing
+a sheet over the screen you are already on.
 
 **Type and colour.** No raw `Color(0x…)` anywhere outside `brand/`. No
 `TextStyle` built by hand. Every font family override is `NigerianText`, which

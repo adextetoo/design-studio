@@ -1,27 +1,37 @@
 package ng.naijaleague.fantasy.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
+import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
+import ng.naijaleague.fantasy.brand.NaijaLeagueTheme
 import ng.naijaleague.fantasy.data.NpflClubs
 import ng.naijaleague.fantasy.rules.Chip
 import ng.naijaleague.fantasy.rules.Formations
@@ -39,7 +49,10 @@ import ng.naijaleague.fantasy.ui.components.SectionLabel
  *
  * On Nzu Chalk — the reading surface (§01). This is not a light mode; it is the
  * surface the brand system reserves for anything you actually read, and it is
- * the only screen in the app that uses it.
+ * the only screen in the app that uses it. The ground is pinned here rather
+ * than set by the shell, because this page is opened from the Profile tab and
+ * that tab runs on Night Pitch: a reading surface that depends on which door
+ * you came through is not a reading surface.
  *
  * Every number on this page is derived from the rules engine rather than typed
  * in, so the page and the game cannot disagree. If a scoring value changes in
@@ -90,264 +103,286 @@ private val scoringRows: List<ScoreRow> = listOf(
 )
 
 @Composable
-fun RulesScreen() {
-    val palette = LocalBrandPalette.current
+fun RulesScreen(onClose: () -> Unit) {
+    NaijaLeagueTheme(surface = BrandSurface.NZU_CHALK) {
+        val palette = LocalBrandPalette.current
 
-    LazyColumn(Modifier.fillMaxWidth().background(palette.ground)) {
-        item {
-            ScreenHeader(
-                title = "How scoring works",
-                subtitle = "Every point explained. No mystery bonus."
-            )
-        }
-
-        // ---- The Away Day Bonus, first, because it is the difference ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel(stringResource(R.string.away_bonus_title))
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.away_bonus_body),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
+        LazyColumn(
+            Modifier
+                .fillMaxSize()
+                .background(palette.ground)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            item {
+                Row(
+                    Modifier.fillMaxWidth().padding(horizontal = BrandDimens.SpaceSm),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        Modifier
+                            .size(BrandDimens.MinTapTarget)
+                            .clip(CircleShape)
+                            .clickable(onClick = onClose),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("‹", style = BrandType.InterfaceAndGuidance.title, color = palette.ink)
+                    }
+                }
+                ScreenHeader(
+                    title = "How scoring works",
+                    subtitle = "Every point explained. No mystery bonus."
                 )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.away_bonus_detail),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceXl))
             }
-        }
 
-        // ---- Scoring table. A table, set as type on the ground (§13). ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel("Scoring")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-            }
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm)
-            ) {
-                Text("ACTION", style = BrandType.InterfaceAndGuidance.label,
-                    color = palette.inkDim, modifier = Modifier.weight(1f))
-                listOf("GK", "DEF", "MID", "FWD").forEach {
-                    Text(it, style = BrandType.InterfaceAndGuidance.label, color = palette.inkDim,
-                        modifier = Modifier.width(38.dp), textAlign = TextAlign.End)
+            // ---- The Away Day Bonus, first, because it is the difference ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel(stringResource(R.string.away_bonus_title))
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.away_bonus_body),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.away_bonus_detail),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
                 }
             }
-            BrandRule(Modifier.padding(horizontal = BrandDimens.Gutter))
-        }
-        items(scoringRows) { row ->
-            val emphasise = row.action.startsWith("Away") || row.action == "The Three"
-            Column {
+
+            // ---- Scoring table. A table, set as type on the ground (§13). ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel("Scoring")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                }
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = BrandDimens.Gutter, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm)
                 ) {
-                    Text(
-                        row.action,
-                        style = BrandType.InterfaceAndGuidance.body,
-                        color = if (emphasise) palette.accent else palette.ink,
-                        modifier = Modifier.weight(1f)
-                    )
-                    listOf(row.gk, row.def, row.mid, row.fwd).forEach { value ->
-                        Text(
-                            value,
-                            style = BrandType.ScoreAndData.data,
-                            color = if (emphasise) palette.accent else palette.ink,
-                            modifier = Modifier.width(38.dp),
-                            textAlign = TextAlign.End
-                        )
+                    Text("ACTION", style = BrandType.InterfaceAndGuidance.label,
+                        color = palette.inkDim, modifier = Modifier.weight(1f))
+                    listOf("GK", "DEF", "MID", "FWD").forEach {
+                        Text(it, style = BrandType.InterfaceAndGuidance.label, color = palette.inkDim,
+                            modifier = Modifier.width(38.dp), textAlign = TextAlign.End)
                     }
                 }
                 BrandRule(Modifier.padding(horizontal = BrandDimens.Gutter))
             }
-        }
-
-        // ---- The Three ----
-        item {
-            Column(
-                Modifier
-                    .padding(horizontal = BrandDimens.Gutter)
-                    .padding(top = BrandDimens.SpaceXl)
-            ) {
-                SectionLabel(stringResource(R.string.the_three_title))
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.the_three_body),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.the_three_reason),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.the_three_corrected),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.inkDim
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceXl))
-            }
-        }
-
-        // ---- Squad rules, read from the engine ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel("Your squad")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                RuleLine("Budget", Money.format(SquadRules.BUDGET_NAIRA))
-                RuleLine("Squad size", "${SquadRules.SQUAD_SIZE} players")
-                RuleLine(
-                    "Shape",
-                    Position.entries.joinToString(", ") {
-                        "${SquadRules.QUOTA[it]} ${it.short}"
-                    }
-                )
-                RuleLine("Maximum from one club", "${SquadRules.MAX_PER_CLUB} players")
-                // Enumerated from the same constants the validator uses, so this
-                // page cannot list a shape the app would then refuse to save.
-                RuleLine("Formations you can play", "${Formations.legal.size}")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    Formations.labels.joinToString("  ·  "),
-                    style = BrandType.ScoreAndData.dataSmall,
-                    color = palette.inkDim
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.club_cap_note),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.inkDim
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceXl))
-            }
-        }
-
-        // ---- Transfers, read from the engine ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel("Transfers")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                RuleLine("Free every gameweek", "${Transfers.FREE_PER_GW}")
-                RuleLine("You can bank up to", "${Transfers.MAX_BANKED}")
-                RuleLine("Each extra transfer costs", "${Transfers.HIT_PER_EXTRA} points")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.transfer_cost_note),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.transfer_offline_note),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.inkDim
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceXl))
-            }
-        }
-
-        // ---- Substitutions. The NPFL-specific rule, so it gets its own section ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel(stringResource(R.string.subs_title))
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.subs_body),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceMd))
-                Text(
-                    stringResource(R.string.subs_postponed_title),
-                    style = BrandType.InterfaceAndGuidance.title,
-                    color = palette.accent
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.subs_postponed_body),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.inkDim
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceXl))
-            }
-        }
-
-        // ---- Chips, straight off the enum ----
-        item {
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
-                SectionLabel("Chips · five a season")
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-            }
-        }
-        items(Chip.entries.toList()) { chip ->
-            Column(Modifier.padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm)) {
-                Text(
-                    chip.chipName,
-                    style = BrandType.InterfaceAndGuidance.title,
-                    color = palette.ink
-                )
-                Text(
-                    chip.explanation,
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.inkDim
-                )
-                // Stating the exception where the chip is explained, not in a
-                // footnote. Read off the club table, so it disappears by itself
-                // the season Rangers get their ground back.
-                if (chip == Chip.GROUND_MAN) {
-                    val displaced = NpflClubs.displaced()
-                    if (displaced.isNotEmpty()) {
-                        Spacer(Modifier.height(4.dp))
+            items(scoringRows) { row ->
+                val emphasise = row.action.startsWith("Away") || row.action == "The Three"
+                Column {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = BrandDimens.Gutter, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            displaced.joinToString(" and ") { it.club.shortName } +
-                                " do not count. " +
-                                (if (displaced.size == 1) "That club plays" else "Those clubs play") +
-                                " every home fixture this season at a ground that is " +
-                                "not theirs, and this chip pays for playing at home.",
+                            row.action,
                             style = BrandType.InterfaceAndGuidance.body,
-                            color = palette.accent
+                            color = if (emphasise) palette.accent else palette.ink,
+                            modifier = Modifier.weight(1f)
                         )
+                        listOf(row.gk, row.def, row.mid, row.fwd).forEach { value ->
+                            Text(
+                                value,
+                                style = BrandType.ScoreAndData.data,
+                                color = if (emphasise) palette.accent else palette.ink,
+                                modifier = Modifier.width(38.dp),
+                                textAlign = TextAlign.End
+                            )
+                        }
+                    }
+                    BrandRule(Modifier.padding(horizontal = BrandDimens.Gutter))
+                }
+            }
+
+            // ---- The Three ----
+            item {
+                Column(
+                    Modifier
+                        .padding(horizontal = BrandDimens.Gutter)
+                        .padding(top = BrandDimens.SpaceXl)
+                ) {
+                    SectionLabel(stringResource(R.string.the_three_title))
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.the_three_body),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.the_three_reason),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.the_three_corrected),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
+                }
+            }
+
+            // ---- Squad rules, read from the engine ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel("Your squad")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    RuleLine("Budget", Money.format(SquadRules.BUDGET_NAIRA))
+                    RuleLine("Squad size", "${SquadRules.SQUAD_SIZE} players")
+                    RuleLine(
+                        "Shape",
+                        Position.entries.joinToString(", ") {
+                            "${SquadRules.QUOTA[it]} ${it.short}"
+                        }
+                    )
+                    RuleLine("Maximum from one club", "${SquadRules.MAX_PER_CLUB} players")
+                    // Enumerated from the same constants the validator uses, so this
+                    // page cannot list a shape the app would then refuse to save.
+                    RuleLine("Formations you can play", "${Formations.legal.size}")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        Formations.labels.joinToString("  ·  "),
+                        style = BrandType.ScoreAndData.dataSmall,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.club_cap_note),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
+                }
+            }
+
+            // ---- Transfers, read from the engine ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel("Transfers")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    RuleLine("Free every gameweek", "${Transfers.FREE_PER_GW}")
+                    RuleLine("You can bank up to", "${Transfers.MAX_BANKED}")
+                    RuleLine("Each extra transfer costs", "${Transfers.HIT_PER_EXTRA} points")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.transfer_cost_note),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.transfer_offline_note),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
+                }
+            }
+
+            // ---- Substitutions. The NPFL-specific rule, so it gets its own section ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel(stringResource(R.string.subs_title))
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.subs_body),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceMd))
+                    Text(
+                        stringResource(R.string.subs_postponed_title),
+                        style = BrandType.InterfaceAndGuidance.title,
+                        color = palette.accent
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.subs_postponed_body),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceXl))
+                }
+            }
+
+            // ---- Chips, straight off the enum ----
+            item {
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter)) {
+                    SectionLabel("Chips · five a season")
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                }
+            }
+            items(Chip.entries.toList()) { chip ->
+                Column(Modifier.padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceSm)) {
+                    Text(
+                        chip.chipName,
+                        style = BrandType.InterfaceAndGuidance.title,
+                        color = palette.ink
+                    )
+                    Text(
+                        chip.explanation,
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.inkDim
+                    )
+                    // Stating the exception where the chip is explained, not in a
+                    // footnote. Read off the club table, so it disappears by itself
+                    // the season Rangers get their ground back.
+                    if (chip == Chip.GROUND_MAN) {
+                        val displaced = NpflClubs.displaced()
+                        if (displaced.isNotEmpty()) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                displaced.joinToString(" and ") { it.club.shortName } +
+                                    " do not count. " +
+                                    (if (displaced.size == 1) "That club plays" else "Those clubs play") +
+                                    " every home fixture this season at a ground that is " +
+                                    "not theirs, and this chip pays for playing at home.",
+                                style = BrandType.InterfaceAndGuidance.body,
+                                color = palette.accent
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        item {
-            Column(
-                Modifier
-                    .padding(BrandDimens.Gutter)
-                    .padding(top = BrandDimens.SpaceLg, bottom = BrandDimens.SpaceXxl)
-            ) {
-                BrandRule()
-                Spacer(Modifier.height(BrandDimens.SpaceLg))
-                Text(
-                    stringResource(R.string.no_buying_points_title),
-                    style = BrandType.InterfaceAndGuidance.title,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.no_buying_points),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.ink
-                )
-                Spacer(Modifier.height(BrandDimens.SpaceSm))
-                Text(
-                    stringResource(R.string.table_starts_lying),
-                    style = BrandType.InterfaceAndGuidance.body,
-                    color = palette.accent
-                )
+            item {
+                Column(
+                    Modifier
+                        .padding(BrandDimens.Gutter)
+                        .padding(top = BrandDimens.SpaceLg, bottom = BrandDimens.SpaceXxl)
+                ) {
+                    BrandRule()
+                    Spacer(Modifier.height(BrandDimens.SpaceLg))
+                    Text(
+                        stringResource(R.string.no_buying_points_title),
+                        style = BrandType.InterfaceAndGuidance.title,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.no_buying_points),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.ink
+                    )
+                    Spacer(Modifier.height(BrandDimens.SpaceSm))
+                    Text(
+                        stringResource(R.string.table_starts_lying),
+                        style = BrandType.InterfaceAndGuidance.body,
+                        color = palette.accent
+                    )
+                }
             }
         }
     }

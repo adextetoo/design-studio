@@ -75,7 +75,7 @@ fun DeadlineStrip(
 }
 
 enum class Tab(val label: String) {
-    HOME("Home"), TEAM("Team"), LEAGUES("Leagues"), RULES("Rules")
+    HOME("Home"), TEAM("Team"), LEAGUES("Leagues"), PROFILE("Profile")
 }
 
 /**
@@ -152,10 +152,18 @@ private fun TabGlyph(tab: Tab, tint: Color) {
                 drawLine(tint, Offset(s * 0.1f, s * 0.5f), Offset(s * 0.66f, s * 0.5f), w, StrokeCap.Square)
                 drawLine(tint, Offset(s * 0.1f, s * 0.8f), Offset(s * 0.42f, s * 0.8f), w, StrokeCap.Square)
             }
-            // Straight from the Nsibidi set in the brand system's motif system.
-            Tab.RULES -> {
-                drawCircle(tint, s * 0.38f, Offset(s * 0.5f, s * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(width = w))
-                drawLine(tint, Offset(s * 0.5f, s * 0.08f), Offset(s * 0.5f, s * 0.92f), w, StrokeCap.Square)
+            // A head over shoulders — built from the same lines and discs as
+            // its three neighbours rather than imported from an icon set, so
+            // the row still reads as one hand's work.
+            //
+            // It is one disc where TEAM is six, which is the distinction the
+            // product actually draws: the team is a formation, and this tab is
+            // the single manager standing behind it.
+            Tab.PROFILE -> {
+                drawCircle(tint, s * 0.17f, Offset(s * 0.5f, s * 0.26f))
+                drawLine(tint, Offset(s * 0.10f, s * 0.92f), Offset(s * 0.24f, s * 0.62f), w, StrokeCap.Square)
+                drawLine(tint, Offset(s * 0.24f, s * 0.62f), Offset(s * 0.76f, s * 0.62f), w, StrokeCap.Square)
+                drawLine(tint, Offset(s * 0.76f, s * 0.62f), Offset(s * 0.90f, s * 0.92f), w, StrokeCap.Square)
             }
         }
     }
