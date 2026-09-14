@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
@@ -45,7 +46,7 @@ fun ClubJersey(
     squadNumber: Int? = null
 ) {
     val palette = LocalBrandPalette.current
-    val kit = NpflClubs.record(clubId).kit
+    val kit = LiveCatalogue.record(clubId).kit
     val sourced = kit.renderable
 
     val body = if (sourced) Color(kit.primary!!) else Color.Transparent
@@ -120,8 +121,8 @@ fun ClubJersey(
 }
 
 /** Does this club have a kit this app will render? Six of twenty do not. */
-fun hasRenderableKit(clubId: String): Boolean = NpflClubs.record(clubId).kit.renderable
+fun hasRenderableKit(clubId: String): Boolean = LiveCatalogue.record(clubId).kit.renderable
 
 /** What the sources actually said, for the card that explains a blank shirt. */
-fun kitWords(clubId: String): String? = NpflClubs.record(clubId).kit.words
+fun kitWords(clubId: String): String? = LiveCatalogue.record(clubId).kit.words
 

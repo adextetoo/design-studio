@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -76,7 +77,7 @@ fun PlayerCardSheet(
     onClaim: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
-    val record = NpflClubs.record(player.clubId)
+    val record = LiveCatalogue.record(player.clubId)
     val registered = NpflSquads.forClub(player.clubId)
         .firstOrNull { it.name == player.name }
 

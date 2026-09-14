@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -77,7 +78,7 @@ fun ClaimCardScreen(
     onClose: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
-    val record = NpflClubs.record(player.clubId)
+    val record = LiveCatalogue.record(player.clubId)
 
     var fullName by rememberSaveable { mutableStateOf(if (player.isPlaceholder) "" else player.name) }
     var phone by rememberSaveable { mutableStateOf("") }

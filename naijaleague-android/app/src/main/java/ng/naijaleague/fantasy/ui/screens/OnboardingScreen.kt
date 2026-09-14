@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandSurface
@@ -206,7 +207,7 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
         // to know what it is. Honours if there are any, because nine titles is
         // the reason to pick Rangers or Enyimba; otherwise that they have just
         // come up, which is the reason to pick Sporting Lagos.
-        val record = NpflClubs.record(club.id)
+        val record = LiveCatalogue.record(club.id)
         val line = when {
             record.leagueTitles > 0 ->
                 "${record.leagueTitles} ${if (record.leagueTitles == 1) "title" else "titles"}"

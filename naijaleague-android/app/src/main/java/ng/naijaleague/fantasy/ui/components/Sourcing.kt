@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -150,14 +151,14 @@ val squadDataSummary: String
  * honest answer is the generated mark rather than a guess.
  */
 fun kitColourOrNull(clubId: String): Color? {
-    val kit = NpflClubs.record(clubId).kit
+    val kit = LiveCatalogue.record(clubId).kit
     return if (kit.renderable) Color(kit.primary!!) else null
 }
 
 /** Fixtures the table calls home games and the club does not. */
 @Composable
 fun NeutralGroundNote(clubId: String, modifier: Modifier = Modifier) {
-    val record = NpflClubs.record(clubId)
+    val record = LiveCatalogue.record(clubId)
     if (!record.playsHomeAtNeutralGround) return
     SourceNote(
         label = "Home, but not at home",

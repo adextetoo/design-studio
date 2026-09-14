@@ -200,3 +200,61 @@ The earlier repo's API, admin console, database schema, import pipeline and
 Transfermarkt scraper are server concerns and have no place in the Android app.
 Its `research/` and `docs/` directories remain the fuller record; this file
 covers what reached the app.
+
+## Reading the operator console
+
+The app is now a READER of that API — never a writer. `catalogue/` fetches
+`GET /clubs` and `GET /players`, neither of which requires a credential, and
+folds an operator's work into the researched data above. Nothing in the app can
+sign a request, so creating a player or correcting a fixture stays behind the
+console's own login where it belongs.
+
+**The researched data is the floor.** A server row wins only where it carries
+provenance saying an operator put it there:
+
+| Field | Taken when | Otherwise |
+| --- | --- | --- |
+| Club colours | `colour_confidence = 'admin_verified'` | the reading above stands, contested ones included |
+| Club identity | `identity_admin_edited = true` | the researched record stands |
+| Players | `is_placeholder = false` **and** `data_source` is `admin_verified` or `league_feed` | not imported; the app has its own labelled stand-ins |
+
+Anything else the server sends is declined, because it was seeded from the same
+`clubIdentity.js` these constants were checked against — accepting it would
+launder a guess into a fact by routing it through a database. Item 5 under
+*Unresolved* is what this is for: an operator who has seen Barau, Doma United or
+Inter Lagos play can supply in ten seconds what a week of searching did not, and
+can settle the three contested kits that this file refuses to pick a side on.
+
+**Three things a real server taught this client**, none of which reading the
+schema would have:
+
+1. The console keys clubs by slug (`enugu-rangers`), not by this app's
+   three-letter code, and its `abbr` column disagrees with the app for five of
+   the twenty — `IKO`/`IKC`, `INT`/`INL`, `KAN`/`KNP`, `3SC`/`SSC`, `RAB`/`RBE`.
+   Joining on either alone silently drops a quarter of the division. See
+   `catalogue/ClubIds.kt`.
+2. `players` has no shirt-number column. The importer parses one out of a
+   spreadsheet and nothing stores it, so a console player reaches the pitch
+   without the number a researched player carries.
+3. `strength` and `market_value_eur` arrive as JSON **strings** — node-postgres
+   returns NUMERIC and BIGINT that way to avoid precision loss.
+
+**A player is held back rather than guessed at.** `selected_by_percent` is null
+until a gameweek is open with entries in it, and §08 pays a 1.5x multiplier on a
+player under 2% owned — so defaulting a null to zero would hand out a scoring
+bonus nothing measured. A console player with no ownership figure, no position,
+no usable price, or a non-`active` status waits, and the Profile screen says how
+many are waiting and why.
+
+**Pointing the app at a console.** There is no deployment of that API; the
+earlier repo ships a docker-compose for running it locally. The base URL is a
+Gradle property, never a committed host:
+
+    ./gradlew assembleRelease -Png.naijaleague.catalogueUrl=https://api.example.ng
+
+Unset is a supported state, not a broken one: the app ships a complete
+catalogue and says on Profile that it is not connected to a console. A debug
+build defaults to `http://10.0.2.2:4000`, the host machine as the emulator sees
+it. Cleartext is permitted to that address and the two loopback names in debug
+builds only — `src/main/res/xml/network_security_config.xml` refuses it
+everywhere else, on every supported API level.

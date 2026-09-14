@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandSurface
@@ -284,6 +285,20 @@ fun ProfileScreen(onOpenGafferPass: () -> Unit, onOpenRules: () -> Unit) {
                     SourceNote(
                         label = stringResource(R.string.squad_data_label),
                         detail = squadDataSummary
+                    )
+
+                    // ---- And where it came from ----
+                    // The console is a source like any other, so it is declared
+                    // like any other. A manager whose club colour was blank last
+                    // week and is filled in today is entitled to know an
+                    // operator supplied it, and a manager looking at players the
+                    // app is holding back is looking at an honest gap rather
+                    // than a bug. Reading this off LiveCatalogue rather than a
+                    // stored flag means it cannot describe a state the app is
+                    // not actually in.
+                    SourceNote(
+                        label = "Operator console",
+                        detail = LiveCatalogue.status.summary
                     )
 
                     Spacer(Modifier.height(BrandDimens.SpaceXxl))

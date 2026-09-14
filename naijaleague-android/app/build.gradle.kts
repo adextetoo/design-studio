@@ -20,6 +20,25 @@ android {
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resourceConfigurations += listOf("en")
+
+        // Where the operator console's API lives.
+        //
+        // A PROPERTY, NEVER A COMMITTED HOST. There is no deployment of that API
+        // yet — the earlier repository ships a docker-compose for running it
+        // locally and nothing else — so hard-coding anything here would bake
+        // one developer's machine into the APK. Set it per build:
+        //
+        //     ./gradlew assembleRelease -Png.naijaleague.catalogueUrl=https://api.example.ng
+        //
+        // or in a local.properties / ~/.gradle/gradle.properties that is not in
+        // this repository. Empty is a supported state, not a broken one: the app
+        // ships a complete researched catalogue and says on the Profile screen
+        // that it is not connected to a console.
+        buildConfigField(
+            "String",
+            "CATALOGUE_BASE_URL",
+            "\"${project.findProperty("ng.naijaleague.catalogueUrl") ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -30,6 +49,15 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
+            // The emulator reaches the host machine's localhost at 10.0.2.2, so
+            // this is where `npm run dev` in packages/api actually is. Cleartext
+            // to that address is permitted by the debug network security config
+            // and by nothing else — see src/debug/res/xml/network_security_config.xml.
+            buildConfigField(
+                "String",
+                "CATALOGUE_BASE_URL",
+                "\"${project.findProperty("ng.naijaleague.catalogueUrl") ?: "http://10.0.2.2:4000"}\""
+            )
         }
     }
 

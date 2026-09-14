@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The shipping posture: HTTPS only, everywhere, no exceptions.
+
+  cleartextTrafficPermitted is false by default on API 28 and up and true below
+  it, and this app's floor is API 26 — so without this file, a release build on
+  an older handset would happily read the catalogue over plain HTTP if anyone
+  ever pointed CATALOGUE_BASE_URL at one. Stating it here makes the rule the
+  same on every supported version rather than a function of the OS.
+
+  The debug build overlays this file with one that permits cleartext to the
+  emulator's loopback address and nothing else.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

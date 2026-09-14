@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
+import ng.naijaleague.fantasy.LiveCatalogue
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
@@ -263,7 +264,7 @@ fun HomeScreen(
                 }
             }
             items(SampleData.fixtures) { fixture ->
-                val homeRecord = NpflClubs.record(fixture.homeClubId)
+                val homeRecord = LiveCatalogue.record(fixture.homeClubId)
                 FixtureRow(
                     home = SampleData.club(fixture.homeClubId).name,
                     homeShort = SampleData.club(fixture.homeClubId).shortName,
