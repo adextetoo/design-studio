@@ -7,3 +7,12 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Where the containerised build drops the APK and its reports:
+#
+#     docker run --rm -v "$PWD/artifacts:/out" naijaleague-android-build
+#
+# A bind mount, so these are written by the container and land here as
+# untracked files. A 10MB APK is build output like any other and belongs in a
+# workflow artifact, not in git.
+artifacts/
