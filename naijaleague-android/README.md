@@ -39,8 +39,11 @@ hand from the Actions tab (`workflow_dispatch`).
 
 **Or build it in a container.** `Dockerfile.build` is CI's environment on your
 own machine: JDK 17, the Android SDK for compileSdk 35 with its licences
-accepted, and the same three Gradle tasks in the same order — so a green build
-here and a green build in Actions mean the same thing.
+accepted, and the same four Gradle invocations in the same order — core tests,
+unit tests, lint, assemble — so a green build here and a green build in Actions
+mean the same thing. Verified: it produces `app-debug.apk` at the same
+10,694,345 bytes as a host build, after running the 151 core tests inside the
+container.
 
 ```sh
 docker build -f Dockerfile.build -t naijaleague-android-build .
@@ -83,6 +86,8 @@ Honesty matters more here than a clean-looking claim.
 | All Kotlin sources parse | **Verified — 0 syntax errors** via the Kotlin 2.1 compiler over every file. |
 | Compose UI type-checks | **Verified against a hand-written stub of the AndroidX API** using the Kotlin 2.0.21 compiler — 0 errors. The stub is not the real library, so gaps are possible, but every call signature, scope receiver (`RowScope.weight`, `BoxScope.matchParentSize`), `R.font.*` reference and import path was checked. |
 | Compose UI compiles against real AndroidX | **Verified — BUILD SUCCESSFUL**, debug APK at 10.7 MB, installed and run on an API 36 emulator. Finding this took one fix: an unescaped apostrophe in `strings.xml` that failed `mergeDebugResources`. |
+| Release variant, R8 and resource shrinking | **Verified — BUILD SUCCESSFUL**, 2.1 MB against the debug build's 10.7 MB. This had never been built before; it failed on two `FullBackupContent` lint errors, which `lintVitalRelease` catches and `lintDebug` does not. |
+| `Dockerfile.build` produces the APK | **Verified — one clean run**, 151 core tests then `testDebugUnitTest` then `assembleDebug`, APK and lint reports written to `artifacts/`. |
 | The app reads a live operator console | **Verified end to end.** Against the API from `infra/docker-compose.local.yml`, the Profile screen reports it is connected; an operator colour edit through `PATCH /admin/clubs/:id` changed that line to name the club colour it took. |
 
 The rules engine is deliberately Android-free so the part of this product that
