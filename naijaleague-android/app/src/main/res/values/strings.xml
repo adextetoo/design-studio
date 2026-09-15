@@ -186,7 +186,7 @@
     <string name="claim_phone">Phone number</string>
     <string name="claim_shirt">Shirt number</string>
     <string name="claim_proof_label">One thing that proves it</string>
-    <string name="claim_proof_help">Anything your club can vouch for: an email address on the club's domain, your registration number, or the name of an official who will confirm you.</string>
+    <string name="claim_proof_help">Anything your club can vouch for: an email address on the club\'s domain, your registration number, or the name of an official who will confirm you.</string>
     <string name="claim_proof">Club email, registration number, or an official who will confirm</string>
     <string name="claim_privacy_label">What happens to this</string>
     <string name="claim_privacy">It goes to one reviewer here and nowhere else. We do not ask for your date of birth, an ID number, a BVN or a bank account, and we will not start — none of them prove anything this does not. If the claim is refused we delete what you sent.</string>
