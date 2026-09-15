@@ -81,6 +81,11 @@ android {
 }
 
 dependencies {
+    // The rules engine, the researched data and the catalogue reader. A build
+    // of its own (core/) so its tests run without the Android SDK; Gradle
+    // substitutes it for these coordinates via includeBuild in settings.
+    implementation("ng.naijaleague:core:1.0.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

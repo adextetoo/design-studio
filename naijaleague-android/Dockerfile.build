@@ -91,6 +91,10 @@ RUN chmod +x gradlew  && for attempt in 1 2 3 4 5; do       if ./gradlew --versi
 
 COPY settings.gradle.kts build.gradle.kts gradle.properties ./
 COPY app/build.gradle.kts ./app/
+# core/ is an included build with its own settings and plugins, so its build
+# files belong in this layer too -- the root build resolves it at configuration
+# time, and without them `help` cannot configure at all.
+COPY core/settings.gradle.kts core/build.gradle.kts ./core/
 RUN ./gradlew help --no-daemon > /dev/null
 
 # Now the sources. Everything above this line is cached across a code change.

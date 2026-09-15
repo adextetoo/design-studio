@@ -251,9 +251,15 @@ private fun TransferEnd(label: String, player: Player, arriving: Boolean) {
                         if (player.isPlaceholder) {
                             StandInTag()
                             Spacer(Modifier.width(6.dp))
-                        } else if (player.squadNumber != null) {
-                            ShirtNumber(player.squadNumber)
-                            Spacer(Modifier.width(6.dp))
+                        } else {
+                            // See ChoosePlayersScreen: Player is declared in the
+                            // core build, so this needs a local rather than a
+                            // smart cast across the module boundary.
+                            val shirt = player.squadNumber
+                            if (shirt != null) {
+                                ShirtNumber(shirt)
+                                Spacer(Modifier.width(6.dp))
+                            }
                         }
                         Text(
                             "${player.position.label} · ${club.name}",

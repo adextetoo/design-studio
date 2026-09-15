@@ -11,9 +11,21 @@ A native Android app built to the NaijaLeague Fantasy brand system v1.1
 ## Build
 
 ```
+./gradlew -p core test           # 151 engine tests -- no Android SDK needed
+./gradlew testDebugUnitTest      # 22 brand guard rails -- these need AndroidX
 ./gradlew assembleDebug          # APK at app/build/outputs/apk/debug/
-./gradlew testDebugUnitTest      # 49 engine tests + the brand guard rails
 ```
+
+`core/` is a **separate Gradle build**, not a subproject, and that is what lets
+the first line run on a machine with no Android SDK at all. Gradle configures
+every project in a build before it runs anything in one, so as `include(":core")`
+a test run would still configure `:app`, and AGP would stop with "SDK location
+not found" before a single test executed. The root build pulls it back in with
+`includeBuild("core")`, so `:app` compiles against the same sources and there is
+one copy of everything. See `core/settings.gradle.kts`.
+
+**`testDebugUnitTest` no longer covers the engine.** It runs the 22 tests that
+genuinely need AndroidX and nothing else, so run both.
 
 **Or let CI build it.** `.github/workflows/android.yml` runs the unit tests,
 lints, assembles the debug APK and uploads it as a workflow artifact on every
@@ -66,15 +78,18 @@ Honesty matters more here than a clean-looking claim.
 
 | Area | Status |
 |---|---|
-| Rules engine + example data (`rules/`, `data/`) | **Compiled and tested — 49 tests, 0 failures.** Pure Kotlin, no Android dependencies, runs on the JVM. |
-| Brand guard rails (`BrandGuardrailsTest`, `BrandCopyTest`) | **Written, not executed here** — they need AndroidX. Their logic was verified independently: the contrast maths against the hex values in `Color.kt`, and the copy-drift checks against the real `strings.xml` and sources. Run with `./gradlew testDebugUnitTest`. |
+| Rules engine, data and catalogue (`core/`) | **Compiled and tested — 151 tests, 0 failures, with `ANDROID_HOME` unset.** Pure Kotlin in a build of its own; `./gradlew -p core test`. |
+| Brand guard rails (`BrandGuardrailsTest`, `BrandCopyTest`) | **Executed — 22 tests, 0 failures** via `./gradlew testDebugUnitTest` against real AndroidX. |
 | All Kotlin sources parse | **Verified — 0 syntax errors** via the Kotlin 2.1 compiler over every file. |
 | Compose UI type-checks | **Verified against a hand-written stub of the AndroidX API** using the Kotlin 2.0.21 compiler — 0 errors. The stub is not the real library, so gaps are possible, but every call signature, scope receiver (`RowScope.weight`, `BoxScope.matchParentSize`), `R.font.*` reference and import path was checked. |
-| Compose UI compiles against real AndroidX and renders | **Not verified in this environment.** `dl.google.com` and `maven.google.com` are blocked by egress policy here, so no APK could be produced. Open in Android Studio and run `./gradlew assembleDebug`. |
+| Compose UI compiles against real AndroidX | **Verified — BUILD SUCCESSFUL**, debug APK at 10.7 MB, installed and run on an API 36 emulator. Finding this took one fix: an unescaped apostrophe in `strings.xml` that failed `mergeDebugResources`. |
+| The app reads a live operator console | **Verified end to end.** Against the API from `infra/docker-compose.local.yml`, the Profile screen reports it is connected; an operator colour edit through `PATCH /admin/clubs/:id` changed that line to name the club colour it took. |
 
 The rules engine is deliberately Android-free so the part of this product that
 is *hard to get right* — and that carries the brand's whole argument — is
-provable without an emulator.
+provable without an emulator. `core/` is what makes that claim true in practice
+rather than only in principle: before it, those tests ran through AGP and a
+contributor without the SDK could not execute them at all.
 
 ## Brand system → code
 

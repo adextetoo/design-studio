@@ -311,9 +311,16 @@ private fun PlayerRow(
                     if (player.isPlaceholder) {
                         StandInTag()
                         Spacer(Modifier.width(6.dp))
-                    } else if (player.squadNumber != null) {
-                        ShirtNumber(player.squadNumber)
-                        Spacer(Modifier.width(6.dp))
+                    } else {
+                        // Bound to a local because Player now lives in the core
+                        // build, and Kotlin will not smart-cast a public val
+                        // declared in another module - it cannot prove nothing
+                        // reassigns it in between.
+                        val shirt = player.squadNumber
+                        if (shirt != null) {
+                            ShirtNumber(shirt)
+                            Spacer(Modifier.width(6.dp))
+                        }
                     }
                     Text(
                         "${player.position.short} · ${SampleData.club(player.clubId).name}",

@@ -14,6 +14,12 @@ set -euo pipefail
 OUT_DIR="${OUT_DIR:-/out}"
 GRADLE_ARGS=(--no-daemon "$@")
 
+echo "==> Core tests (JVM only, no Android SDK)"
+# A build of its own, so this applies no AGP. It is a separate invocation for
+# the same reason it is a separate step in CI: testDebugUnitTest does not run
+# these, and a green :app test run says nothing about the scoring engine.
+./gradlew -p core test "${GRADLE_ARGS[@]}" --stacktrace
+
 echo "==> Unit tests"
 ./gradlew testDebugUnitTest "${GRADLE_ARGS[@]}" --stacktrace
 
