@@ -1,0 +1,106 @@
+# The Android BUILD in a container. Not the app — an APK runs on a handset,
+# and there is nothing about it to "deploy" in Docker. What this image is for
+# is the other half: reproducing .github/workflows/android.yml on a developer's
+# machine, so "it fails in CI but not for me" stops being a thing anyone says.
+#
+#     docker build -f Dockerfile.build -t naijaleague-android-build .
+#     docker run --rm -v "$PWD/artifacts:/out" naijaleague-android-build
+#
+# BUILD CONTEXT IS naijaleague-android/, this directory — the Gradle project is
+# self-contained and nothing above it is needed.
+#
+# WHAT THIS HAS TO MATCH, AND WHY. The workflow sets up JDK 17 (temurin) and
+# lets gradle/actions/setup-gradle run the committed wrapper; it then runs
+# testDebugUnitTest, lintDebug (continue-on-error) and assembleDebug in that
+# order. Divergence in any of those is how a local green turns into a red CI
+# run, so this image pins the same JDK vendor and major version, uses the same
+# wrapper, and runs the same three tasks in the same order with the same
+# tolerance for lint. See docker-build.sh, which is the run half of the same
+# contract.
+#
+# THE WRAPPER IS THE GRADLE. gradle/wrapper/gradle-wrapper.properties pins
+# 8.9 and the wrapper jar is committed, so installing a Gradle distribution
+# here would only create a second one to disagree with. ./gradlew downloads
+# 8.9 itself on first use and caches it in GRADLE_USER_HOME.
+FROM eclipse-temurin:17-jdk-jammy
+
+# unzip for the command-line tools archive, curl to fetch it, git because AGP
+# probes for it and is noisy when it is missing.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends unzip curl git ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+# GRADLE_USER_HOME is inside the image rather than at the default ~/.gradle so
+# that the dependency warm-up below lands in a layer. Left at the default it
+# would still work, but every container run would re-download AndroidX.
+ENV GRADLE_USER_HOME=/opt/gradle-home
+
+# The command-line tools, pinned. `latest` here would mean an image that builds
+# differently next month for no recorded reason.
+#
+# The nested cmdline-tools/latest/ path is not decoration: sdkmanager resolves
+# the SDK root as two directories up from its own location, so the archive's
+# own layout (cmdline-tools/bin) unpacked directly into ANDROID_HOME makes it
+# compute /opt as the root and install packages beside the SDK instead of in it.
+ARG CMDLINE_TOOLS_VERSION=11076708
+RUN mkdir -p "${ANDROID_HOME}/cmdline-tools" \
+ && curl -fsSL -o /tmp/cmdline-tools.zip \
+      "https://dl.google.com/android/repository/commandlinetools-linux-${CMDLINE_TOOLS_VERSION}_latest.zip" \
+ && unzip -q /tmp/cmdline-tools.zip -d "${ANDROID_HOME}/cmdline-tools" \
+ && mv "${ANDROID_HOME}/cmdline-tools/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest" \
+ && rm /tmp/cmdline-tools.zip
+
+ENV PATH="${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
+
+# Licences. `yes |` rather than a hand-written licence hash file: the hashes
+# change with the packages and a stale one fails the install with "not accepted"
+# rather than with anything that says which licence is missing.
+RUN yes | sdkmanager --licenses > /dev/null
+
+# compileSdk = 35 and the AGP 8.7.3 default build-tools for it are 35.0.0 —
+# app/build.gradle.kts is the source of truth for both. platform-tools is here
+# for adb, which a developer running this image interactively will want.
+RUN sdkmanager --install \
+      "platform-tools" \
+      "platforms;android-35" \
+      "build-tools;35.0.0" \
+  > /dev/null
+
+WORKDIR /workspace
+
+# The wrapper and the build definition first, sources second. Downloading
+# Gradle 8.9, AGP and the whole AndroidX graph is minutes; a code change should
+# not repeat it. `--version` is enough to make the wrapper fetch and unpack the
+# distribution, and the help task resolves the plugin classpath.
+COPY gradlew gradlew.bat ./
+COPY gradle ./gradle
+
+# RETRIED, because this step is one ~130MB download over TLS and a dropped
+# connection kills the whole image build eight minutes in. Measured here:
+#
+#     java.io.EOFException: SSL peer shut down incorrectly
+#
+# at 460s, from services.gradle.org. The partial distribution is removed
+# between attempts — the wrapper does not resume, and a half-written
+# dists/ directory makes the next attempt fail differently and more
+# confusingly than the first. The final unguarded run is what decides the
+# build: if five attempts did not get a distribution, this layer must fail.
+RUN chmod +x gradlew  && for attempt in 1 2 3 4 5; do       if ./gradlew --version --no-daemon > /dev/null; then break; fi;       echo "Gradle distribution download failed (attempt ${attempt}); retrying.";       rm -rf "${GRADLE_USER_HOME}/wrapper/dists";       sleep 15;     done  && ./gradlew --version --no-daemon > /dev/null
+
+COPY settings.gradle.kts build.gradle.kts gradle.properties ./
+COPY app/build.gradle.kts ./app/
+RUN ./gradlew help --no-daemon > /dev/null
+
+# Now the sources. Everything above this line is cached across a code change.
+COPY . .
+
+COPY docker-build.sh /usr/local/bin/docker-build.sh
+RUN chmod +x /usr/local/bin/docker-build.sh
+
+# /out is where the APK and the reports are left. Mount something over it or
+# the artefacts die with the container.
+VOLUME ["/out"]
+
+ENTRYPOINT ["/usr/local/bin/docker-build.sh"]

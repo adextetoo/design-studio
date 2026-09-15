@@ -25,6 +25,29 @@ both need AndroidX, which the authoring environment could not reach.
 Download the APK from the run's **Artifacts** section, or trigger a build by
 hand from the Actions tab (`workflow_dispatch`).
 
+**Or build it in a container.** `Dockerfile.build` is CI's environment on your
+own machine: JDK 17, the Android SDK for compileSdk 35 with its licences
+accepted, and the same three Gradle tasks in the same order — so a green build
+here and a green build in Actions mean the same thing.
+
+```sh
+docker build -f Dockerfile.build -t naijaleague-android-build .
+docker run --rm -v "$PWD/artifacts:/out" naijaleague-android-build
+```
+
+The APK and the test and lint reports land in `artifacts/`. Nothing is
+installed on the host — no JDK, no SDK, no Gradle. The image builds *the app*;
+it does not run it. An APK runs on a handset or an emulator, so there is
+nothing here to "deploy in Docker", and the container's job ends when the file
+is written.
+
+Arguments after the image name go to every Gradle invocation, which is how the
+console URL is set for a build:
+
+```sh
+docker run --rm -v "$PWD/artifacts:/out" naijaleague-android-build   -Png.naijaleague.catalogueUrl=https://api.example.ng
+```
+
 Requires JDK 17+ and the Android SDK (compileSdk 35). Gradle 8.9 via the
 wrapper, AGP 8.7.3, Kotlin 2.0.21, Compose BOM 2024.10.01. `minSdk 26`.
 

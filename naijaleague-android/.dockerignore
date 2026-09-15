@@ -1,0 +1,15 @@
+# Build output and Gradle's own state. Copying either in would ship one
+# machine's absolute paths and daemon registry into the image, and the build
+# inside the container would then disagree with itself about where things are.
+build
+app/build
+.gradle
+.idea
+*.iml
+local.properties
+
+# The APKs this image exists to produce.
+artifacts
+*.apk
+
+.git
