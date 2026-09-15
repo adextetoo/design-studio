@@ -1,0 +1,30 @@
+# Line endings, and the one place they are not cosmetic.
+#
+# `gradlew` is a POSIX shell script. Checked out with CRLF — the Git for
+# Windows default, core.autocrlf=true — and copied into a Linux container, its
+# shebang reads "#!/bin/sh\r"; the kernel takes the \r as part of the
+# interpreter path and reports
+#
+#     /bin/sh: 1: ./gradlew: not found
+#
+# about a file that is plainly there. It happens on a Windows clone and nowhere
+# else, so CI stays green while the containerised build fails on a laptop.
+# Measured here: Dockerfile.build failed at exactly that line.
+#
+# `text eol=lf` makes these LF in the working tree on every platform, not only
+# in the repository.
+gradlew text eol=lf
+*.sh text eol=lf
+Dockerfile text eol=lf
+Dockerfile.* text eol=lf
+
+# A Windows batch file needs CRLF for the same kind of reason, in the other
+# direction.
+gradlew.bat text eol=crlf
+*.bat text eol=crlf
+
+*.jar binary
+*.png binary
+*.jpg binary
+*.ttf binary
+*.otf binary
