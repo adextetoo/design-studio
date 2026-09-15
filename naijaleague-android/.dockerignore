@@ -1,15 +1,19 @@
 # Build output and Gradle's own state. Copying either in would ship one
 # machine's absolute paths and daemon registry into the image, and the build
 # inside the container would then disagree with itself about where things are.
-build
-app/build
-.gradle
-.idea
-*.iml
-local.properties
+#
+# THE PATTERNS ARE RECURSIVE ON PURPOSE. .dockerignore matches from the context
+# root, so a bare `build` excludes ./build and nothing else -- it does not
+# match app/build or core/build. With core/ added as a second build, the
+# non-recursive form silently started copying 2.8MB of host output back in.
+**/build
+**/.gradle
+**/.idea
+**/*.iml
+**/local.properties
 
 # The APKs this image exists to produce.
 artifacts
-*.apk
+**/*.apk
 
 .git
