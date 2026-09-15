@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cloud backup and device transfer both carry the saved squad and nothing else.
+
+  Each block is an allowlist: naming saved_squad.xml in an include element
+  excludes everything else, the auth token included. Adding an exclude for
+  auth.xml alongside it looks safer and is in fact a fatal release-lint error,
+  because the excluded path is not inside an included one. See
+  backup_rules.xml.
+-->
 <data-extraction-rules>
     <cloud-backup>
         <include domain="sharedpref" path="saved_squad.xml" />
-        <exclude domain="sharedpref" path="auth.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="saved_squad.xml" />
