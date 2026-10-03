@@ -59,7 +59,7 @@ fun DeadlineStrip(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Canvas(Modifier.size(7.dp)) { drawCircle(color = ink) }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(BrandDimens.SpaceSm))
             Text(
                 stringResource(R.string.deadline_label).uppercase(),
                 style = BrandType.InterfaceAndGuidance.label,
@@ -109,12 +109,12 @@ fun BrandBottomBar(
                         .weight(1f)
                         .heightIn(min = BrandDimens.MinTapTarget)
                         .clickable { onSelect(tab) }
-                        .padding(vertical = 6.dp),
+                        .padding(vertical = BrandDimens.SpaceXs),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     TabGlyph(tab, tint)
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(Modifier.height(BrandDimens.SpaceXs))
                     Text(tab.label, style = BrandType.InterfaceAndGuidance.label, color = tint)
                 }
             }

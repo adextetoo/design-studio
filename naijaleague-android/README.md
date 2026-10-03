@@ -121,7 +121,7 @@ contributor without the SDK could not execute them at all.
 | §06 Gaffer Pass pricing and the "never sells points" promise | `ui/screens/GafferPassScreen.kt`, on the Adire Indigo surface |
 | §04 The Monday Receipt share card, and the campaign line | `ui/screens/ReceiptScreen.kt` |
 | §15 Three Pick, the F1-derived weekly predictor | `ui/screens/ThreePickScreen.kt` |
-| §13 The away-bonus second beat | `components/AwayBonusBadge`, driven by `BrandMotion.standard()` |
+| §13 The away-bonus second beat | `components/AwayBonusBadge`, a cut after `BrandMotion.AWAY_BONUS_BEAT_DELAY_MS`, no fade |
 
 ## Decisions the brand system left open
 
@@ -138,7 +138,8 @@ Flagged rather than buried, because each is a real product call:
    `BrandColor.primaryActionFill`.
 3. **Bundled fonts, not downloadable.** Removes the Play Services dependency and
    means type renders with no network — the same principle as the rest of the
-   product. Adds ~1.5MB; revisit against the 4MB Lite-mode target.
+   product. Adds ~1.2MB (Archivo and the Noto subset); revisit against the 4MB
+   Lite-mode target.
 4. **No dynamic colour.** Material You would repaint a brand whose whole equity
    is one specific green in the wallpaper's colour.
 5. **Three sizes pulled onto the scale.** An earlier pass had invented 34sp, 13sp
@@ -203,11 +204,31 @@ declared and enforcing nothing: a 13sp money label, a 12sp player name, brass on
 a sync dot, and `NigerianText` silently resolving to the OEM system font. All
 fixed; the tests stop them coming back.
 
+## Not a template app
+
+The UI was audited against a common list of tells that make an app look
+generated from a template ("vibecoded"). Most were never present: no gradients,
+no gradient text, no emoji in headings, no imported icon set (the glyphs are
+drawn), no stock Material components, no fade-in on scroll, no serif italic
+accents, no buzzword copy. Seven were present and are fixed:
+
+| Tell | Was | Now |
+|---|---|---|
+| Inter everywhere | Inter was the interface face | Archivo at normal width. It was already bundled for display, so this removed a font file. Archivo is a grotesque in the same Akzidenz line as Söhne, so it is also the closer stand-in |
+| Glassmorphism | Formation picker was a translucent panel with a lit white edge over a blurred pitch | Opaque sheet that slides up from the bottom edge. The scrim keeps the pitch above it readable |
+| Coloured border cards | Every card and field had a lime-tinted hairline; selected tiles and plan rows used a lime or brass border over a matching tint | Neutral `rule` on Night Pitch. Selection is a heavier neutral edge with no tint |
+| Badge above the headline | Lime uppercase labels over most headings; a brass "Gaffer Pass" badge stacked over that screen's headline | `SectionLabel` defaults to dim ink. "Gaffer Pass" moved into the top bar |
+| Fade-in on load | Splash body faded in (260ms linear, over the 240ms ceiling); the away bonus faded and rose into place | Splash shows everything at once. The away bonus lands as a cut after its delay, which keeps the second beat |
+| Em dashes everywhere | 14 in `strings.xml`, 8 in Kotlin copy | None in user-facing prose. The rules table keeps "—" for a cell with no value, which is standard |
+| Inconsistent spacing | Badge padding came in five sizes (7/3, 8/3, 8/4, 8/5, 6/1); spacers at 2, 3, 5, 6, 7 and 10dp | Badges are 8/4. Spacing snaps to the 4/8/12 scale. The pitch token internals keep their optical offsets |
+
 ## Licensed typefaces
 
-Ships with the brand system's named open-source fallbacks — Inter and Archivo
-Expanded — plus a subset of **Noto Sans** for names, all bundled as variable
-fonts with the axes pinned in the `res/font` XML resources. To install the licensed pairing: drop `sohne_*.otf` and `druk_*.otf`
+Ships with one open-source stand-in, **Archivo**, used expanded for display and
+at normal width for interface and data, plus a subset of **Noto Sans** for
+names. Both are bundled as variable fonts with the axes pinned in the `res/font`
+XML resources. Archivo replaced Inter as the interface face: see
+[Not a template app](#not-a-template-app). To install the licensed pairing: drop `sohne_*.otf` and `druk_*.otf`
 into `app/src/main/res/font/`, point the families in `brand/Type.kt` at them, and
 delete the variation XML. See `licenses/` for the OFL.
 

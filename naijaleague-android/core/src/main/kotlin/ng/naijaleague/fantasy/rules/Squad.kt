@@ -95,7 +95,7 @@ data class Squad(
             .forEach { (clubId, players) ->
                 v += Violation(
                     "CLUB_CAP",
-                    "You have ${players.size} players from ${clubName(clubId)}. The limit is 2 — " +
+                    "You have ${players.size} players from ${clubName(clubId)}. The limit is 2, so " +
                         "drop ${players.size - SquadRules.MAX_PER_CLUB}."
                 )
             }

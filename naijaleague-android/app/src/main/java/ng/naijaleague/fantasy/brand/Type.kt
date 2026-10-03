@@ -16,10 +16,16 @@ import ng.naijaleague.fantasy.R
  * Typography — brand system v1.1, section 02.
  *
  * The licensed pairing is Söhne (interface and data) with Druk Condensed and
- * Druk Wide (display). Neither is redistributable, so this ships the brand
- * system's own named open-source fallbacks — Inter and Archivo Expanded — as
- * bundled variable fonts, with the width and weight axes pinned in XML
- * (the res/font XML resources) to the exact instances the brand system specifies.
+ * Druk Wide (display). Neither is redistributable, so this ships one open-source
+ * variable font, Archivo, for both jobs: expanded for display, normal width for
+ * interface and data. The width and weight axes are pinned in the res/font XML
+ * resources to the exact instances the brand system specifies.
+ *
+ * Archivo replaced Inter as the interface face. Inter is the default sans of
+ * template-built apps, so it made this product look like one of them. Archivo
+ * is a grotesque in the Akzidenz tradition, which is also where Söhne comes
+ * from, so it is the closer stand-in. It is already bundled for display, so the
+ * swap removed an 876KB font file and added nothing.
  *
  * Bundled rather than downloaded on purpose. It removes the Play Services
  * dependency, and it means type renders correctly with no network — which is

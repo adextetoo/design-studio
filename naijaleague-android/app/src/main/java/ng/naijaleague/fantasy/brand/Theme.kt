@@ -52,7 +52,9 @@ val NightPitchPalette = BrandPalette(
     raised = BrandColor.NightPitchRaised,
     ink = BrandColor.ChalkWhite,
     inkDim = BrandColor.HazeDim,
-    rule = BrandColor.JaraLime.copy(alpha = 0.20f),
+    // Neutral, not lime. A lime edge on every card and field spent the one loud
+    // voice on furniture, and tinted hairlines are a template-app tell.
+    rule = BrandColor.HarmattanHaze.copy(alpha = 0.18f),
     accent = BrandColor.JaraLime,
     accentInk = BrandColor.NightPitch,
     honours = BrandColor.IfeBrass,

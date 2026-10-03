@@ -147,9 +147,11 @@ fun ReceiptCard(
             // The exported image is standalone, but in preview the card sits on
             // the same Night Pitch ground — without an edge it reads as part of
             // the screen rather than as the object being shared.
+            // A neutral edge. The lime belongs to the score and the campaign
+            // line inside the card, not to its frame.
             .border(
                 1.dp,
-                BrandColor.JaraLime.copy(alpha = 0.25f),
+                BrandColor.HarmattanHaze.copy(alpha = 0.25f),
                 RoundedCornerShape(BrandDimens.CardRadius)
             )
             .padding(BrandDimens.SpaceXl),

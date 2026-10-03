@@ -1,8 +1,5 @@
 package ng.naijaleague.fantasy.ui.screens
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,17 +9,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import kotlinx.coroutines.delay
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandSurface
@@ -47,7 +37,7 @@ import ng.naijaleague.fantasy.ui.components.HeroBackdrop
  * that waits, then a separate screen to choose between getting started and
  * logging in, and onboarding then opened with a third screen carrying the
  * headline. Three screens to say one thing. This is the one: the mark and the
- * headline settle while the app loads, and the two doors are there the moment
+ * headline are there while the app loads, and the two doors are there the moment
  * it is ready. A returning manager taps "I already have a squad" without
  * waiting for an animation to finish, and onboarding starts where it should —
  * on the club you support.
@@ -62,27 +52,14 @@ import ng.naijaleague.fantasy.ui.components.HeroBackdrop
 @Composable
 fun SplashScreen(
     onStart: () -> Unit,
-    onSignIn: () -> Unit,
-    /** Set false in tests and previews so nothing waits on a timer. */
-    animated: Boolean = true
+    onSignIn: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
 
-    // The mark settles, then the words. Two beats, not a performance: §14 gives
-    // motion the job of explaining where something came from, and a splash that
-    // entertains for three seconds is three seconds nobody asked for.
-    var settled by remember { mutableStateOf(!animated) }
-    LaunchedEffect(animated) {
-        if (animated) {
-            delay(220)
-            settled = true
-        }
-    }
-    val reveal by animateFloatAsState(
-        targetValue = if (settled) 1f else 0f,
-        animationSpec = tween(durationMillis = 260, easing = LinearEasing),
-        label = "splash-reveal"
-    )
+    // Everything is on screen at once. The body line used to fade in after the
+    // headline, which is the stock fade-in-on-load of template apps, and at
+    // 260ms linear it also broke §13's 240ms ceiling and the Uli curve. A
+    // splash that makes a returning manager wait for words is lag, not motion.
 
     HeroBackdrop(surface = BrandSurface.NIGHT_PITCH) {
         Column(
@@ -108,8 +85,7 @@ fun SplashScreen(
                 // and never a bouncer on the front door (§12).
                 stringResource(R.string.splash_body),
                 style = BrandType.InterfaceAndGuidance.body,
-                color = palette.inkDim,
-                modifier = Modifier.alpha(reveal)
+                color = palette.inkDim
             )
             Spacer(Modifier.height(BrandDimens.SpaceXl))
             BrandButton(label = stringResource(R.string.splash_start), onClick = onStart)

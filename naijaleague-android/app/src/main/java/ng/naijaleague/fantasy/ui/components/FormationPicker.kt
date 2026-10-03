@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,10 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ng.naijaleague.fantasy.brand.BrandColor
@@ -53,16 +51,15 @@ import ng.naijaleague.fantasy.rules.Squad
 /**
  * The formation picker.
  *
- * A GLASS PANEL OVER THE PITCH, not a new screen. Changing shape is a decision
- * you make while looking at the team — send the manager somewhere else and they
- * lose the thing they were deciding about. So the pitch stays visible and dimmed
- * underneath, and the panel sits over it.
+ * A SHEET OVER THE PITCH, not a new screen. Changing shape is a decision you
+ * make while looking at the team. Send the manager somewhere else and they lose
+ * the thing they were deciding about. So the pitch stays visible above the
+ * sheet, dimmed by the scrim, and the sheet slides up over the bottom of it.
  *
- * The panel is translucent rather than a flat sheet because the pitch behind it
- * is information: the green and the eleven tokens still read through it, so it
- * is obvious what is about to change. Where the platform can blur a backdrop
- * (Android 12 and up) the caller blurs the pitch as well; below that the scrim
- * carries it alone, which is why the scrim is weighted to work on its own.
+ * The sheet is opaque. It used to be frosted glass over a blurred pitch, and
+ * glassmorphism is one of the surest signs of a template-built app. It also
+ * cost legibility for nothing: the part of the pitch that matters is the part
+ * above the sheet, and the scrim already keeps that readable.
  *
  * THE CAROUSEL LOOPS, and that is the whole reason it is a carousel. Eight
  * shapes do not fit on a phone's width, and a strip that stops at both ends
@@ -99,10 +96,10 @@ fun FormationPicker(
 
     LaunchedEffect(Unit) { listState.scrollToItem(startIndex) }
 
-    // The panel rises. A sheet that simply exists on the frame after a tap reads
-    // as a mis-render; a short rise reads as an answer to the tap. It is the
-    // brand enter curve — fast out, long settle, no bounce — and it is the same
-    // 240ms the blur behind it takes, so the two land together.
+    // The sheet slides up from the bottom edge, the way a platform sheet does.
+    // A sheet that simply exists on the frame after a tap reads as a mis-render.
+    // It slides without fading: a fade on top of the slide is decoration. It is
+    // the brand enter curve (fast out, long settle, no bounce) at 240ms.
     val animate = LocalAnimationsEnabled.current
     var entered by remember { mutableStateOf(!animate) }
     LaunchedEffect(Unit) { entered = true }
@@ -130,18 +127,9 @@ fun FormationPicker(
             Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .offset(y = ((1f - appear) * 28f).dp)
-                .alpha(appear)
+                .graphicsLayer { translationY = (1f - appear) * size.height }
                 .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
-                // Translucent, so the pitch reads through and it is obvious what
-                // is about to change.
-                .background(palette.raised.copy(alpha = 0.88f))
-                .border(
-                    1.dp,
-                    // The lit top edge that makes glass look like glass.
-                    Color.White.copy(alpha = 0.10f),
-                    RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-                )
+                .background(palette.raised)
                 .navigationBarsPadding()
                 .padding(bottom = BrandDimens.SpaceLg),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -208,19 +196,17 @@ private fun FormationChoice(
     onClick: () -> Unit
 ) {
     val palette = LocalBrandPalette.current
-    val edge = when {
-        selected -> palette.accent
-        !playable -> palette.rule
-        else -> Color.White.copy(alpha = 0.12f)
-    }
+    // Selection is a heavier neutral edge, not a lime border over a lime tint.
     Column(
         Modifier
             .width(104.dp)
             .clip(RoundedCornerShape(BrandDimens.CardRadius))
-            .background(
-                if (selected) palette.accent.copy(alpha = 0.14f) else Color.White.copy(alpha = 0.04f)
+            .background(palette.ground)
+            .border(
+                if (selected) 2.dp else 1.dp,
+                if (selected) palette.ink else palette.rule,
+                RoundedCornerShape(BrandDimens.CardRadius)
             )
-            .border(if (selected) 2.dp else 1.dp, edge, RoundedCornerShape(BrandDimens.CardRadius))
             .clickable(enabled = playable, onClick = onClick)
             .padding(vertical = BrandDimens.SpaceMd),
         horizontalAlignment = Alignment.CenterHorizontally

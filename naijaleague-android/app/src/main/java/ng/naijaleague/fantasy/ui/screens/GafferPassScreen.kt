@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
-import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandSurface
 import ng.naijaleague.fantasy.brand.BrandType
@@ -42,6 +41,7 @@ import ng.naijaleague.fantasy.brand.NaijaLeagueTheme
 import ng.naijaleague.fantasy.rules.Money
 import ng.naijaleague.fantasy.ui.components.BrandButton
 import ng.naijaleague.fantasy.ui.components.BrandRule
+import ng.naijaleague.fantasy.ui.components.HonourBadge
 import ng.naijaleague.fantasy.ui.components.SectionLabel
 
 /**
@@ -87,7 +87,7 @@ private val included = listOf(
     "The Differential Board" to
         "Every player under 5% ownership, ranked by upcoming fixture difficulty.",
     "Team news by SMS" to
-        "The alert fires for everyone at the same moment — you also get it as a text, " +
+        "The alert fires for everyone at the same moment. You also get it as a text, " +
             "so it reaches you when your data has finished. A delivery channel, not a head start.",
     "Unlimited saved squads" to
         "Model four squads side by side, see the projected difference, then commit.",
@@ -98,7 +98,7 @@ private val included = listOf(
     "Crest builder" to
         "Build a squad badge from the Adire, Uli, Nsibidi and Arewa components.",
     "Season archive" to
-        "Every receipt, every captain call, every rank — kept forever.",
+        "Every receipt, every captain call, every rank, kept forever.",
     "No ads" to "Nothing sold against your attention."
 )
 
@@ -127,6 +127,13 @@ fun GafferPassScreen(onClose: () -> Unit) {
                 ) {
                     Text("‹", style = BrandType.InterfaceAndGuidance.title, color = palette.ink)
                 }
+                // The product name lives in the bar, not as a brass badge stacked
+                // over the headline. That stack is a template-app tell.
+                Text(
+                    stringResource(R.string.gaffer_pass),
+                    style = BrandType.InterfaceAndGuidance.title,
+                    color = palette.ink
+                )
             }
 
             Column(
@@ -135,7 +142,6 @@ fun GafferPassScreen(onClose: () -> Unit) {
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = BrandDimens.Gutter)
             ) {
-                SectionLabel(stringResource(R.string.gaffer_pass), color = BrandColor.IfeBrass)
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
                 Text(
                     stringResource(R.string.gaffer_head),
@@ -159,7 +165,7 @@ fun GafferPassScreen(onClose: () -> Unit) {
                             style = BrandType.InterfaceAndGuidance.title,
                             color = palette.ink
                         )
-                        Spacer(Modifier.height(2.dp))
+                        Spacer(Modifier.height(BrandDimens.SpaceXs))
                         Text(
                             detail,
                             style = BrandType.InterfaceAndGuidance.body,
@@ -204,7 +210,7 @@ fun GafferPassScreen(onClose: () -> Unit) {
             ) {
                 val plan = plans.first { it.id == selected }
                 BrandButton(
-                    label = "Start ${plan.name.lowercase()} — ${Money.format(plan.priceNaira)}",
+                    label = "Start ${plan.name.lowercase()}: ${Money.format(plan.priceNaira)}",
                     onClick = onClose
                 )
                 Spacer(Modifier.height(BrandDimens.SpaceSm))
@@ -227,10 +233,12 @@ private fun PlanRow(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(BrandDimens.CardRadius))
-            .background(if (selected) BrandColor.IfeBrass.copy(alpha = 0.14f) else palette.raised)
+            .background(palette.raised)
+            // Selection is a heavier neutral edge. A brass border over a brass
+            // tint made every plan row look like a coloured-border card.
             .border(
                 if (selected) 2.dp else 1.dp,
-                if (selected) BrandColor.IfeBrass else palette.rule,
+                if (selected) palette.ink else palette.rule,
                 RoundedCornerShape(BrandDimens.CardRadius)
             )
             .clickable(onClick = onSelect)
@@ -248,21 +256,10 @@ private fun PlanRow(plan: Plan, selected: Boolean, onSelect: () -> Unit) {
                     Spacer(Modifier.width(BrandDimens.SpaceSm))
                     // Brass is earned here: this is the honours colour and the
                     // Gaffer Pass is one of its four permitted homes (§01).
-                    Box(
-                        Modifier
-                            .clip(RoundedCornerShape(BrandDimens.ChipRadius))
-                            .background(BrandColor.IfeBrass)
-                            .padding(horizontal = 7.dp, vertical = 3.dp)
-                    ) {
-                        Text(
-                            plan.saving,
-                            style = BrandType.InterfaceAndGuidance.label,
-                            color = BrandColor.NightPitch
-                        )
-                    }
+                    HonourBadge(plan.saving)
                 }
             }
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(BrandDimens.SpaceXs))
             Text(
                 plan.note,
                 style = BrandType.InterfaceAndGuidance.bodySmall,

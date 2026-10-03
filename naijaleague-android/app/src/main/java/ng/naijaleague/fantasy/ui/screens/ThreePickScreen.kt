@@ -186,7 +186,7 @@ private fun PickRow(number: Int, question: String, hint: String) {
         Spacer(Modifier.width(BrandDimens.SpaceMd))
         Column(Modifier.weight(1f)) {
             Text(question, style = BrandType.InterfaceAndGuidance.body, color = palette.ink)
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(BrandDimens.SpaceXs))
             Text(hint, style = BrandType.InterfaceAndGuidance.micro, color = palette.inkDim)
         }
     }

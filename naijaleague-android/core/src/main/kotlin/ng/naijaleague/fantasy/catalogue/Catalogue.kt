@@ -132,7 +132,7 @@ sealed interface CatalogueStatus {
     /** A server was configured and could not be read. */
     data class Unreachable(val reason: String) : CatalogueStatus {
         override val summary =
-            "Could not reach the operator console — $reason. Showing the researched data " +
+            "Could not reach the operator console ($reason). Showing the researched data " +
                 "that ships with the app, which is complete on its own."
     }
 

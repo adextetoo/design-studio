@@ -520,18 +520,15 @@ private fun JoinRow(league: JoinableLeague) {
                         .heightIn(min = BrandDimens.MinTapTarget)
                         .clip(RoundedCornerShape(BrandDimens.ChipRadius))
                         .background(palette.raised)
-                        .border(
-                            1.dp,
-                            palette.accent.copy(alpha = 0.55f),
-                            RoundedCornerShape(BrandDimens.ChipRadius)
-                        )
+                        // Same neutral edge as BrandButtonSecondary, not a lime outline.
+                        .border(1.dp, palette.inkDim, RoundedCornerShape(BrandDimens.ChipRadius))
                         .clickable { /* wired to the leagues view-model in the live build */ },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         "Join",
                         style = BrandType.InterfaceAndGuidance.label,
-                        color = palette.accent
+                        color = palette.ink
                     )
                 }
             }

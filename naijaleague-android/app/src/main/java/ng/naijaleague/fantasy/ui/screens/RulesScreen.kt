@@ -181,7 +181,7 @@ fun RulesScreen(onClose: () -> Unit) {
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = BrandDimens.Gutter, vertical = 10.dp),
+                            .padding(horizontal = BrandDimens.Gutter, vertical = BrandDimens.SpaceMd),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -392,7 +392,7 @@ fun RulesScreen(onClose: () -> Unit) {
 private fun RuleLine(label: String, value: String) {
     val palette = LocalBrandPalette.current
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 7.dp),
+        Modifier.fillMaxWidth().padding(vertical = BrandDimens.SpaceSm),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

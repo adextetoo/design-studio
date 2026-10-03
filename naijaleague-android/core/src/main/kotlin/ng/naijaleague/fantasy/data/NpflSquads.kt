@@ -118,7 +118,7 @@ object NpflSquads {
             url = "https://ikoroducityfc.com/",
             retrieved = "2026-09-08",
             confidence = Confidence.LOW,
-            caveat = "Club-official, and therefore admissible — but with real evidence " +
+            caveat = "Club-official, and therefore admissible, but with real evidence " +
                 "that this page is stale. Its footer reads \"Copyright (c) 2023\", and " +
                 "twenty-nine names is a full registered list rather than a match squad. " +
                 "Treat it as a starting point to correct, not a finished roster.",
@@ -199,7 +199,7 @@ object NpflSquads {
 
         df("IKO", "Godspower", "Anozie", 10,
             "club captain per a September 2026 report, which the club's own players " +
-                "page does not list at all — the clearest single sign that the page is stale"),
+                "page does not list at all. That is the clearest single sign that the page is stale"),
         df("IKO", "Uzochukwu", "Okekeaniokete", 4),
         df("IKO", "Chibuike", "Ohaegbulam", 5),
         df("IKO", "Somto", "Nnoli", 6),
@@ -219,7 +219,7 @@ object NpflSquads {
         md("IKO", "Moses", "Sodeinde", 23),
         md("IKO", "Temitope", "Folarin", 25,
             "DISPUTED: a report dated 28 August 2026 has Folarin Temitope signing for " +
-                "Rangers. Recorded, not resolved — name order varies."),
+                "Rangers. Recorded, not resolved. Name order varies."),
         md("IKO", "Kelechi", "Onwe", 30),
         md("IKO", "Rivio", "Ayemwenre", 35, "also appears in transfer records against Sporting Lagos"),
         md("IKO", "Malik", "Anofi", 37),
@@ -244,7 +244,7 @@ object NpflSquads {
         gk("RIV", "Clinton", "Andy", null, "signed 2026; reported as a goalkeeper"),
         fw("RIV", "Alex", "Oyowah", 10,
             "reported as a forward wearing 10 in the most recent confirmed squad list, " +
-                "dated February 2024 — the number may not still be current"),
+                "dated February 2024, so the number may not still be current"),
         fw("RIV", "Ekene", "Awazie", null,
             "former Enyimba captain, signed 2026. Enyimba's own undated page still " +
                 "lists him at 30; the dated report wins"),

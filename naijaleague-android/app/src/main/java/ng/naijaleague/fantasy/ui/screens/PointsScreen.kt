@@ -191,7 +191,7 @@ fun PointsScreen(onClose: () -> Unit) {
                         // bonus lands. §13 calls this the most screenshotted moment
                         // in the product, so it gets its own component and its own
                         // arrival rather than being blended into one figure.
-                        Box(Modifier.padding(bottom = 10.dp)) {
+                        Box(Modifier.padding(bottom = BrandDimens.SpaceSm)) {
                             AwayBonusBadge(extraPoints = awayBonus)
                         }
                     }
@@ -352,7 +352,7 @@ private fun PlayerPointsRow(
                         modifier = Modifier.weight(1f, fill = false)
                     )
                     if (isCaptain) {
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(BrandDimens.SpaceSm))
                         // Brass, and the only brass on this screen. The captaincy
                         // is an honour the manager awarded; nothing else here was
                         // won (§01).
@@ -362,7 +362,7 @@ private fun PlayerPointsRow(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (player.isPlaceholder) {
                         StandInTag()
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(BrandDimens.SpaceSm))
                     }
                     Text(
                         "${player.position.short} · ${club.name}",
@@ -429,7 +429,7 @@ private fun BreakdownLine(label: String, points: Int?, strong: Boolean = false) 
         Modifier
             .fillMaxWidth()
             .padding(start = BrandDimens.Gutter + 40.dp, end = BrandDimens.Gutter)
-            .padding(bottom = 2.dp),
+            .padding(bottom = BrandDimens.SpaceXs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -695,7 +695,7 @@ private fun TransferSide(label: String, player: Player, emphasis: Boolean = fals
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (player.isPlaceholder) {
                     StandInTag()
-                    Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(BrandDimens.SpaceSm))
                 }
                 Text(
                     "${player.position.short} · ${club.name}",
@@ -769,7 +769,7 @@ private fun FixtureLine(fixture: SampleData.Fixture) {
             fixture.kickoff,
             style = BrandType.InterfaceAndGuidance.micro,
             color = palette.inkDim,
-            modifier = Modifier.padding(start = BrandDimens.Gutter + 36.dp, bottom = 2.dp)
+            modifier = Modifier.padding(start = BrandDimens.Gutter + 36.dp, bottom = BrandDimens.SpaceXs)
         )
         if (fixture.homeAtNeutralGround) {
             Text(

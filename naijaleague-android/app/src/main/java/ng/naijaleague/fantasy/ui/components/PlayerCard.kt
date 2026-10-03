@@ -203,7 +203,7 @@ fun PlayerCardSheet(
             RateRow(
                 "Differential multiplier",
                 DifferentialTier.forOwnership(player.ownershipPct).let {
-                    if (it == DifferentialTier.NONE) "none — over 5% owned" else "×${it.multiplier}"
+                    if (it == DifferentialTier.NONE) "none (over 5% owned)" else "×${it.multiplier}"
                 }
             )
             performance?.let {
@@ -225,7 +225,7 @@ fun PlayerCardSheet(
             SourceNote(
                 label = "No photo, no age, no attribute ratings",
                 detail = if (player.isPlaceholder) {
-                    "This is a stand-in, not a person — there is nothing to photograph. " +
+                    "This is a stand-in, not a person. There is nothing to photograph. " +
                         "No squad list is published for ${record.club.shortName} that any " +
                         "source will stand behind."
                 } else {
@@ -278,7 +278,7 @@ fun PlayerCardSheet(
 private fun RateRow(label: String, value: String, emphasis: Boolean = false) {
     val palette = LocalBrandPalette.current
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 7.dp),
+        Modifier.fillMaxWidth().padding(vertical = BrandDimens.SpaceSm),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

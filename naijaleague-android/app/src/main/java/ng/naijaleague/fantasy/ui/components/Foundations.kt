@@ -1,7 +1,6 @@
 package ng.naijaleague.fantasy.ui.components
 
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -53,14 +51,21 @@ import ng.naijaleague.fantasy.brand.LocalBrandPalette
  * pairings in BrandColor.Contrast happening by accident (§01).
  */
 
-/** Uppercase eyebrow. Label class, 11sp, +0.09em — never larger (§02). */
+/**
+ * Uppercase section label. Label class, 11sp, +0.09em, never larger (§02).
+ *
+ * Dim ink by default, not the accent. A lime label over every heading spent
+ * the one loud voice on navigation and read as a template's "badge above the
+ * headline". A caller passes a colour only when the label itself carries
+ * meaning, such as brass for an honour.
+ */
 @Composable
 fun SectionLabel(text: String, modifier: Modifier = Modifier, color: Color? = null) {
     val palette = LocalBrandPalette.current
     Text(
         text = text.uppercase(),
         style = BrandType.InterfaceAndGuidance.label,
-        color = color ?: palette.accent,
+        color = color ?: palette.inkDim,
         modifier = modifier
     )
 }
@@ -109,7 +114,9 @@ fun BrandButtonSecondary(
             .fillMaxWidth()
             .heightIn(min = BrandDimens.ButtonHeight)
             .clip(RoundedCornerShape(BrandDimens.ButtonRadius))
-            .border(BorderStroke(1.dp, palette.accent.copy(alpha = 0.55f)), RoundedCornerShape(BrandDimens.ButtonRadius))
+            // Neutral edge. A lime outline beside a lime fill made two loud
+            // buttons; the label already says which is which.
+            .border(BorderStroke(1.dp, palette.inkDim), RoundedCornerShape(BrandDimens.ButtonRadius))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -168,6 +175,10 @@ fun AwayBonusBadge(extraPoints: Int, modifier: Modifier = Modifier) {
     // The second beat. The base total counts up first; the away bonus lands
     // after it, so the manager feels the extra rather than reading one blended
     // number. §13 calls this the most screenshotted moment in the product.
+    //
+    // It lands as a cut, not a fade-and-rise. Points never fade (§13), and a
+    // badge drifting up into place is the generic entrance every template app
+    // gives every element. The delay alone makes the beat.
     var landed by remember(extraPoints) { mutableStateOf(!animate) }
     LaunchedEffect(extraPoints, animate) {
         if (animate) {
@@ -175,19 +186,13 @@ fun AwayBonusBadge(extraPoints: Int, modifier: Modifier = Modifier) {
             landed = true
         }
     }
-    val appear by animateFloatAsState(
-        targetValue = if (landed) 1f else 0f,
-        animationSpec = BrandMotion.standard(),
-        label = "awayBonusBeat"
-    )
 
     Row(
         modifier = modifier
-            .offset(y = ((1f - appear) * 6f).dp)
-            .alpha(appear)
+            .alpha(if (landed) 1f else 0f)
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(palette.accent)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -205,7 +210,7 @@ fun HonourBadge(text: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(BrandColor.IfeBrass)
-            .padding(horizontal = 7.dp, vertical = 3.dp)
+            .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs)
     ) {
         Text(text, style = BrandType.InterfaceAndGuidance.label, color = BrandColor.NightPitch)
     }
@@ -223,14 +228,14 @@ fun OfflineBadge(modifier: Modifier = Modifier) {
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .background(palette.raised)
             .border(1.dp, palette.rule, RoundedCornerShape(BrandDimens.ChipRadius))
-            .padding(horizontal = 8.dp, vertical = 5.dp),
+            .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Canvas(Modifier.size(8.dp)) {
             // Haze, not brass. Brass means something was won; this is a sync state.
             drawCircle(color = BrandColor.HarmattanHaze)
         }
-        Spacer(Modifier.width(6.dp))
+        Spacer(Modifier.width(BrandDimens.SpaceSm))
         Text(
             stringResource(R.string.offline_badge),
             style = BrandType.InterfaceAndGuidance.micro,
@@ -351,7 +356,7 @@ fun StatBar(label: String, home: Int, away: Int, modifier: Modifier = Modifier) 
             Text(label, style = BrandType.InterfaceAndGuidance.micro, color = palette.inkDim)
             Text(away.toString(), style = BrandType.ScoreAndData.data, color = palette.ink)
         }
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(BrandDimens.SpaceSm))
         // RowScope.weight requires a value greater than zero, so a genuine
         // 0-3 stat line would throw during composition. Clamping also keeps a
         // zero side visible as a sliver rather than vanishing, which reads
@@ -364,7 +369,7 @@ fun StatBar(label: String, home: Int, away: Int, modifier: Modifier = Modifier) 
                     .height(5.dp)
                     .background(palette.accent)
             )
-            Spacer(Modifier.width(3.dp))
+            Spacer(Modifier.width(BrandDimens.SpaceXs))
             Box(
                 Modifier
                     .weight(1f - homeFraction)

@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
@@ -77,7 +76,7 @@ fun LiveMatchScreen(onClose: () -> Unit) {
             Box(
                 Modifier
                     .background(BrandColor.LiveGreen, CircleShape)
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
+                    .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs)
             ) {
                 Text(
                     "LIVE",

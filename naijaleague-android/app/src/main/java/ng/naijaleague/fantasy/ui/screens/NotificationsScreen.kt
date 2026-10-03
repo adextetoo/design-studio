@@ -172,7 +172,7 @@ private fun sampleNotifications(): List<Notification> {
             headline = "Transfer confirmed: ${signing.name} is in",
             detail = "${signingClub.shortName} defender, in for Gameweek " +
                 "${SampleData.gameweekNumber}. That is $fromClub from " +
-                "${signingClub.shortName} — the cap is ${SquadRules.MAX_PER_CLUB}.",
+                "${signingClub.shortName}. The cap is ${SquadRules.MAX_PER_CLUB}.",
             minutesAgo = 185,
             unread = false
         ),

@@ -32,8 +32,8 @@
     <string name="onb2_alt">I follow the whole league</string>
 
     <string name="onb3_body">Tap a position to fill it. Nothing is final until Sunday 3pm, so guess freely.</string>
-    <string name="onb3_suggested">Suggested — change anything</string>
-    <string name="onb3_cta">Looks good — continue</string>
+    <string name="onb3_suggested">Suggested: change anything</string>
+    <string name="onb3_cta">Looks good, continue</string>
     <string name="onb3_budget_left">Budget left</string>
 
     <string name="onb4_head">Your squad needs a name your group chat will remember.</string>
@@ -62,20 +62,20 @@
 
     <!-- ===== Rules. Every one of these states a rule and must match the engine. ===== -->
     <string name="away_bonus_title">Away Day Bonus</string>
-    <string name="away_bonus_body">In the NPFL, home teams win. Everybody knows it — the pitches, the travel, the nine hours on a bus, the crowd. So backing an away player is the bravest thing you can do in this game, and we pay you for it.</string>
+    <string name="away_bonus_body">In the NPFL, home teams win. Everybody knows why: the pitches, the travel, the nine hours on a bus, the crowd. So backing an away player is the bravest thing you can do in this game, and we pay you for it.</string>
     <string name="away_bonus_detail">Goal or assist away from home: one extra point. Clean sheet away: two extra. No other fantasy game in the world has this, because no other league needs it.</string>
     <string name="away_bonus_home_hint">3 of your players are away on Sunday. Goals away from home pay more.</string>
     <string name="away_bonus_home_note">No other fantasy game has this, because no other league needs it.</string>
 
-    <string name="the_three_title">The Three — and why it\'s not a secret</string>
+    <string name="the_three_title">The Three, and why it\'s not a secret</string>
     <string name="the_three_body">Three points to the best player in each match, two to the next, one to the next.</string>
     <string name="the_three_reason">The difference between us and everybody else is that we publish the reason. Every award comes with a line from the match scorer who was at the ground. If you think we got it wrong, you have two hours to flag it with the clip. Points are provisional until Monday, 12:00.</string>
     <string name="the_three_corrected">We would rather be corrected in public than pretend a number came from nowhere.</string>
     <string name="the_three_live">Filed by the scorer at the ground. Every award comes with the reason, and you have two hours after full time to flag it with the clip.</string>
 
-    <string name="club_cap_note">Two per club, not three. The NPFL is more even than England, and we are not letting you stack one squad — which also means you end up caring about at least eight clubs.</string>
+    <string name="club_cap_note">Two per club, not three. The NPFL is more even than England, and we are not letting you stack one squad. It also means you end up caring about at least eight clubs.</string>
     <string name="transfer_cost_note">The app tells you the cost before you confirm, every single time. Nobody should ever lose four points by accident.</string>
-    <string name="transfer_offline_note">Your changes save on your phone first, then sync. If your data finishes mid-transfer, the move is not lost — it goes through when you reconnect, as long as that happens before Sunday 3pm.</string>
+    <string name="transfer_offline_note">Your changes save on your phone first, then sync. If your data finishes mid-transfer, the move is not lost. It goes through when you reconnect, as long as that happens before Sunday 3pm.</string>
 
     <!-- The same §05 promise as transfer_offline_note, said in one sentence for
          the Data and offline settings row. The rules page explains the promise;
@@ -100,11 +100,11 @@
     <string name="three_pick_strap">Three picks. 30 seconds. No squad needed.</string>
     <string name="three_pick_window">Opens Friday 4pm. Closes Sunday 2:55pm.</string>
     <string name="three_pick_q1">Highest-scoring player of the round</string>
-    <string name="three_pick_q2">The upset — name one away team that wins</string>
+    <string name="three_pick_q2">The upset: name one away team that wins</string>
     <string name="three_pick_q3">Exact scoreline, Match of the Week</string>
     <string name="three_pick_prize_all">All three right: ₦50,000 and your name on the front of the app all week.</string>
     <string name="three_pick_prize_two">Two right: ₦2,000 airtime.</string>
-    <string name="three_pick_free">Free to enter. Always. Prizes are put up by our sponsor, not by other players — nobody loses money in this game.</string>
+    <string name="three_pick_free">Free to enter. Always. Prizes are put up by our sponsor, not by other players. Nobody loses money in this game.</string>
     <string name="three_pick_eligibility">Cash prizes are for entrants aged 18 and over. Under 18s who win take airtime, data or a match ticket instead.</string>
     <string name="three_pick_cta">Lock in my three</string>
 
@@ -136,14 +136,14 @@
          The account step sits at the END of onboarding, not the start. By here
          the manager has built something, so the question is how to keep it. -->
     <string name="signup_head">Save your squad</string>
-    <string name="signup_body">%1$s is built. Save it now and it is yours — your points, your leagues, your transfers, on any phone you sign in from.</string>
+    <string name="signup_body">%1$s is built. Save it now and it is yours: your points, your leagues, your transfers, on any phone you sign in from.</string>
     <string name="signup_google">Continue with Google</string>
     <string name="signup_or">or</string>
     <string name="signup_manager_name">Your name</string>
     <string name="signup_phone">Phone number</string>
     <string name="signup_phone_why">We send a code, not a password. Nothing to forget twenty minutes before a deadline.</string>
     <string name="signup_age_label">Your age</string>
-    <string name="signup_age_body">You have to be %1$d or over to play. Cash prizes are for %2$d and over — under 18s who win take airtime, data or a match ticket instead.</string>
+    <string name="signup_age_body">You have to be %1$d or over to play. Cash prizes are for %2$d and over. Under 18s who win take airtime, data or a match ticket instead.</string>
     <string name="signup_cta">Save my squad</string>
     <string name="signup_have_account">Already have a squad? Sign in</string>
 
@@ -154,7 +154,7 @@
          self-deprecation, it is the product being straight about which of the
          two is worth the manager's thumb. -->
     <string name="join_head">The table you will actually check on Monday is the one with your people in it.</string>
-    <string name="join_body">Send the link to the group chat. Whoever taps it lands in your league — no code to type, and they can build their squad afterwards.</string>
+    <string name="join_body">Send the link to the group chat. Whoever taps it lands in your league. No code to type, and they can build their squad afterwards.</string>
     <string name="join_code_label">Joining a private league</string>
     <string name="join_code_hint">League code</string>
     <string name="join_code_help">Six characters, from whoever set the league up.</string>
@@ -163,7 +163,7 @@
     <string name="join_code_cta">Join with this code</string>
     <string name="join_browse_note">Anybody can join these, which is also the problem with them. Nobody in here knows your name.</string>
     <string name="join_counts_label">About these numbers</string>
-    <string name="join_counts_note">Manager counts on this screen are demo figures. They are not league data and they are not live entry numbers — real counts arrive with real entries.</string>
+    <string name="join_counts_note">Manager counts on this screen are demo figures. They are not league data and they are not live entry numbers. Real counts arrive with real entries.</string>
 
     <!-- ===== The end card (§04, §12) =====
          One of the few places the endline is allowed. §12 bans it in
@@ -180,7 +180,7 @@
          that verifies and says who reads it. -->
     <string name="claim_link">Is this you? Claim your card</string>
     <string name="claim_head">Claim this card</string>
-    <string name="claim_body">If this is you, tell us and a person here will check it. Your word beats a club website that has not been updated since 2023 — but somebody has to confirm it is your word first.</string>
+    <string name="claim_body">If this is you, tell us and a person here will check it. Your word beats a club website that has not been updated since 2023, but somebody has to confirm it is your word first.</string>
     <string name="claim_about_you">About you</string>
     <string name="claim_name">Your full name, spelt how you spell it</string>
     <string name="claim_phone">Phone number</string>
@@ -189,7 +189,7 @@
     <string name="claim_proof_help">Anything your club can vouch for: an email address on the club\'s domain, your registration number, or the name of an official who will confirm you.</string>
     <string name="claim_proof">Club email, registration number, or an official who will confirm</string>
     <string name="claim_privacy_label">What happens to this</string>
-    <string name="claim_privacy">It goes to one reviewer here and nowhere else. We do not ask for your date of birth, an ID number, a BVN or a bank account, and we will not start — none of them prove anything this does not. If the claim is refused we delete what you sent.</string>
+    <string name="claim_privacy">It goes to one reviewer here and nowhere else. We do not ask for your date of birth, an ID number, a BVN or a bank account, and we will not start: none of them prove anything this does not. If the claim is refused we delete what you sent.</string>
     <string name="claim_cta">Send my claim</string>
     <string name="claim_incomplete">Fill in your name, your phone number and one proof, and the button turns on.</string>
     <string name="claim_sent_head">Claim sent</string>

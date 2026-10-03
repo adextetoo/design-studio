@@ -310,7 +310,7 @@ private fun PlayerRow(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (player.isPlaceholder) {
                         StandInTag()
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(BrandDimens.SpaceSm))
                     } else {
                         // Bound to a local because Player now lives in the core
                         // build, and Kotlin will not smart-cast a public val
@@ -319,7 +319,7 @@ private fun PlayerRow(
                         val shirt = player.squadNumber
                         if (shirt != null) {
                             ShirtNumber(shirt)
-                            Spacer(Modifier.width(6.dp))
+                            Spacer(Modifier.width(BrandDimens.SpaceSm))
                         }
                     }
                     Text(
@@ -331,7 +331,7 @@ private fun PlayerRow(
                         modifier = Modifier.weight(1f, fill = false)
                     )
                     if (tier != DifferentialTier.NONE) {
-                        Spacer(Modifier.width(6.dp))
+                        Spacer(Modifier.width(BrandDimens.SpaceSm))
                         Text(
                             "${player.ownershipPct}% · x${tier.multiplier}",
                             style = BrandType.InterfaceAndGuidance.label,

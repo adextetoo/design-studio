@@ -2,8 +2,8 @@
 <!-- Class 1 — data rows, tabular. -->
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
     <font
-        android:font="@font/inter_variable"
+        android:font="@font/archivo_variable"
         android:fontStyle="normal"
         android:fontWeight="500"
-        android:fontVariationSettings="'wght' 500, 'opsz' 16" />
+        android:fontVariationSettings="'wght' 500, 'wdth' 100" />
 </font-family>

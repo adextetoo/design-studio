@@ -1,7 +1,5 @@
 package ng.naijaleague.fantasy.ui.screens
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
@@ -30,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -40,11 +37,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
-import ng.naijaleague.fantasy.LocalAnimationsEnabled
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandColor
 import ng.naijaleague.fantasy.brand.BrandDimens
-import ng.naijaleague.fantasy.brand.BrandMotion
 import ng.naijaleague.fantasy.brand.BrandType
 import ng.naijaleague.fantasy.brand.LocalBrandPalette
 import ng.naijaleague.fantasy.data.SampleData
@@ -109,26 +104,10 @@ fun TeamScreen(onChoosePlayers: () -> Unit) {
         return
     }
 
-    // The pitch goes soft behind the picker. This is the backdrop half of the
-    // glass: the panel is translucent, so what shows through it has to be out of
-    // focus or it competes with the shapes on the dial. It eases rather than
-    // snaps because the panel is arriving, not cutting.
-    //
-    // Modifier.blur is a no-op below Android 12. The scrim in FormationPicker is
-    // weighted to carry the separation on its own there, which is why it is as
-    // heavy as it is.
-    val animate = LocalAnimationsEnabled.current
-    val backdropBlur by animateDpAsState(
-        targetValue = if (pickingShape) PitchBlur else 0.dp,
-        animationSpec = if (animate) BrandMotion.enter() else snap(),
-        label = "pitchBlur"
-    )
-
     Box(Modifier.fillMaxWidth()) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .blur(backdropBlur)
                 .verticalScroll(rememberScrollState())
         ) {
             ScreenHeader(
@@ -266,16 +245,6 @@ private val TokenHeight = 74.dp
 
 /** Air between tokens. A team sheet needs the space between the lines. */
 private val TokenGap = BrandDimens.SpaceSm
-
-/**
- * How far out of focus the pitch goes behind the formation picker.
- *
- * Enough that the tokens stop being readable — otherwise the eye keeps trying
- * to read them through the panel — and not so far that the green stops being
- * recognisably a pitch. Losing the pitch entirely would defeat the point of
- * overlaying rather than pushing a new screen.
- */
-private val PitchBlur = 14.dp
 
 @Composable
 private fun PitchView(

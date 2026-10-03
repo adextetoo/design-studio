@@ -91,7 +91,7 @@ fun StandInTag(modifier: Modifier = Modifier) {
         modifier
             .clip(RoundedCornerShape(BrandDimens.ChipRadius))
             .border(1.dp, palette.rule, RoundedCornerShape(BrandDimens.ChipRadius))
-            .padding(horizontal = 6.dp, vertical = 1.dp)
+            .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs)
     ) {
         Text(
             stringResource(R.string.stand_in),
@@ -137,7 +137,7 @@ val squadDataSummary: String
         val total = NpflClubs.all.size
         val real = NpflSquads.positioned().size
         val waiting = NpflSquads.awaitingPosition().size
-        return "$sourced of $total clubs publish a squad we can stand behind — " +
+        return "$sourced of $total clubs publish a squad we can stand behind: " +
             "$real real players so far. Everyone else is a labelled stand-in. " +
             "$waiting more players are confirmed by name but nobody prints what " +
             "position they play."

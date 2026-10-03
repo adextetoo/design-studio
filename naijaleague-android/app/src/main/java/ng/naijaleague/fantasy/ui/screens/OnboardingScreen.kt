@@ -109,7 +109,7 @@ fun OnboardingScreen(onFinished: () -> Unit) {
 @Composable
 private fun StepIndicator(step: Int, total: Int, modifier: Modifier = Modifier) {
     val palette = LocalBrandPalette.current
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(BrandDimens.SpaceXs)) {
         repeat(total) { index ->
             Box(
                 Modifier
@@ -175,10 +175,11 @@ private fun ClubTile(club: Club, selected: Boolean, onClick: () -> Unit) {
     Column(
         Modifier
             .clip(RoundedCornerShape(BrandDimens.CardRadius))
-            .background(if (selected) palette.accent.copy(alpha = 0.16f) else palette.raised)
+            .background(palette.raised)
+            // Selection is a heavier neutral edge, not a lime border over a lime tint.
             .border(
-                1.dp,
-                if (selected) palette.accent else palette.rule,
+                if (selected) 2.dp else 1.dp,
+                if (selected) palette.ink else palette.rule,
                 RoundedCornerShape(BrandDimens.CardRadius)
             )
             .clickable(onClick = onClick)

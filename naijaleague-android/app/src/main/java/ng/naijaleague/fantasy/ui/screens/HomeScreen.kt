@@ -113,7 +113,7 @@ fun HomeScreen(
                     Row(verticalAlignment = Alignment.Bottom) {
                         PointsCounter(points = gameweek.points)
                         Spacer(Modifier.width(BrandDimens.SpaceMd))
-                        Column(Modifier.padding(bottom = 10.dp)) {
+                        Column(Modifier.padding(bottom = BrandDimens.SpaceSm)) {
                             if (awayBonus > 0) AwayBonusBadge(extraPoints = awayBonus)
                             Spacer(Modifier.height(BrandDimens.SpaceXs))
                             Text(
@@ -146,7 +146,7 @@ fun HomeScreen(
                     BrandCard(Modifier.weight(1f)) {
                         Column {
                             SectionLabel("Overall rank", color = palette.inkDim)
-                            Spacer(Modifier.height(6.dp))
+                            Spacer(Modifier.height(BrandDimens.SpaceSm))
                             Text(
                                 formatThousands(SampleData.overallRank),
                                 style = BrandType.ScoreAndData.scorelineMid,
@@ -162,7 +162,7 @@ fun HomeScreen(
                     BrandCard(Modifier.weight(1f)) {
                         Column {
                             SectionLabel("Free transfers", color = palette.inkDim)
-                            Spacer(Modifier.height(6.dp))
+                            Spacer(Modifier.height(BrandDimens.SpaceSm))
                             // Ask the engine. Open-coding "banked + 1" would
                             // advertise 6 free transfers at banked = 5, while
                             // Transfers caps at 5 and charges -4 for the sixth.
@@ -226,7 +226,7 @@ fun HomeScreen(
                             Box(
                                 Modifier
                                     .background(BrandColor.LiveGreen, androidx.compose.foundation.shape.CircleShape)
-                                    .padding(horizontal = 7.dp, vertical = 3.dp)
+                                    .padding(horizontal = BrandDimens.SpaceSm, vertical = BrandDimens.SpaceXs)
                             ) {
                                 // White on Live Green is 3.57:1 — large text only. At
                                 // Label size it would fail, so this uses Night Pitch.
@@ -272,7 +272,7 @@ fun HomeScreen(
                     awayShort = SampleData.club(fixture.awayClubId).shortName,
                     kickoff = fixture.kickoff,
                     venueNote = if (fixture.homeAtNeutralGround) {
-                        "At ${homeRecord.stadium} — not ${homeRecord.homeGroundOfRecord}. " +
+                        "At ${homeRecord.stadium}, not ${homeRecord.homeGroundOfRecord}. " +
                             "Ground Man does not pay out here."
                     } else {
                         null
@@ -364,7 +364,7 @@ private fun FixtureRow(
             color = palette.inkDim,
             modifier = Modifier.padding(
                 start = BrandDimens.Gutter + 36.dp,
-                bottom = if (venueNote == null) BrandDimens.SpaceMd else 2.dp
+                bottom = if (venueNote == null) BrandDimens.SpaceMd else BrandDimens.SpaceXs
             )
         )
         if (venueNote != null) {

@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import ng.naijaleague.fantasy.R
 import ng.naijaleague.fantasy.brand.BrandDimens
 import ng.naijaleague.fantasy.brand.BrandType
@@ -243,14 +242,14 @@ private fun TransferEnd(label: String, player: Player, arriving: Boolean) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(Modifier.height(2.dp))
+                    Spacer(Modifier.height(BrandDimens.SpaceXs))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // A stand-in says on its face that it is one, wherever it
                         // is shown (§07). Neither of these two is one, but the
                         // eighteen clubs with no published squad are full of them.
                         if (player.isPlaceholder) {
                             StandInTag()
-                            Spacer(Modifier.width(6.dp))
+                            Spacer(Modifier.width(BrandDimens.SpaceSm))
                         } else {
                             // See ChoosePlayersScreen: Player is declared in the
                             // core build, so this needs a local rather than a
@@ -258,7 +257,7 @@ private fun TransferEnd(label: String, player: Player, arriving: Boolean) {
                             val shirt = player.squadNumber
                             if (shirt != null) {
                                 ShirtNumber(shirt)
-                                Spacer(Modifier.width(6.dp))
+                                Spacer(Modifier.width(BrandDimens.SpaceSm))
                             }
                         }
                         Text(
